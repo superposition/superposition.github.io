@@ -1,7 +1,7 @@
 ---
 title: "Why this notebook: thinking above the code"
 description: AI is opening more directions for me to explore. I want to keep the reasoning, the experiments, and the changes of mind in public.
-date: 2026-09-10 00:00:00 +0000
+date: 2026-09-10 00:00:00 -0400
 tags: [AI, mathematics, kernels, learning]
 experiment_id: mage-001
 technical_record: https://github.com/superposition/mage/blob/master/docs/experiments/mage-001-validation.md
