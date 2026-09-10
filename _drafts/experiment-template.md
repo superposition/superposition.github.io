@@ -3,33 +3,24 @@ title: "Working title"
 description: "The question behind this entry."
 tags: [learning]
 experiment_id: mage-NNN
-technical_record: https://superposition.github.io/mage/experiments/mage-NNN/
+technical_record: https://github.com/superposition/mage
 math: true
 ---
-## Motivation
+<!-- Open with the question and why it matters to the reader. Explain what
+pulled you toward it. Keep the introduction concrete and brief. -->
 
-What pulled me toward this question?
+## The idea
 
-## Mathematical model
+<!-- Develop the mathematical or scientific connection. Use an equation or
+example when it earns its place, define the symbols, and explain the meaning.
+State the hypothesis and link primary sources where they help. -->
 
-What operation or behavior am I trying to understand?
+## What the experiment changes
 
-## Hypothesis
+<!-- Connect an actual observation to the idea. Explain what changed in your
+understanding and where uncertainty remains. Link implementation, commands,
+full measurements, and validation logs through technical_record. -->
 
-What do I expect, and why?
+## The next question
 
-## Implementation
-
-What did I build? Link the code and technical record.
-
-## Evidence
-
-What was actually observed? Include failures and measurement boundaries.
-
-## Changed understanding
-
-What do I now believe differently?
-
-## Next questions
-
-What should I investigate next?
+<!-- Follow the reasoning toward the next investigation. -->

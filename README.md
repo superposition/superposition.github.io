@@ -9,7 +9,9 @@ Preview drafts with `bundle exec jekyll serve --drafts`. Publish by moving the e
 to `_posts/YYYY-MM-DD-slug.md`, setting its date, and merging to `main`.
 
 Use an `experiment_id` and `technical_record` link for work documented in Mage.
-Keep narrative here and reproduction details in https://superposition.github.io/mage/.
+Keep public writing focused on the mathematical ideas and why they matter.
+The Mage field notes live at https://superposition.github.io/mage/.
+Link code, setup, test logs, and detailed measurements to https://github.com/superposition/mage/.
 
 ## Build
 
