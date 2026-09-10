@@ -2,6 +2,7 @@
 title: "A faster call can hide a slower kernel"
 description: The first profiles changed the question. Before choosing a language, I need to understand which part of the work became faster.
 date: 2026-09-10 00:01:00 -0400
+updated: 2026-09-10
 tags: [kernels, mathematics, measurement, learning]
 experiment_id: mage-001
 technical_record: https://github.com/superposition/mage/blob/master/docs/experiments/mage-001-comparison.md
@@ -42,3 +43,81 @@ For the production question, the current results are a starting point. They favo
 AI makes it easier for me to reach these experiments. What I want to develop alongside that speed is the ability to say what an experiment means. That is how this notebook can become useful beyond the code it produces.
 
 The [next research steps are in Mage](https://github.com/superposition/mage/blob/master/docs/research/kernel-exploration.md). The kernels, full measurements, and reproduction instructions stay there; this journal follows the questions and what changes as I work through them.
+
+## Measured values
+
+Five FP32 operations, three implementations, one RTX 4090 under WSL2. The figures below are the retained measurements behind this entry; the method and reproduction steps are in the [measurement record](https://github.com/superposition/mage/blob/master/docs/experiments/mage-001-comparison.md).
+
+<figure class="measurement">
+  <picture>
+    <source media="(max-width: 520px)" srcset="{{ '/mage/assets/figures/mage-001/comparison-kernel-mobile.svg' | relative_url }}">
+    <img src="{{ '/mage/assets/figures/mage-001/comparison-kernel.svg' | relative_url }}" width="740" height="650" alt="GPU kernel time: Triton has the shortest measured time for GELU, LayerNorm, and neighbor aggregation. PyTorch has the shortest for matrix multiplication and triangle contraction.">
+  </picture>
+  <figcaption>
+    <p>GPU kernel time, summed per operation. Separate Nsight Systems capture, 100 iterations per measurement; gaps between launches are excluded. The WSL timestamp fallback has reduced precision.</p>
+    <details>
+      <summary>Values (µs)</summary>
+      <table>
+        <caption class="visually-hidden">GPU kernel time per operation and implementation</caption>
+        <thead><tr><th scope="col">Operation</th><th scope="col">PyTorch</th><th scope="col">Triton</th><th scope="col">Rust</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Matrix multiplication</th><td>56.0</td><td>83.8</td><td>344.0</td></tr>
+          <tr><th scope="row">Bias + GELU</th><td>15.9</td><td>7.9</td><td>11.2</td></tr>
+          <tr><th scope="row">LayerNorm</th><td>11.4</td><td>8.2</td><td>18.6</td></tr>
+          <tr><th scope="row">Triangle contraction</th><td>28.5</td><td>93.9</td><td>81.2</td></tr>
+          <tr><th scope="row">Neighbor aggregation</th><td>78.3</td><td>7.9</td><td>10.3</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </figcaption>
+</figure>
+
+<figure class="measurement">
+  <picture>
+    <source media="(max-width: 520px)" srcset="{{ '/mage/assets/figures/mage-001/comparison-event-mobile.svg' | relative_url }}">
+    <img src="{{ '/mage/assets/figures/mage-001/comparison-event.svg' | relative_url }}" width="740" height="650" alt="Time around the call: Rust has the shortest event span for GELU and neighbor aggregation. PyTorch has the shortest for the other three operations. These spans include possible launch gaps.">
+  </picture>
+  <figcaption>
+    <p>Mean of 300 warmed CUDA-event spans, collected in three rounds with rotating implementation order. Whiskers show the range of the three round means, not a confidence interval. A span can include gaps while the host submits work.</p>
+    <details>
+      <summary>Values (µs)</summary>
+      <table>
+        <caption class="visually-hidden">Event span per operation and implementation</caption>
+        <thead><tr><th scope="col">Operation</th><th scope="col">PyTorch</th><th scope="col">Triton</th><th scope="col">Rust</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Matrix multiplication</th><td>50.9</td><td>88.8</td><td>326.7</td></tr>
+          <tr><th scope="row">Bias + GELU</th><td>27.7</td><td>24.3</td><td>13.0</td></tr>
+          <tr><th scope="row">LayerNorm</th><td>17.8</td><td>22.6</td><td>19.5</td></tr>
+          <tr><th scope="row">Triangle contraction</th><td>55.6</td><td>91.9</td><td>78.5</td></tr>
+          <tr><th scope="row">Neighbor aggregation</th><td>89.7</td><td>21.8</td><td>13.2</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </figcaption>
+</figure>
+
+<figure class="measurement">
+  <picture>
+    <source media="(max-width: 520px)" srcset="{{ '/mage/assets/figures/mage-001/comparison-launches-mobile.svg' | relative_url }}">
+    <img src="{{ '/mage/assets/figures/mage-001/comparison-launches.svg' | relative_url }}" width="740" height="650" alt="Kernel launches per operation: PyTorch launches 2 for GELU, 3 for triangle contraction, and 4 for neighbor aggregation; 1 for matrix multiplication and LayerNorm. Triton and Rust launch 1 for every operation.">
+  </picture>
+  <figcaption>
+    <p>Captured launches divided by 100 iterations. Both custom implementations use one kernel per operation. Fewer launches explain part of the result; they do not determine kernel duration.</p>
+    <details>
+      <summary>Values</summary>
+      <table>
+        <caption class="visually-hidden">Kernel launches per operation and implementation</caption>
+        <thead><tr><th scope="col">Operation</th><th scope="col">PyTorch</th><th scope="col">Triton</th><th scope="col">Rust</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Matrix multiplication</th><td>1</td><td>1</td><td>1</td></tr>
+          <tr><th scope="row">Bias + GELU</th><td>2</td><td>1</td><td>1</td></tr>
+          <tr><th scope="row">LayerNorm</th><td>1</td><td>1</td><td>1</td></tr>
+          <tr><th scope="row">Triangle contraction</th><td>3</td><td>1</td><td>1</td></tr>
+          <tr><th scope="row">Neighbor aggregation</th><td>4</td><td>1</td><td>1</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </figcaption>
+</figure>
+
+These are forward-only learning kernels at five fixed shapes, on one WSL workstation with unlocked clocks. Compilation, transfers, and service startup are excluded. Each row has its own scale, so implementations are comparable within a row and not across operations. The two views come from separate runs with different launch rhythms, so subtracting one from the other does not isolate Python overhead.
