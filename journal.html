@@ -1,0 +1,9 @@
+---
+layout: page
+title: Journal
+permalink: /journal/
+description: Motivations, working hypotheses, evidence, and changes of mind.
+---
+{% for post in site.posts %}
+<article class="entry"><p class="meta">{{ post.date | date: "%d %b %Y" }}</p><div><h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2><p>{{ post.description }}</p></div></article>
+{% endfor %}

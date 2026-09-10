@@ -1,44 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
+---
+layout: default
+title: Thinking above the code
+---
+<section class="idea-intro">
+  <p class="eyebrow">Superposition / An open notebook</p>
+  <h1>Thinking above the code.</h1>
+  <p>AI is making it easier for me to build. I want to use that opening to understand more: the mathematics behind our tools, the science they make approachable, and the questions worth spending time on.</p>
+</section>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your First Grid!</title>
-</head>
-
-<style>
-/* Create a grid of 5 columns, all evenly spaced, add a 10px gap; */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-gap: 1rem;
-}
-
-/* Just for visual representation: */
-.grid > div {
-  font-family: helvetica, "Open Sans", arial, sans-serif;
-  font-weight: bold;
-  font-size: 2rem;
-  background: #1e202a;
-  color: #fcc002;
-  padding: 1rem;
-  text-align: center;
-}
-</style>
-
-<body>
-  <div class="grid">
-    <div class="item">01</div>
-    <div class="item">02</div>
-    <div class="item">03</div>
-    <div class="item">04</div>
-    <div class="item">05</div>
-    <div class="item">06</div>
-    <div class="item">07</div>
-    <div class="item">08</div>
-    <div class="item">09</div>
-    <div class="item">10</div>
-  </div>
-</body>
-</html>
+<section aria-labelledby="notes">
+  <div class="section-heading"><h2 id="notes">Notes & investigations</h2><a class="arrow-link" href="{{ '/journal/' | relative_url }}">Journal ↗</a></div>
+  {% for post in site.posts limit:5 %}
+  <article class="entry">
+    <p class="meta">{{ post.date | date: "%d %b %Y" }}<br>{{ post.experiment_id | default: "Starting point" }}</p>
+    <div><h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3><p>{{ post.description }}</p><div class="tags">{% for tag in post.tags %}<a class="tag" href="{{ '/topics/' | relative_url }}#{{ tag | slugify }}">{{ tag }}</a>{% endfor %}</div></div>
+  </article>
+  {% endfor %}
+  <article class="entry">
+    <p class="meta">Field note 001<br>Mathematics</p>
+    <div><h3><a href="https://superposition.github.io/mage/experiments/mage-001/">Computation is also movement.</a></h3><p>A matrix product contains opportunities for reuse. A reduction requires partial answers to meet. What happens when we follow those ideas into the hardware?</p><a class="read-link" href="https://superposition.github.io/mage/experiments/mage-001/">Explore the idea in Mage ↗</a></div>
+  </article>
+</section>
+<div class="reading-note"><p>Starting with linear algebra and GPU kernels. Following the connections into music, circuits, materials, medicine, and the wider world as the questions develop.</p></div>
