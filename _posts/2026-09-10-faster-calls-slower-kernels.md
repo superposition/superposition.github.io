@@ -48,6 +48,18 @@ The [next research steps are in Mage](https://github.com/superposition/mage/blob
 
 Five FP32 operations, three implementations, one RTX 4090 under WSL2. The figures below are the retained measurements behind this entry; the method and reproduction steps are in the [measurement record](https://github.com/superposition/mage/blob/master/docs/experiments/mage-001-comparison.md).
 
+Kernel time and time around the call for the same five operations, in one figure:
+
+<figure class="measurement">
+  <picture>
+    <source media="(max-width: 520px)" srcset="{{ '/mage/assets/figures/mage-001/comparison-views-mobile.svg' | relative_url }}">
+    <img src="{{ '/mage/assets/figures/mage-001/comparison-views.svg' | relative_url }}" width="740" height="351" alt="GPU kernel time and time around the call per operation: for Bias + GELU, Triton has the shorter kernel time while Rust has the shorter event span; PyTorch has the shortest kernel time for matrix multiplication and triangle contraction.">
+  </picture>
+  <figcaption>
+    <p>Top row: time inside the kernels. Bottom row: time around the call. Each column has its own scale, so implementations compare within a column. Values are in the two tables below.</p>
+  </figcaption>
+</figure>
+
 <figure class="measurement">
   <picture>
     <source media="(max-width: 520px)" srcset="{{ '/mage/assets/figures/mage-001/comparison-kernel-mobile.svg' | relative_url }}">
