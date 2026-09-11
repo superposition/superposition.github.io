@@ -35,10 +35,10 @@ Step 29 (the same on the Orin Nano) is [T29 (#45)](https://github.com/superposit
 When this entry landed on 2026-09-11T19:24Z, T28 had no comments at all and T29's only comment was a
 blocked deploy smoke, not a mission; no mission had run on either machine. T28 has since run its host
 mission — `open_missions` 0 → 1 → 0, a sealed 2395-byte MCAP and the mission id in the session list,
-on a zero-motion stack (`docs/evidence/T28/4090-mission/` on `ticket/T28`, `449eeea`, PR #213 open,
-`#44` `status:review`) — while T29's board half had not run (`#45` `status:review`, PR #211); as of
-2026-09-11T20:45Z neither ticket was `status:done`. What this entry's numbers measure is the kernel
-suite, on both machines.
+on a zero-motion stack (`docs/evidence/T28/4090-mission/` on `ticket/T28`, `449eeea`). As of
+2026-09-11T20:45Z, PR #213 was open with `#44` `status:review`, T29's board half had not run (`#45`
+`status:review`, PR #211), and neither ticket was `status:done`. What this entry's numbers measure is
+the kernel suite, on both machines.
 
 **The board deploy was attempted early, on purpose, and recorded as blocked.** Deploying `25f2b6f7`
 to `~/qualia-deploy/` and building natively on the board was cheap and proved the deploy path; the
