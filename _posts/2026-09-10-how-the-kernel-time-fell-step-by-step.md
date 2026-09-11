@@ -12,7 +12,7 @@ mesh_band: true
 <figure class="mesh-band" data-colors="#c9b2ff,#93caff,#91dbba" data-weights="1,0.73,0.45">
   <canvas aria-hidden="true" focusable="false"></canvas>
   <figcaption>
-    <p>The three spots are the three steps in the evidence table, opacity set by that step's speed-up in GPU kernel time: the 2.43× register tile brightest, the 1.77× shared-read change, the 1.10× two-warp row split dimmest.</p>
+    <p>The three spots are the three steps, opacity set by that step's speed-up.</p>
     <span class="mesh-band-credit">Field: <a href="https://github.com/paper-design/shaders" rel="noopener">Paper Shaders</a> mesh gradient (Apache-2.0), palette and weights from this post.</span>
   </figcaption>
 </figure>
