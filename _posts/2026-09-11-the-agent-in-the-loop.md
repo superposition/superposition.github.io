@@ -11,6 +11,7 @@ sources:
   - https://github.com/superposition/qualia/issues/9
   - https://github.com/superposition/qualia/pull/196
   - https://github.com/superposition/qualia/pull/184
+  - https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-agent-in-the-loop/loop-state.json
 ---
 
 **The claim.** The agent now has one place where strands report and one view they report into. A
@@ -26,6 +27,21 @@ follow-up read showed `open_missions` **0 → 1**; `GET /braid` answers
 `{"schema_version":"qualia.braid-state.v1", …}`. On the same board, `qualia-agent` finished at
 **41 passed / 0 failed**. And the fly is in the loop quantitatively: at stack start the runner opens
 `explore-frontier` and sends `fly prior: risk uncertainty_weight=0.625 semantic_novelty=0`.
+
+<figure class="measurement">
+  <picture>
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-agent-in-the-loop/strand-flow.svg"
+         width="1100" height="784"
+         alt="The strands fanning into the one write edge, POST /braid carrying the frozen BraidEvent (503 on a failed dispatch, a quarantined report refused with 400), then observe as the sole mutator, the folded BraidState and its six fields, the durable copies the braid does not keep (MCAP quarantine, the registry's rollback record), and the GET /braid read the console, TUI and operator page poll.">
+  </picture>
+  <figcaption>
+    <p>The strands reporting into <code>observe</code> through the one write edge —
+    <code>POST /braid</code> carrying the frozen <code>BraidEvent</code> (503 on a failed dispatch, a
+    <code>quarantined</code> report refused with 400) — then <code>observe</code> as the sole
+    mutator, the folded <code>BraidState</code> and its six fields, the durable copies the braid
+    keeps none of, and the <code>GET /braid</code> read the console, TUI and operator page poll.</p>
+  </figcaption>
+</figure>
 
 ## What we tried
 
@@ -76,6 +92,21 @@ zero when either side is absent or when a ledger row reads newer than the belief
 wrapped subtraction. It sits on an arena view, not on `BraidState`, because the braid's state is
 serialised to JSON at `GET /braid` and holds no mapping. T27's TUI renders it as
 `belief lag: {ms} ms`.
+
+<figure class="measurement">
+  <picture>
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-agent-in-the-loop/mission-lifecycle.svg"
+         width="1100" height="490"
+         alt="Two panels. Left: open_missions through the fold — the crate's test folding open m1, open m2, close m1, close m2 and a close for a mission it never saw (1, 2, 1, 0, 0), and the agent's write edge folding one open and one close (1, 0). Right: the belief pace gate — the window (1x), the stale window (8x), the hold region, and the two stale publications runners/map's tests assert.">
+  </picture>
+  <figcaption>
+    <p>The lifecycle and the gate: left, <code>open_missions</code> through the fold (1, 2, 1, 0, 0 —
+    including a close for a mission it never saw) and the write edge's (1, 0); right, the belief pace
+    gate — the window (1×), the stale window (8×), the hold region, and the two stale publications
+    <code>runners/map</code>'s tests assert (a 10 s-old tick under the 250 ms default; a 300 ms-old
+    tick released at 200 × 8 = 1,600 ms).</p>
+  </figcaption>
+</figure>
 
 ## The exploration mission, and one field that could not be computed
 
@@ -140,9 +171,3 @@ merge that landed the exploration mission. Epics:
   completion; the round trip proves the edge, not the behaviour.
 - **The board was shared.** Other agents were building and running on Pinkie during these legs; the
   reported results are agreements across runs, not undisturbed measurements.
-- **No figure ships with this entry.** No directory under `docs/figures/` matches the slug
-  `the-agent-in-the-loop`: the committed sets are the T42 heroes (`the-connectome-as-a-prior`,
-  `the-ladder`, `the-front-end-rebuilt-from-lessons`), the T43 turntables (`the-mark`,
-  `the-licence-and-the-snapshot`, `the-operating-model`) and T51's `fly-brain` set. None of them draws
-  the strand→observe→storage flow or the pace gate's wait/stale decision, so the entry ships without a
-  figure rather than with an invented one.

@@ -12,6 +12,7 @@ sources:
   - https://github.com/superposition/qualia/pull/190
   - https://github.com/superposition/qualia/pull/189
   - https://raw.githubusercontent.com/superposition/qualia/main/docs/evidence/T16/three-kernels/README.md
+  - https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-fly-in-the-belief-matrices/coupling-strength.json
 ---
 
 **The claim.** The prior is now a number in the belief loop and a number on the GPU, and neither
@@ -24,6 +25,21 @@ the arithmetic is normalised, so the value is a weight, not a count. Behind it: 
 return `Ok(0.0)` for every input; an invented rate model in a separate crate behind a second
 off-by-default feature; and three new kernels measured on the 4090 at **2.50 µs** (`belief_couple`,
 1 × 4), **10.59 µs** (`action_score`, 2 × 256) and **11.84 µs** (`perception_voxel`, 48 × 256).
+
+<figure class="measurement">
+  <picture>
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-fly-in-the-belief-matrices/prior-path.svg"
+         width="1100" height="830"
+         alt="The connectome artifact's path into the belief slots: dataset to committed graph.bin and manifest.json, a digest-checked load, peak-normalised in-strength, couple(belief, slots), and the layer belief; the off-by-default fly-prior flag, the refusal on an unmappable mapping, and the coupling's host-side, no-kernel nature are called out beside the path.">
+  </picture>
+  <figcaption>
+    <p>The connectome artifact's path into the belief slots: dataset → committed
+    <code>graph.bin</code>/<code>manifest.json</code> → digest-checked load → peak-normalised
+    in-strength → <code>couple(belief, slots)</code> → the layer belief, with the off-by-default
+    <code>fly-prior</code> flag, the refusal on an unmappable mapping, and the coupling's host-side
+    (no-kernel) nature called out.</p>
+  </figcaption>
+</figure>
 
 ## What we tried
 
@@ -66,6 +82,20 @@ the layer cannot satisfy is refused with `UnknownType(u32)` or `SlotOutOfRange(u
 so a stale mapping cannot read as a partial success. With the feature off, the symbol exists and
 returns `Ok(0.0)`; there is no branch in the belief loop.
 
+<figure class="measurement">
+  <picture>
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-fly-in-the-belief-matrices/coupling-normalisation.svg"
+         width="1100" height="497"
+         alt="Two panels of the factor CouplingPrior::couple applies per belief type, with the peak type in blue: left, the tests' three-type fixture (in-strength 4, 8, 2 giving 0.5, 1.0, 0.25, applied 1.75); right, the committed five-type artifact (in-strength 19, 3, 33, 12, 25, peak 33, applied 2.7879, mean 0.5576).">
+  </picture>
+  <figcaption>
+    <p>The factor <code>CouplingPrior::couple</code> applies to a mapped belief slot, per type:
+    left, the tests' three-type fixture (in-strength 4, 8, 2 → 0.5, 1.0, 0.25, applied 1.75);
+    right, the committed five-type artifact (in-strength 19, 3, 33, 12, 25, peak 33, applied
+    2.7879, mean 0.5576). The blue bar is the peak type, which couples at unit weight.</p>
+  </figcaption>
+</figure>
+
 The honest limit, recorded on the ticket: on an idle stack the coupling's effect on the *published*
 belief is not separately observable — the belief starts at zero and the identity model keeps it there,
 and the coupling scales the mean. The observable is the per-tick total above plus the unit test that
@@ -91,6 +121,20 @@ time, of which the new three are 2.50 µs (`belief_couple`), 10.59 µs (`action_
 (`perception_voxel`). That capture is committed under `docs/evidence/T16/three-kernels/` and is the
 number T17 and T18 have to beat. It replaced a 5-kernel baseline of **4784.75 µs** / 13 launches
 (`docs/evidence/baseline-2026-09-11/`, at `76143f0`).
+
+<figure class="measurement">
+  <picture>
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-fly-in-the-belief-matrices/new-kernels.svg"
+         width="1100" height="527"
+         alt="The T16 capture's per-kernel time on the RTX 4090 on a log axis: 16 launches over 8 kernels, 4892.893 microseconds, with the three kernels this epic added (belief_couple 2.496, action_score 10.592, perception_voxel 11.84 microseconds) against the 13-launch, 4784.753-microsecond baseline they replaced.">
+  </picture>
+  <figcaption>
+    <p>The T16 capture's per-kernel time on the RTX 4090 (log axis): 16 launches over 8 kernels,
+    4892.893 µs, of which the three kernels this epic added (<code>belief_couple</code> 2.50,
+    <code>action_score</code> 10.59, <code>perception_voxel</code> 11.84 µs) are 24.928 µs, against
+    the 13-launch, 4784.753 µs baseline they replaced.</p>
+  </figcaption>
+</figure>
 
 The ABI for the simulator's slot is fully pinned: `FlySimPayload` is `repr(C, align(64))`, 65,984
 bytes, with a 65,536-byte state array (`FLY_SIM_MAX_TYPES` = 16,384 `f32`) and `SHM_VERSION` bumped
@@ -147,8 +191,3 @@ merge that put the backend `couple_prior` on `main`. Epics:
   total and the unit tests are the evidence; a mission that moves the belief has not been run.
 - **The 4090 numbers are one contended session.** No error bar and no repeated-run spread are
   recorded in the T16 capture; compare shape and launch count first.
-- **No figure ships with this entry.** No directory under `docs/figures/` matches the slug
-  `the-fly-in-the-belief-matrices`. The nearest committed set — T51's `fly-brain`
-  (`brain-layout.svg`, `brain-firing.svg`, `brain-matrices.svg`, `turntable.glb`, under
-  `docs/figures/fly-brain/`) — is the figure set for T51's own `fly-brain` entry, not this slug, so
-  this entry ships without a figure rather than reusing another entry's.

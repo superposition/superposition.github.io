@@ -27,6 +27,21 @@ residency is a loop problem, not an occupancy problem. And the deploy side has i
 to the board at `25f2b6f7` and the probe **hung** — a plain-HTTP Leash on :8000 and a stack whose only
 default address was `https://127.0.0.1:8080`, llama.cpp's plain-HTTP port.
 
+<figure class="measurement">
+  <picture>
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-4090-and-the-nano/kernel-durations.svg"
+         width="1100" height="449"
+         alt="Two panels. Left: each of the five kernels' mean time per launch on the RTX 4090 and on the Orin NX, log axis, with its launch count — the same 13 launches summing to 4,784.753 and 39,182.176 microseconds (8.19x). Right: the board's residency against its issued work per cycle, with belief_update and costmap_stats at 65.59% and 64.58% of peak sustained-active warps but 1.52% and 16.58% of peak SM throughput.">
+  </picture>
+  <figcaption>
+    <p>The same 13 launches on two machines: left, each kernel's mean time per launch on the RTX 4090
+    and the Orin NX (log axis), with its launch count, summing to 4,784.753 µs and 39,182.176 µs
+    (8.19×); right, the board's residency against its issued work per cycle —
+    <code>belief_update</code> and <code>costmap_stats</code> at 65.59 % and 64.58 % of peak
+    sustained-active warps but 1.52 % and 16.58 % of peak SM throughput.</p>
+  </figcaption>
+</figure>
+
 ## What we tried
 
 **The mission tickets' runs are not what this entry measures.** Step 28 (an end-to-end mission on the
@@ -50,6 +65,21 @@ unreachable and the only path is stage-and-ship. The recipe that works — `git 
 trimmed `members` list, `cargo generate-lockfile --offline` — is written into the comment and into
 D-016/D-018.
 
+<figure class="measurement">
+  <picture>
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-4090-and-the-nano/deploy-path.svg"
+         width="1100" height="830"
+         alt="The stage-and-ship path drawn as stages with each obstacle noted beside the stage it stopped: git archive on the host, scp to jetson@192.168.55.1, unpack with the workspace trimmed, native --release --offline build, the PTX ceiling (driver 540.4 JITs 8.5 and below, NVRTC 12.9 emits 8.8), the compat-loader fix, 5 passed, and the two ncu runs.">
+  </picture>
+  <figcaption>
+    <p>The stage-and-ship path: <code>git archive</code> on the host → <code>scp</code> to
+    <code>jetson@192.168.55.1</code> → unpack with the workspace trimmed → native
+    <code>--release --offline</code> build → the PTX ceiling (driver 540.4 JITs ≤ 8.5, NVRTC 12.9
+    emits 8.8) and the compat-loader fix → 5 passed and the two <code>ncu</code> runs, each obstacle
+    as a note beside the stage it stopped.</p>
+  </figcaption>
+</figure>
+
 **Two obstacles were specific to the board's driver.** NVRTC 12.9 emits PTX ISA 8.8; the board's
 driver 540.4 JITs 8.5 and below, so every device test skipped itself with
 `CUDA_ERROR_UNSUPPORTED_PTX_VERSION`. A direct driver probe found the ceiling (`load ptx-8.5 result=0`
@@ -71,6 +101,20 @@ occupancy 66.67 %: 1024 of the 1536 threads the SM can hold). The 4090's cycle c
 kernel is an **inference**, not a measurement — the capture did not measure that clock — but the shape
 is what a latency-bound kernel predicts: the same cycles, a slower clock, a proportionally larger wall
 time, and the naive shape is worst exactly where it ships.
+
+<figure class="measurement">
+  <script type="module"
+          src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <model-viewer src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-4090-and-the-nano/turntable.glb"
+                camera-controls auto-rotate disable-zoom></model-viewer>
+  <figcaption>
+    <p>The extruded mark plus one pillar per kernel in the board's capture, each pillar's height its
+    mean time on the Orin NX — two pillars and three stubs, the 99.6 % the entry states — with a
+    60-frame rotation baked as an animation. If the viewer script does not load, the same
+    <a href="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-4090-and-the-nano/turntable.glb">GLB
+    downloads from the same figure</a>.</p>
+  </figcaption>
+</figure>
 
 ## Evidence
 
@@ -129,9 +173,3 @@ of the T50 Pinkie capture. This entry's epic is
 - **The board clock is about 10 days behind** (`date -u` read 2026-09-01 when the host read
   2026-09-11), which the deploy comment flags as a hazard for anything depending on TLS to a remote
   upstream; nothing in this entry depends on it.
-- **No figure ships with this entry.** No directory under `docs/figures/` matches the slug
-  `the-4090-and-the-nano`: T42's heroes cover `the-connectome-as-a-prior`, `the-ladder` and
-  `the-front-end-rebuilt-from-lessons`; T43's turntables cover `the-mark`,
-  `the-licence-and-the-snapshot` and `the-operating-model`; and T51's `fly-brain` set is named for
-  T51's own entry. None of them draws the per-kernel board-vs-4090 comparison or the deploy path, so
-  the entry ships without a figure rather than with an invented one.
