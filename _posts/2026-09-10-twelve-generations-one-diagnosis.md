@@ -108,7 +108,9 @@ A third finding is recorded rather than explained. The first kernel-time capture
 
 The same loop on layer normalization ran four generations and kept none. One warp per row measured 13.07 µs against 12.29; four warps per row and 128-thread blocks both measured 12.29 against 12.29; 512-thread blocks measured 13.31. One generation was refused outright because the committed control drifted 12.5% inside it.
 
-The committed arrangement — two warps per row in a 256-thread block — is a local optimum in that space, and the loop says so instead of manufacturing a change. The distance to Triton's layer normalization kernel, 10.05 against 7.99 µs, is not reachable by re-assigning the existing work. It needs a different decomposition, which is a different kind of proposal than the ones this loop can make.
+The committed arrangement — two warps per row in a 256-thread block — is a local optimum in that space, and the loop says so instead of manufacturing a change.
+
+A block-per-row kernel then went where the loop could not (`layer_norm_row`): a quad held per thread plus a masked tail, four warps reduced with shuffles behind one barrier, and the approximate reciprocal square root. Captured in one session, kernel microseconds per iteration: **8.84** committed against **8.23** for Triton, where the configuration the loop held measures **10.35**. The committed kernel is 7% behind Triton; the generated one is 26% behind. The remaining distance needed a different decomposition rather than a different split of the same work — the second time that has been true, after `cp.async` for the matrix multiply, and both times the templates had no way to express it.
 
 That work did surface a real defect. The two-warp kernel splits a row in whole 32-lane steps, which counts part of the row twice whenever each warp's span is not a multiple of 32. Width 768 (span 96) hid it; width 128 was wrong by 0.43. The host now keeps that kernel to widths it can share and otherwise takes the single-warp kernel, whose every access is guarded.
 
