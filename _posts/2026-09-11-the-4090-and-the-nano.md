@@ -18,11 +18,12 @@ them is measured. The same **13 CUDA launches over 5 kernels** cost **4.78 ms** 
 RTX 4090 (`docs/evidence/baseline-2026-09-11/`, commit `76143f0`) and **39.18 ms** on the Orin NX
 (`docs/evidence/T50/pinkie-kernels/`, `a28736f`) — **8.19× slower**. Two kernels are 99.6 % of it:
 `belief_update` **12.976 ms** and `cognition_update` **12.991 + 13.046 ms**, both one block of 1024
-threads where each thread walks a full 1024-wide row in a serial loop. The counters rule out
-residency: `belief_update` has **65.59 %** of peak sustained-active warps — almost the same as
-`costmap_stats`' **64.58 %** — but issues work at **1.52 %** of peak SM throughput against
-`costmap_stats`' **16.58 %**. An **11×** difference in issued work per cycle at equal residency is a
-loop problem, not an occupancy problem. And the deploy side has its own first result: the stack went
+threads where each thread walks a full 1024-wide row in a serial loop. The counters separate two
+questions: how many warps are resident on the SM at once (occupancy), and how much work each resident
+warp issues per cycle (throughput). `belief_update` has **65.59 %** of peak sustained-active warps —
+almost the same as `costmap_stats`' **64.58 %** — but issues work at **1.52 %** of peak SM throughput
+against `costmap_stats`' **16.58 %**. An **11×** difference in issued work per cycle at equal
+residency is a loop problem, not an occupancy problem. And the deploy side has its own first result: the stack went
 to the board at `25f2b6f7` and the probe **hung** — a plain-HTTP Leash on :8000 and a stack whose only
 default address was `https://127.0.0.1:8080`, llama.cpp's plain-HTTP port.
 
@@ -35,8 +36,9 @@ When this entry landed on 2026-09-11T19:24Z, T28 had no comments at all and T29'
 blocked deploy smoke, not a mission; no mission had run on either machine. T28 has since run its host
 mission — `open_missions` 0 → 1 → 0, a sealed 2395-byte MCAP and the mission id in the session list,
 on a zero-motion stack (`docs/evidence/T28/4090-mission/` on `ticket/T28`, `449eeea`, PR #213 open,
-`#44` `status:review`) — and T29's board half has not run yet (`#45` `status:review`, PR #211). Neither
-ticket is `status:done`, and what this entry's numbers measure is the kernel suite, on both machines.
+`#44` `status:review`) — while T29's board half had not run (`#45` `status:review`, PR #211); as of
+2026-09-11T20:45Z neither ticket was `status:done`. What this entry's numbers measure is the kernel
+suite, on both machines.
 
 **The board deploy was attempted early, on purpose, and recorded as blocked.** Deploying `25f2b6f7`
 to `~/qualia-deploy/` and building natively on the board was cheap and proved the deploy path; the

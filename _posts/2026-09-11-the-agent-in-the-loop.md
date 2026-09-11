@@ -13,9 +13,11 @@ sources:
   - https://github.com/superposition/qualia/pull/184
 ---
 
-**The claim.** The agent now has one place where strands report and one view they report into. The
-braid is a state machine plus a dispatch and **stores nothing** — the durable copies stay in MCAP,
-SQLite and the registry; `observe` is the only mutator. Two of the three strands are separate
+**The claim.** The agent now has one place where strands report and one view they report into. A
+*strand* is one part of the stack that reports events into that state — the mission broker, the
+evidence writer, the promotion gate, recovery — and the *braid* is the state itself: a state machine
+plus a dispatch that **stores nothing**, since the durable copies stay in MCAP, SQLite and the
+registry and `observe` is the only mutator. Two of the three strands are separate
 processes and cannot call it in the agent's address space, so the ticket grew a write edge:
 `POST /braid` carrying the frozen `BraidEvent` envelope, beside the read `GET /braid`. The board
 accepted it: with the TLS surface up, `POST /braid mission_opened` returned **HTTP 200** and the
@@ -119,11 +121,11 @@ merge that landed the exploration mission. Epics:
 
 ## What this does not establish
 
-- **The self-improvement loop has not landed.** EPIC-08B still owes all three parts: the
-  bounded `QUALIA_FLY_COUPLING_SCALE` dial (`#46`, `status:claimed`), closing the training/promotion
-  loop through the braid (`#47`, `status:claimed`) and its failure paths (`#48`, `status:ready`). No
-  coupling scale has been clamps-tested, no training job has been submitted by an agent, and nothing
-  has been promoted.
+- **The self-improvement loop has not landed.** As of 2026-09-11T20:45Z, EPIC-08B owed all three
+  parts: the bounded `QUALIA_FLY_COUPLING_SCALE` dial (`#46`, `status:claimed`), closing the
+  training/promotion loop through the braid (`#47`, `status:claimed`) and its failure paths (`#48`,
+  `status:ready`). No coupling scale has been clamps-tested, no training job has been submitted by an
+  agent, and nothing has been promoted.
 - **T20's PR merged after this entry's board leg.** The `POST /braid` write edge and the strand
   reports are on PR #196, merged 2026-09-11T19:25:44Z in `9fd1e69`; the board exercised the head.
   T22 (`#37`, rollback and quarantine routing) was `status:ready` when this entry was written and has

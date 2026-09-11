@@ -17,10 +17,10 @@ sources:
 **The claim.** The prior is now a number in the belief loop and a number on the GPU, and neither
 number can move a motor. `CouplingPrior::load` verifies the producer's three section digests — and the
 size the counts imply — before it decodes anything; `couple` scales each mapped belief slot by its
-type's in-strength normalised by the peak, and returns the total applied. On the 4090, with a fixture
-whose in-strengths are 4, 8 and 2, that total printed **`fly prior: applied 1.75` once per tick**
-(0.5 + 1.0 + 0.25), 162 lines in about 5 s — and the arithmetic is normalised, so the value is a
-weight, not a count. Behind it: the flag `fly-prior`, **off by default**, under which both backends
+type's in-strength — the summed weight of that type's incoming edges — normalised by the peak, and
+returns the total applied. On the 4090, with a fixture whose in-strengths are 4, 8 and 2, that total
+printed **`fly prior: applied 1.75` once per tick** (0.5 + 1.0 + 0.25), 162 lines in about 5 s — and
+the arithmetic is normalised, so the value is a weight, not a count. Behind it: the flag `fly-prior`, **off by default**, under which both backends
 return `Ok(0.0)` for every input; an invented rate model in a separate crate behind a second
 off-by-default feature; and three new kernels measured on the 4090 at **2.50 µs** (`belief_couple`,
 1 × 4), **10.59 µs** (`action_score`, 2 × 256) and **11.84 µs** (`perception_voxel`, 48 × 256).
@@ -130,10 +130,10 @@ merge that put the backend `couple_prior` on `main`. Epics:
 ## What this does not establish
 
 - **T17 has not landed; T18 landed after this entry's period.** CPU/CUDA parity for the three new
-  kernels was `status:ready` (`#32`) and is now `status:review` (`#32`, still open): the three kernels
-  have host oracles and a capture, not a parity assertion. The ≤ 6 GiB memory plan and the
-  `sm_87`/`sm_89` fatbin targets were `status:ready` (`#33`); T18 landed in `60beee4` (PR #207, merged
-  2026-09-11T20:16:14Z), and its board capture shows the sm_87 cubins loading on Pinkie with no
+  kernels was `status:ready` (`#32`) and was `status:review` as of 2026-09-11T20:45Z (`#32`, open):
+  the three kernels have host oracles and a capture, not a parity assertion. The ≤ 6 GiB memory plan
+  and the `sm_87`/`sm_89` fatbin targets were `status:ready` (`#33`); T18 landed in `60beee4` (PR #207,
+  merged 2026-09-11T20:16:14Z), and its board capture shows the sm_87 cubins loading on Pinkie with no
   `CUDA_ERROR_UNSUPPORTED_PTX_VERSION` (`docs/evidence/T18/fatbin-sm-87/`).
 - **T12 was not on `main` when this entry was written.** The runner wiring that reads
   `QUALIA_FLY_MODE` and loads the prior at start-up was the replay on PR #198, then still open; it

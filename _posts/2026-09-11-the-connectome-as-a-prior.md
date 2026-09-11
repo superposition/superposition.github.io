@@ -16,8 +16,10 @@ sources:
 **The claim.** A connectome becomes usable as a prior at exactly one moment: when it is written down
 as a file whose numbers a consumer can verify. This step builds the type-level graph **offline**, from
 two Feather tables, and emits three files: `graph.bin` (`rowptr` `u64`, then `cols` `u32`, then
-`weights` `u32`, little-endian), `manifest.json` (schema `qualia.connectome-prior.v1`, a type count, an
-edge count, four SHA-256 digests and the attribution) and `attribution.json`
+`weights` `u32`, little-endian — a compressed sparse row (CSR), in which `rowptr` gives each type's
+slice of the concatenated `cols` and `weights`), `manifest.json` (schema `qualia.connectome-prior.v1`,
+a type count, an edge count,
+four SHA-256 digests and the attribution) and `attribution.json`
 (`male-cns:v1.0`, `CC-BY-4.0`, the dataset URL, `Berg et al. 2026, Cell`). It was exercised on a
 hand-written fixture of **12 edges over 5 types**, which collapse to **9** distinct type pairs and to
 a CSR of `rowptr = [0,2,4,5,7,9]`, `cols = [1,2,2,4,0,0,2,2,3]`,
