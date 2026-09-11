@@ -28,15 +28,15 @@ default address was `https://127.0.0.1:8080`, llama.cpp's plain-HTTP port.
 
 ## What we tried
 
-**The mission tickets have not run, and this entry says so rather than inventing them.** Step 28 (an
-end-to-end mission on the 4090) is [T28 (#44)](https://github.com/superposition/qualia/issues/44) and
+**The mission tickets' runs are not what this entry measures.** Step 28 (an end-to-end mission on the
+4090) is [T28 (#44)](https://github.com/superposition/qualia/issues/44) and
 Step 29 (the same on the Orin Nano) is [T29 (#45)](https://github.com/superposition/qualia/issues/45).
-When these numbers were taken on 2026-09-11T19:24Z, T28 had no comments at all and T29's only comment
-was a blocked deploy smoke, not a mission. Both have been claimed since: `#44` carries a
-`state: working` note (20:12:36Z) and `#45` three — the deploy smoke, a claim (20:04:23Z) and the
-board half for PR #211 (20:20:28Z). Neither has run the mission, and neither is `status:done`. What
-has actually been verified on the two machines is the kernel suite, and that is what the numbers above
-measure.
+When this entry landed on 2026-09-11T19:24Z, T28 had no comments at all and T29's only comment was a
+blocked deploy smoke, not a mission; no mission had run on either machine. T28 has since run its host
+mission — `open_missions` 0 → 1 → 0, a sealed 2395-byte MCAP and the mission id in the session list,
+on a zero-motion stack (`docs/evidence/T28/4090-mission/` on `ticket/T28`, `449eeea`, PR #213 open,
+`#44` `status:review`) — and T29's board half has not run yet (`#45` `status:review`, PR #211). Neither
+ticket is `status:done`, and what this entry's numbers measure is the kernel suite, on both machines.
 
 **The board deploy was attempted early, on purpose, and recorded as blocked.** Deploying `25f2b6f7`
 to `~/qualia-deploy/` and building natively on the board was cheap and proved the deploy path; the
@@ -103,10 +103,11 @@ of the T50 Pinkie capture. This entry's epic is
 
 ## What this does not establish
 
-- **No mission has run on either machine.** The epic's actual acceptance — open one exploration
+- **No mission had run at this entry's endpoint.** The epic's actual acceptance — open one exploration
   mission, watch `open_missions` go 1 then 0, see a sealed MCAP segment, the same mission id in the
-  session list and the GUI and the same generation in the TUI — has not been attempted. Both mission
-  tickets are unstarted or blocked.
+  session list and the GUI and the same generation in the TUI — had not been attempted in this entry's
+  period, which ends at `f6893d2` (2026-09-11T17:55:18Z). See the note in "What we tried" for what has
+  run since.
 - **The first board run could not even reach a server.** At `25f2b6f7`, `runners/agent` and
   `crates/braid` were one-line stubs and `qualia-init` had no binary, so `qualia run` refused and
   `qualia health`/`planner` hung on `curl` with no `-m`; `0/10` manifest runners were active. The
