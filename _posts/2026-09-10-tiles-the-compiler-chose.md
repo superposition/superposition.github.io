@@ -12,9 +12,9 @@ mesh_band: true
 ---
 <figure class="mesh-band" data-colors="#93caff,#91dbba,#c9b2ff,#e0a08a" data-weights="0.74,1,0.62,0.90">
   <canvas aria-hidden="true" focusable="false"></canvas>
-  <noscript><img src="https://superposition.github.io/mage/assets/figures/mage-004/mesh-band.png" alt="A dark field with four soft spots of colour — blue, green, lavender and warm sand — scaled by how competitive each implementation is." width="1107" height="327"></noscript>
+  <noscript><img src="https://superposition.github.io/mage/assets/figures/mage-004/mesh-band.png" alt="A dark field with four soft spots of colour — blue, green, lavender and warm sand — scaled by how competitive each implementation is." width="923" height="213"></noscript>
   <figcaption>
-    <p>The four spots are the four implementations in the evidence table, opacity set by the geometric mean of their kernel times relative to the best implementation on each operation: Triton brightest, cuTile Rust dimmest.</p>
+    <p>The four spots are the four implementations, opacity set by how competitive each is.</p>
     <span class="mesh-band-credit">Field: <a href="https://github.com/paper-design/shaders" rel="noopener">Paper Shaders</a> mesh gradient (Apache-2.0), palette and weights from this post.</span>
   </figcaption>
 </figure>
@@ -34,12 +34,16 @@ multiply-adds, so shared-memory reads per multiply-add fall from $\tfrac{2}{1}$ 
 $\tfrac{8}{16} = 0.5$ — and loading those as 128-bit quads takes it to $0.125$: one instruction
 fetching all four values the thread needs.
 
-![Two schematics side by side: the cuTile Rust tile layout on the left, the cuda-oxide register-tile layout with a transposed A and row stride 68 on the right](/mage/assets/figures/mage-004/matmul-layouts.svg)
-
-*The same product, two ways of placing it in memory. Left, the compiler decides how the output tile
-is threaded and how wide the loads are; right, the kernel author does. The transposed $A$ with a row
-stride of 68 exists so each thread's four rows are contiguous — one 128-bit read instead of four
-scattered ones. [Download the SVG](/mage/assets/figures/mage-004/matmul-layouts.svg).*
+<figure class="measurement">
+  <picture>
+    <source media="(max-width: 520px)" srcset="{{ '/mage/assets/figures/mage-004/matmul-layouts-mobile.svg' | relative_url }}">
+    <img src="{{ '/mage/assets/figures/mage-004/matmul-layouts.svg' | relative_url }}" width="740" height="278"
+         alt="Two schematics side by side. Left, the cuTile Rust tile layout: a grid of 32 by 128 tiles, one program per tile, loading 32 by 32 operands per contraction step as 128-bit loads. Right, the cuda-oxide layout: a 64 by 64 block with a 4 by 4 register tile per thread, and shared memory holding A transposed with row stride 68 so each thread's four rows are contiguous.">
+  </picture>
+  <figcaption>
+    <p>The same product, two ways of placing it in memory: the compiler decides how the tile is threaded and how wide the loads are, the kernel author decides the register tile and the transposed $A$. <a href="{{ '/mage/assets/figures/mage-004/matmul-layouts.svg' | relative_url }}" download>Download the SVG</a>.</p>
+  </figcaption>
+</figure>
 
 The tile compiler is not blind to any of this: it widens loads too, and it partitions the output into
 $32\times128$ tiles with $32\times32$ operands per contraction step. What it cannot know is that this

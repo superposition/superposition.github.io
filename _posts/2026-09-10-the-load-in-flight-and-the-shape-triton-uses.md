@@ -13,7 +13,7 @@ mesh_band: true
 <figure class="mesh-band" data-colors="#91dbba,#c9b2ff,#e0a08a" data-weights="1,0.76,0.13">
   <canvas aria-hidden="true" focusable="false"></canvas>
   <figcaption>
-    <p>The three spots are the two rewrites and the drift they have to beat: opacity is each change's share of the kernel time it started from — 80.00 → 68.62 µs for the matrix multiply, 10.05 → 8.97 µs for the layer norm — against an untouched kernel's 80.07 → 81.60 µs between the two namespaces.</p>
+    <p>The three spots are the two rewrites and the drift they have to beat, opacity set by each change's share of the kernel time it started from.</p>
     <span class="mesh-band-credit">Field: <a href="https://github.com/paper-design/shaders" rel="noopener">Paper Shaders</a> mesh gradient (Apache-2.0), palette and weights from this post.</span>
   </figcaption>
 </figure>
