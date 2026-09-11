@@ -14,11 +14,12 @@ sources:
 ---
 
 **The claim.** The agent now has one place where strands report and one view they report into. A
-*strand* is one part of the stack that reports events into that state — the mission broker, the
-evidence writer, the promotion gate, recovery — and the *braid* is the state itself: a state machine
-plus a dispatch that **stores nothing**, since the durable copies stay in MCAP, SQLite and the
-registry and `observe` is the only mutator. Two of the three strands are separate
-processes and cannot call it in the agent's address space, so the ticket grew a write edge:
+*strand* is one part of the stack that reports events into that state — at this edge, three owners: the
+mission broker, the evidence recorder and the JEPA runtime; the crate's vocabulary is one variant
+wider, recovery's `Quarantined` being a dispatch rather than a strand report — and the *braid* is the
+state itself: a state machine plus a dispatch that **stores nothing**, since the durable copies stay
+in MCAP, SQLite and the registry and `observe` is the only mutator. Two of the three strands are
+separate processes and cannot call it in the agent's address space, so the ticket grew a write edge:
 `POST /braid` carrying the frozen `BraidEvent` envelope, beside the read `GET /braid`. The board
 accepted it: with the TLS surface up, `POST /braid mission_opened` returned **HTTP 200** and the
 follow-up read showed `open_missions` **0 → 1**; `GET /braid` answers
