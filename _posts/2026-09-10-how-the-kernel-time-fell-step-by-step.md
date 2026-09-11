@@ -1,179 +1,134 @@
 ---
 title: "How the kernel time fell, step by step"
-description: Three measured stages took the Rust matrix multiply from 344 to 80 microseconds and layer normalization from 18.6 to 10.1, with the prediction that chose each change and the attempts that measured worse.
+description: Three measured steps took the Rust matrix multiply from 344 to 80 microseconds and layer normalization from 18.6 to 10.1 — and the steps that carried the reduction were a change of layout and a change of work split, not of arithmetic.
 date: 2026-09-10 16:30:00 -0400
-updated: 2026-09-10
+updated: 2026-09-11
 tags: [kernels, measurement, performance]
 experiment_id: mage-003
 technical_record: https://github.com/superposition/mage/blob/master/docs/experiments/mage-003.md
 math: true
+mesh_band: true
 ---
-Two Rust kernels were rewritten once and the numbers moved. The interesting part is what came next: neither of the following changes came from a profiler. One came from deliberately building a **worse** register shape and reading the ratio, the other from counting how many threads the grid could keep resident. Several further attempts were measured, and they were slower than what they replaced.
+<figure class="mesh-band" data-colors="#c9b2ff,#93caff,#91dbba" data-weights="1,0.73,0.45">
+  <canvas aria-hidden="true" focusable="false"></canvas>
+  <figcaption>
+    <p>The three spots are the three steps in the evidence table, opacity set by that step's speed-up in GPU kernel time: the 2.43× register tile brightest, the 1.77× shared-read change, the 1.10× two-warp row split dimmest.</p>
+    <span class="mesh-band-credit">Field: <a href="https://github.com/paper-design/shaders" rel="noopener">Paper Shaders</a> mesh gradient (Apache-2.0), palette and weights from this post.</span>
+  </figcaption>
+</figure>
+**The claim.** Two Rust kernels went from $343.99$ to $80.00\ \mu s$ and from $18.64$ to $10.05\ \mu s$ of GPU
+kernel time, and the steps that carried the reduction changed where the data sits and which threads read it,
+not how much arithmetic runs. Reading a thread's operands as 128-bit quads cut shared-memory reads per
+multiply-add from $\tfrac{8}{16} = 0.5$ to $\tfrac{2}{16} = 0.125$; splitting each row between two warps asked
+the same 128 streaming multiprocessors for twice the threads.
 
-This entry follows the same five FP32 operations through the third round of measurements. The kernels and the full method are in the [measurement record](https://github.com/superposition/mage/blob/master/docs/experiments/mage-003.md), and the earlier rounds are in [field note 001](https://superposition.github.io/mage/experiments/mage-001/) and [field note 002](https://superposition.github.io/mage/experiments/mage-002/).
+## The matrix multiply was reading too often, not computing too much
 
-## Two kernels, six numbers
+Each thread owns a $4 \times 4$ block of $C$ and does sixteen multiply-adds per contraction step, so the
+loop's real question is how often it goes to shared memory: the retained build goes eight times —
+$\tfrac{8}{16} = 0.5$ reads per multiply-add. Counters are unavailable on this host, so the count was tested
+rather than read. A deliberately worse build — $32 \times 32$ block tiles, a $2 \times 4$ register tile, six
+reads for eight multiply-adds, $\tfrac{6}{8} = 0.75$ — should be $1.5\times$ slower if shared-memory load
+instructions are the limit. Same session, it was $1.44\times$: 210.51 against $145.61\ \mu s$. Both builds
+issue the same multiply-adds, so the ratio tracks the reads.
 
-Matrix multiplication and layer normalization each have three measured stages. The values are GPU kernel time — the sum of captured kernel durations over 100 iterations, taken from separate Nsight Systems captures of the same shapes.
+Three steps then removed read instructions: the $B$ tile read as one 128-bit quad (145.6 → **114.9 µs**), the
+$A$ tile stored transposed and k-major so the four rows a thread owns are contiguous and one load fetches
+them (→ **89.9 µs**), and the contraction step widened from 32 to 64 so the barrier pairs halve
+(→ **80.00 µs**). The retained loop reads each operand once, 128 bits at a time, for sixteen multiply-adds,
+with shared memory up from 16384 to 33792 bytes and registers from 55 to 56. The first two values are spans
+measured by the binary, the third is GPU kernel time.
 
-Matrix multiplication: **343.99 → 141.70 → 80.00 µs**. Layer normalization: **18.64 → 11.03 → 10.05 µs**. The spans around each call moved with them: 326.72 → 144.41 → 82.60 µs, and 19.47 → 15.43 → 12.91 µs.
+<div class="measurement">
+<figure class="profile-plot">
+  <picture>
+    <source media="(max-width: 520px)" srcset="{{ '/mage/assets/figures/mage-004/matmul-layouts-mobile.svg' | relative_url }}">
+    <img src="{{ '/mage/assets/figures/mage-004/matmul-layouts.svg' | relative_url }}" width="740" height="278"
+         alt="Two schematics. Left, the compiler-chosen tile layout: a grid of 32 by 128 tiles, one program per tile, loading 32 by 32 operands per contraction step as 128-bit loads. Right, the hand-written layout: a 64 by 64 block with a 4 by 4 register tile per thread, shared memory holding A transposed with row stride 68 so each thread's four rows are contiguous.">
+  </picture>
+  <figcaption>
+    <p>Where the two steps on the right-hand side of this note live. The register tile decides how many times the loop reads; the transposed $A$ with a row stride of 68 is what makes the four rows a thread owns one 128-bit load instead of four scattered 32-bit ones. <a href="{{ '/mage/assets/figures/mage-004/matmul-layouts.svg' | relative_url }}" download>Download the SVG</a>.</p>
+  </figcaption>
+</figure>
+</div>
 
-One value in the middle needs a footnote. Layer normalization's 11.03 µs is the warp kernel of the first rewrite as measured in the third capture session; the session that published the first rewrite recorded 11.09 µs for the same kernel. The two sessions differ by 0.5%, which is the resolution this harness has.
+## The layer norm was short of resident threads
 
-## The arrangement that started it
+The warp kernel launches 512 blocks of 256 threads for 4096 rows — 131072 threads, which over the 4090's 128
+SMs is at most 1024 resident per SM against a limit of 1536. The grid is short of the threads that keep loads
+in flight, and nothing inside a warp changes how many warps an SM holds. **Two warps per row**, each owning
+half of it, doubles the block count to 1024; the halves meet once in 64 bytes of shared memory behind one
+barrier, and each warp sums $x$ and $x^2$ in one pass, so the statistics cost one read of the row. 39
+registers per thread.
 
-The original matrix multiply gives each thread one output of a 16 × 16 tile. A thread reads one value of $A$ and one value of $B$ from the shared tile for every multiply-add, so nothing is reused: **two shared reads per multiply-add**, 4096 blocks, 37 registers.
+<figure class="measurement">
+  <picture>
+    <source media="(max-width: 520px)" srcset="{{ '/mage/assets/figures/mage-003/layernorm-row-split-mobile.svg' | relative_url }}">
+    <img src="{{ '/mage/assets/figures/mage-003/layernorm-row-split.svg' | relative_url }}" width="1040" height="430" alt="Two schematics of one 768-float layer-norm row. Left: one warp owns it, 32 lanes reading 24 floats each as six 128-bit quads and reducing with shuffle_down; 512 blocks leave 1024 of each SM's 1536 thread slots filled. Right: two warps own half the row each, reading 12 floats per lane as three quads and summing x and x squared in one pass, their partial sums meeting once in 64 bytes of shared memory behind one barrier, and the same 128 SMs are asked for twice the threads.">
+  </picture>
+  <figcaption>
+    <p>Schematic, not a measurement: the same row and the same 128-bit lane loads, split between two warps instead of one. What changes is how many threads the grid asks an SM to keep resident, and where the two halves' partial sums meet.</p>
+  </figcaption>
+</figure>
 
-The original layer normalization gives each row a block of 256 threads and reads the row three times — once for the mean, once for the centered variance, once for the output. Each of the two reductions halves the block through eight barriers, so every row crosses **19 barriers**.
+Five runs per build, timed by the binary: one warp per row 13.53–13.76 µs (mean 13.64), two warps 12.53–12.94
+µs (mean 12.69). The ranges do not overlap, and that capture session prices the two-warp kernel at 10.05 µs
+against 11.03 µs for the kernel it replaces.
 
-The first rewrite answered both. The matrix multiply moved to a **4 × 4 tile of outputs per thread**: sixteen multiply-adds from eight shared reads, or 0.5 reads per multiply-add, with 64 × 64 block tiles and a 32-deep step in the contraction. Layer normalization moved to **one warp per row**, reading 128-bit quads and reducing with shuffles instead of shared memory and barriers. Kernel time fell to 141.70 µs and 11.03 µs.
+## Evidence
 
-## A ratio chose the next matrix multiply
+One Nsight Systems capture per implementation and operation, 100 iterations each, plus three rounds of 100
+warmed CUDA-event samples. The instrument is named per row because it is not one instrument throughout.
 
-Hardware counters are not available on this host, so occupancy, cache behavior and memory bandwidth cannot be read directly. There is a substitute: build two variants and see which number moves.
+| Kernel | Step | Instrument | Value |
+| --- | --- | --- | ---: |
+| matrix multiply | original: $16\times16$ tiles, one output per thread | GPU kernel time | 343.99 |
+| matrix multiply | $4\times4$ outputs per thread, $64\times64$ block tiles, K step 32 (PR #42) | GPU kernel time | 141.70 |
+| matrix multiply | the retained $4\times4$ build the next three rows start from | CUDA-event span | 145.61 |
+| matrix multiply | the $B$ tile read as one 128-bit quad | CUDA-event span | 114.9 |
+| matrix multiply | the $A$ tile stored transposed, k-major, row stride 68 | CUDA-event span | 89.9 |
+| matrix multiply | K step 32 → 64, halving the barrier pairs | GPU kernel time | 80.00 |
+| layer norm | original: a 256-thread block per row, three passes, two tree reductions | GPU kernel time | 18.64 |
+| layer norm | one warp per row, 128-bit quads, shuffle reductions (PR #42) | GPU kernel time | 11.03 |
+| layer norm | two warps per row, half a row each, one exchange behind one barrier (PR #44) | GPU kernel time | 10.05 |
 
-A **32 × 32 block tile with a 2 × 4 register tile** produces eight outputs from two values of $A$ and four values of $B$, which is six shared reads for eight multiply-adds, or **0.75 reads per multiply-add** against 0.5 for the retained build. If shared-memory load instructions are the limit, that predicts a **1.5×** difference. Measured in the same session, the CUDA-event span was 210.51 µs against 145.61 µs: **1.44×**. Both variants issue the same multiply-adds, so the ratio tracks the read count rather than the arithmetic.
+*Microseconds. A span can include gaps while the host submits work; kernel time cannot. The 11.03 is the warp
+kernel as measured in the third session — the session that published it recorded 11.09, 0.5% away, which is
+this harness's resolution.*
 
-The confirmation was then built out of three measured steps, each one removing read instructions rather than adding parallelism:
-
-- reading the $B$ tile as a single 128-bit quad: 145.6 → **114.9 µs** around the call;
-- storing the $A$ tile transposed, so the four rows a thread owns are contiguous and one 128-bit load fetches them: → **89.9 µs**;
-- deepening the step in the contraction from 32 to 64, which halves the number of barrier pairs: → **80.00 µs** of kernel time.
-
-Reading the shared tiles as quads is what makes the count fall: the retained kernel performs one 128-bit read of $A$ and one of $B$ per step for sixteen multiply-adds, so shared reads per multiply-add drop from **0.5 to 0.125**. The first two figures are spans around the call; the last is kernel time. They are quoted with their instrument because they are not one series.
-
-## Residency chose the layer norm
-
-Layer normalization moved for a different reason. The one-warp kernel launches 512 blocks of 256 threads for 4096 rows. That is 131072 threads; across the 128 streaming multiprocessors of the 4090 it is at most 1024 resident threads per SM against a limit of 1536. The grid is short of the threads that keep memory loads in flight.
-
-**Two warps per row**, each owning half a row, doubles the block count to 1024. The two partial sums meet once in 64 bytes of shared memory behind a single barrier, and each warp computes the sum and the sum of squares in one pass, so the row is read once for the statistics instead of twice.
-
-The comparison was five runs per build on the same input, timed by the binary itself: one warp per row 13.76, 13.55, 13.60, 13.53, 13.76 µs (mean 13.64); two warps per row 12.87, 12.58, 12.53, 12.54, 12.94 µs (mean 12.69). The ranges do not overlap. The retained capture prices the two-warp kernel at 10.05 µs of kernel time.
+Bias + GELU, triangle contraction and neighbor aggregation keep their kernels, and their kernel time moves by
+less than 3% between the first and the retained capture (11.21 → 10.97, 81.16 → 80.07, 10.28 → 10.33 µs).
+The steps above are an order of magnitude outside that drift.
 
 ## What was tried and not kept
 
-Every attempt below is a single development measurement, not retained evidence, and the metric is named because the attempts were not all timed the same way.
+Each is a single development measurement with its instrument named, not retained evidence.
 
-- **32 × 32 tiles with a 2 × 4 register tile**: 210.51 µs event span against 145.61 µs for the retained build. This is the experiment that identified the limit; it was not adopted.
-- **8 × 4 register tile on 128-row blocks**: 147.74 µs event span against 145.61 µs, inside the few percent this harness cannot resolve.
-- **Layer normalization with 128-thread blocks** (four rows per block): 14.4 µs event span.
-- **A row staged in shared memory for a single global pass**: 14.3 µs event span.
-- **A row held in eight named quad registers**: 13.4–14.0 µs event span.
-- **Four warps per row**: 13.3–13.7 µs event span. Doubling again does not help; the two-warp split already reaches the resident-thread limit.
-- **A row held in a `[F32x4; 8]` array**: 22.12 µs of kernel time against 11.02 µs for the warp kernel in the same build. It spilled to local memory, which is why the row is spread across lanes instead.
-
-Bias + GELU, triangle contraction and neighbor aggregation keep their original kernels. Between the first and third measurement rounds their kernel time moves by less than 3%, which bounds how much of the two rewritten kernels' movement could be drift rather than the rewrites.
+- **$32\times32$ tiles with a $2\times4$ register tile**: 210.51 µs span against 145.61 — the experiment that
+  identified the limit; not adopted.
+- **$8\times4$ register tile on 128-row blocks**: 147.74 µs span against 145.61, inside the few percent this
+  harness cannot resolve.
+- **Four warps per row**: 13.3–13.7 µs span; doubling again does not help, since two warps already reach the
+  resident-thread limit.
+- **A row in eight named quad registers**: 13.4–14.0 µs; **a row held in a `[F32x4; 8]` array**: 22.12 µs of
+  kernel time against 11.02 for the warp kernel in the same build — it spilled to local memory, which is why
+  the row is spread across lanes instead.
+- **128-thread blocks for the layer norm** (four rows per block): 14.4 µs span against 12.69.
 
 ## What the numbers do not establish
 
-The library call is still ahead: the matrix multiply is 80.0 µs against 44.0 µs for the cuBLAS call behind PyTorch in this capture. The Triton matrix multiply is not stable between sessions — 83.78 µs in the first round, 83.77 µs in one later capture, 71.94 µs in the retained one — while the Rust kernel moves from 80.12 µs to 80.00 µs. In one session Triton is faster and in the other slower, so no ranking between the two follows from a single pairing. Layer normalization is behind Triton's kernel (10.05 against 7.99 µs) and ahead of both baselines around the call (12.91 against 20.62 and 17.30 µs).
+The cuBLAS call behind PyTorch is still ahead: 80.0 µs of kernel time for the matrix multiply against 44.0 µs,
+which ranges from 44.03 to 55.96 across the three namespaces. Triton's matrix multiply is not stable between
+sessions (83.78, 83.77, 71.94 µs) while the Rust kernel moves from 80.12 to 80.00, so one pairing ranks
+nothing. Layer normalization is behind Triton's kernel (10.05 against 7.99) and ahead of both baselines
+around the call.
 
-These are five fixed FP32 shapes on one WSL workstation with unlocked clocks. Kernel time comes from a single capture per case and carries no interval of its own; the spans are means of 300 warmed samples in three rounds, and they can include gaps while the host submits work. No counters were available, so the residency figure above is a limit on what the grid can hold, not a measurement of what it held.
+These are fixed FP32 shapes on one WSL workstation with unlocked clocks. No counters were available, so
+occupancy, cache behavior and memory throughput are not measured — the residency arithmetic is a limit on
+what the grid can hold, not a measurement of what it held. Kernel time comes from a single capture per case
+and carries no interval of its own, and the spans are means of 300 warmed samples. Compilation, transfers,
+tile tails, lower precision, backward passes and service behavior are outside the measurements.
 
-## Measured values
-
-The retained evidence is one Nsight Systems capture per implementation and operation, 100 iterations each, plus three rounds of 100 CUDA-event samples per implementation. PyTorch and Triton were measured in the same session as the final Rust kernels.
-
-How each kernel reached its measured time:
-
-<figure class="measurement">
-  <picture>
-    <source media="(max-width: 520px)" srcset="{{ '/mage/assets/figures/mage-003/kernel-progression-mobile.svg' | relative_url }}">
-    <img src="{{ '/mage/assets/figures/mage-003/kernel-progression.svg' | relative_url }}" width="740" height="510" alt="Two horizontal step charts of GPU kernel time in microseconds. Matrix multiplication falls from 343.99 at mage-001 to 141.70 after the 4 by 4 register tile and to 80.00 after the 128-bit shared reads and the 64-deep K step; layer normalization falls from 18.64 to 11.03 after one warp per row and to 10.05 after two warps per row. Each stage is labelled with the change that produced it.">
-  </picture>
-  <figcaption>
-    <p>GPU kernel time at each stage, from separate Nsight Systems captures of 100 iterations. The factor between stages is that step's speed-up. Lower is better.</p>
-    <details>
-      <summary>Values (µs of GPU kernel time)</summary>
-      <table>
-        <caption class="visually-hidden">GPU kernel time per stage for matrix multiplication and layer normalization</caption>
-        <thead><tr><th scope="col">Stage</th><th scope="col">Matrix multiplication</th><th scope="col">LayerNorm</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">mage-001</th><td>343.99</td><td>18.64</td></tr>
-          <tr><th scope="row">PR #42</th><td>141.70</td><td>11.03</td></tr>
-          <tr><th scope="row">PR #43 / #44</th><td>80.00</td><td>10.05</td></tr>
-        </tbody>
-      </table>
-    </details>
-  </figcaption>
-</figure>
-
-Kernel time and time around the call for the same five operations:
-
-<figure class="measurement">
-  <picture>
-    <source media="(max-width: 520px)" srcset="{{ '/mage/assets/figures/mage-003/comparison-views-mobile.svg' | relative_url }}">
-    <img src="{{ '/mage/assets/figures/mage-003/comparison-views.svg' | relative_url }}" width="740" height="351" alt="GPU kernel time and time around the call per operation: PyTorch has the shortest kernel time for matrix multiplication and triangle contraction, Triton for Bias + GELU, LayerNorm and neighbor aggregation; around the call Rust is shortest for Bias + GELU, LayerNorm and neighbor aggregation, and PyTorch for matrix multiplication and triangle contraction.">
-  </picture>
-  <figcaption>
-    <p>Top row: time inside the kernels. Bottom row: time around the call. Each column has its own scale, so implementations compare within a column.</p>
-    <details>
-      <summary>Rust values, both views (µs)</summary>
-      <table>
-        <caption class="visually-hidden">Rust kernel time and event span per operation, with the earlier rounds</caption>
-        <thead><tr><th scope="col">Operation</th><th scope="col">Kernel</th><th scope="col">Span</th><th scope="col">Kernel, mage-001</th><th scope="col">Kernel, mage-002</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">Matrix multiplication</th><td>80.0</td><td>82.6</td><td>344.0</td><td>141.7</td></tr>
-          <tr><th scope="row">Bias + GELU</th><td>11.0</td><td>13.3</td><td>11.2</td><td>11.0</td></tr>
-          <tr><th scope="row">LayerNorm</th><td>10.1</td><td>12.9</td><td>18.6</td><td>11.1</td></tr>
-          <tr><th scope="row">Triangle contraction</th><td>80.1</td><td>83.5</td><td>81.2</td><td>80.4</td></tr>
-          <tr><th scope="row">Neighbor aggregation</th><td>10.3</td><td>12.9</td><td>10.3</td><td>10.3</td></tr>
-        </tbody>
-      </table>
-    </details>
-  </figcaption>
-</figure>
-
-GPU kernel time for all five operations and three implementations:
-
-<figure class="measurement">
-  <picture>
-    <source media="(max-width: 520px)" srcset="{{ '/mage/assets/figures/mage-003/comparison-kernel-mobile.svg' | relative_url }}">
-    <img src="{{ '/mage/assets/figures/mage-003/comparison-kernel.svg' | relative_url }}" width="740" height="650" alt="GPU kernel time per operation: PyTorch has the shortest time for matrix multiplication and triangle contraction, Triton for Bias + GELU, LayerNorm and neighbor aggregation.">
-  </picture>
-  <figcaption>
-    <p>GPU kernel time, summed per operation. Separate Nsight Systems capture, 100 iterations per measurement; gaps between launches are excluded. The WSL timestamp fallback has reduced precision.</p>
-    <details>
-      <summary>Values (µs)</summary>
-      <table>
-        <caption class="visually-hidden">GPU kernel time per operation and implementation</caption>
-        <thead><tr><th scope="col">Operation</th><th scope="col">PyTorch</th><th scope="col">Triton</th><th scope="col">Rust</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">Matrix multiplication</th><td>44.0</td><td>71.9</td><td>80.0</td></tr>
-          <tr><th scope="row">Bias + GELU</th><td>15.8</td><td>7.6</td><td>11.0</td></tr>
-          <tr><th scope="row">LayerNorm</th><td>11.2</td><td>8.0</td><td>10.1</td></tr>
-          <tr><th scope="row">Triangle contraction</th><td>28.5</td><td>81.6</td><td>80.1</td></tr>
-          <tr><th scope="row">Neighbor aggregation</th><td>67.3</td><td>8.0</td><td>10.3</td></tr>
-        </tbody>
-      </table>
-    </details>
-  </figcaption>
-</figure>
-
-Time around the call:
-
-<figure class="measurement">
-  <picture>
-    <source media="(max-width: 520px)" srcset="{{ '/mage/assets/figures/mage-003/comparison-event-mobile.svg' | relative_url }}">
-    <img src="{{ '/mage/assets/figures/mage-003/comparison-event.svg' | relative_url }}" width="740" height="650" alt="Time around the call: Rust has the shortest event span for Bias + GELU, LayerNorm and neighbor aggregation; PyTorch has the shortest for matrix multiplication and triangle contraction.">
-  </picture>
-  <figcaption>
-    <p>Mean of 300 warmed CUDA-event spans, collected in three rounds with rotating implementation order. Whiskers show the range of the three round means, not a confidence interval. A span can include gaps while the host submits work.</p>
-    <details>
-      <summary>Values (µs)</summary>
-      <table>
-        <caption class="visually-hidden">Event span per operation and implementation</caption>
-        <thead><tr><th scope="col">Operation</th><th scope="col">PyTorch</th><th scope="col">Triton</th><th scope="col">Rust</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">Matrix multiplication</th><td>58.2</td><td>97.4</td><td>82.6</td></tr>
-          <tr><th scope="row">Bias + GELU</th><td>23.7</td><td>21.2</td><td>13.3</td></tr>
-          <tr><th scope="row">LayerNorm</th><td>17.3</td><td>20.6</td><td>12.9</td></tr>
-          <tr><th scope="row">Triangle contraction</th><td>54.1</td><td>94.4</td><td>83.5</td></tr>
-          <tr><th scope="row">Neighbor aggregation</th><td>89.6</td><td>25.7</td><td>12.9</td></tr>
-        </tbody>
-      </table>
-    </details>
-  </figcaption>
-</figure>
-
-Each row has its own scale, so implementations compare within a row and not across operations. The two views come from separate runs with different launch rhythms, so subtracting one from the other does not isolate host overhead. Compilation, transfers and service startup are excluded.
+The [field note](https://superposition.github.io/mage/experiments/mage-003/) has the PyTorch and Triton
+columns with the full tables, and the [technical record](https://github.com/superposition/mage/blob/master/docs/experiments/mage-003.md)
+has the method and the reproduction commands.
