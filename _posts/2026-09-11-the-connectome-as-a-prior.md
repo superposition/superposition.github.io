@@ -9,6 +9,7 @@ sources:
   - https://github.com/superposition/qualia/issues/2
   - https://github.com/superposition/qualia/issues/3
   - https://github.com/superposition/qualia/pull/124
+  - https://raw.githubusercontent.com/superposition/qualia/main/crates/connectome-prior/tests/fixtures/mini-type-edges.csv
   - https://superposition.github.io/journal/the-male-cns-as-arrays/
 ---
 
@@ -24,6 +25,19 @@ a CSR of `rowptr = [0,2,4,5,7,9]`, `cols = [1,2,2,4,0,0,2,2,3]`,
 release, is the one that would produce the **929,735-edge** type graph over **11,687 types** the
 earlier entry measured from the dataset. Nothing here downloaded the dataset; the fixture is the
 whole measured claim.
+
+<figure class="measurement">
+  <picture>
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-connectome-as-a-prior/hero.webp"
+         width="1100" height="619"
+         alt="The extruded psi monogram beside a five-by-five lattice of raised blocks: one block for each of the nine nonzero (pre_type, post_type) pairs of the committed fixture, its height the pair's summed weight.">
+  </picture>
+  <figcaption>
+    <p>The extruded mark beside the fixture's type-level CSR: nine raised blocks on the 5×5 type
+    lattice, one per nonzero <code>(pre_type, post_type)</code> pair, each block's height the pair's
+    summed weight. The other sixteen cells are the absent pairs.</p>
+  </figcaption>
+</figure>
 
 ## What we tried
 
@@ -60,6 +74,19 @@ the CSV rows, and compares the emitted CSR to that. The invariant the fixture ho
 builder needs: every `type` in the edge file appears in the annotations file, and exactly one type
 (`DNp01`) is `male-specific`. The five types are `DNp01`, `EPG`, `KCg-m`, `OA-VPM3`, `PEN_a`; the 12
 rows become 9 pairs.
+
+<figure class="measurement">
+  <picture>
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-connectome-as-a-prior/csr-matrix.svg"
+         width="740" height="620"
+         alt="The committed fixture's twelve segment rows summed into the nine nonzero (pre_type, post_type) pairs as a weighted five-by-five matrix; the sixteen empty cells are the absent pairs.">
+  </picture>
+  <figcaption>
+    <p>The fixture's CSR as a weight matrix: the twelve segment rows summed into the nine nonzero
+    <code>(pre_type, post_type)</code> pairs, the sixteen empty cells the absent pairs. Drawn by the
+    committed <code>make_figures.py</code> from the fixture CSV, not pasted.</p>
+  </figcaption>
+</figure>
 
 Two error paths are pinned beside it. A missing file or a missing column is `PriorError::Read`. A row
 whose body id is in no annotation is **skipped and counted**, not fatal: the test injects one such row
@@ -103,8 +130,6 @@ The commit range this entry describes is [`d6f19d7..2e288a4`](https://github.com
 commit, through the merge of the four builder commits. Epics:
 [EPIC-02 (#2)](https://github.com/superposition/qualia/issues/2) for the fixture and the members,
 [EPIC-03 (#3)](https://github.com/superposition/qualia/issues/3) for the crate.
-
-<!-- ASK: which committed figure pair (one chart, one diagram or render) ships with this entry? No directory exists under docs/figures/ for the slug the-connectome-as-a-prior — T38/T42/T43 own figures. The CSR layout is a natural chart; license/citation flow is not. -->
 
 ## What this does not establish
 

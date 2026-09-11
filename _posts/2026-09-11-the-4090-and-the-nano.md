@@ -98,8 +98,6 @@ The commit range this entry describes is [`25f2b6f..f6893d2`](https://github.com
 of the T50 Pinkie capture. This entry's epic is
 [EPIC-10 (#15)](https://github.com/superposition/qualia/issues/15).
 
-<!-- ASK: which committed figure pair (one chart, one diagram or render) ships with this entry? No docs/figures/ directory exists for the slug the-4090-and-the-nano; T38/T42/T43 own figures. The per-kernel board-vs-4090 comparison is the natural chart; the deploy/hang path is the natural diagram. -->
-
 ## What this does not establish
 
 - **No mission has run on either machine.** The epic's actual acceptance — open one exploration
@@ -123,3 +121,9 @@ of the T50 Pinkie capture. This entry's epic is
 - **The board clock is about 10 days behind** (`date -u` read 2026-09-01 when the host read
   2026-09-11), which the deploy comment flags as a hazard for anything depending on TLS to a remote
   upstream; nothing in this entry depends on it.
+- **No figure ships with this entry.** No directory under `docs/figures/` matches the slug
+  `the-4090-and-the-nano`: T42's heroes cover `the-connectome-as-a-prior`, `the-ladder` and
+  `the-front-end-rebuilt-from-lessons`; T43's turntables cover `the-mark`,
+  `the-licence-and-the-snapshot` and `the-operating-model`; and T51's `fly-brain` set is named for
+  T51's own entry. None of them draws the per-kernel board-vs-4090 comparison or the deploy path, so
+  the entry ships without a figure rather than with an invented one.

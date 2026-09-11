@@ -117,8 +117,6 @@ merge that landed the exploration mission. Epics:
 [EPIC-08 (#8)](https://github.com/superposition/qualia/issues/8),
 [EPIC-08B (#9)](https://github.com/superposition/qualia/issues/9).
 
-<!-- ASK: which committed figure pair (one chart, one diagram or render) ships with this entry? No docs/figures/ directory exists for the slug the-agent-in-the-loop; T38/T42/T43 own figures. The strand→observe→storage flow is the natural diagram; the pace gate's wait/stale decision is the natural chart. -->
-
 ## What this does not establish
 
 - **The self-improvement loop has not landed.** EPIC-08B is `status:ready` in all three parts: the
@@ -136,3 +134,9 @@ merge that landed the exploration mission. Epics:
   completion; the round trip proves the edge, not the behaviour.
 - **The board was shared.** Other agents were building and running on Pinkie during these legs; the
   reported results are agreements across runs, not undisturbed measurements.
+- **No figure ships with this entry.** No directory under `docs/figures/` matches the slug
+  `the-agent-in-the-loop`: the committed sets are the T42 heroes (`the-connectome-as-a-prior`,
+  `the-ladder`, `the-front-end-rebuilt-from-lessons`), the T43 turntables (`the-mark`,
+  `the-licence-and-the-snapshot`, `the-operating-model`) and T51's `fly-brain` set. None of them draws
+  the strand→observe→storage flow or the pace gate's wait/stale decision, so the entry ships without a
+  figure rather than with an invented one.

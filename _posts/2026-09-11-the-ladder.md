@@ -11,6 +11,7 @@ sources:
   - https://github.com/superposition/qualia/issues/49
   - https://github.com/superposition/qualia/pull/195
   - https://github.com/superposition/qualia/pull/200
+  - https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-ladder/ladder.json
 ---
 
 **The claim.** The seam between the neural and symbolic halves is a single measured number: how far
@@ -24,6 +25,19 @@ first of which lowers coupling by a factor of **0.90** on a failed mission. `qua
 **17 tests** on the board for the drift half and **24 tests** with the rules. The ladder those
 thresholds describe — recalibrate, roll back, observe-only, safe stop — is **not in the tree yet**;
 what has landed is the measurement and the rules, and that distinction is the point of this entry.
+
+<figure class="measurement">
+  <picture>
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-ladder/hero.webp"
+         width="1100" height="619"
+         alt="The extruded psi monogram beside four concentric extruded rings, the widening gaps between them at squared Mahalanobis 3, 5 and 8.">
+  </picture>
+  <figcaption>
+    <p>The extruded mark beside the healing ladder's four bands as four concentric rings, the gaps
+    between them at squared Mahalanobis 3, 5 and 8. The outermost band is open-ended: the ladder's
+    thresholds are the plan's specification, not a measurement.</p>
+  </figcaption>
+</figure>
 
 ## What we tried
 
@@ -71,6 +85,19 @@ compute API's authority statement requires. No function in the crate may call a 
 assert that it does. The numbers above are the plan's; the only measured quantities in this entry are
 the drift values and the test counts.
 
+<figure class="measurement">
+  <picture>
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-ladder/ladder-bands.svg"
+         width="1100" height="516"
+         alt="The healing ladder's escalation over squared Mahalanobis distance: four bands separated at 3, 5 and 8, each labelled with the step it selects, and the measured identity-prediction drift of 0.0 marked on the axis.">
+  </picture>
+  <figcaption>
+    <p>The ladder's escalation as four bands, separated at the plan's 3, 5 and 8 and labelled with the
+    step each selects; the measured identity-prediction drift (<code>0.0</code>) is marked on the axis.
+    The chart says on its face that the thresholds are a specification, not a measurement.</p>
+  </figcaption>
+</figure>
+
 ## What the rules say, in order
 
 `default_rules()` returns, in this order:
@@ -110,8 +137,6 @@ T34. The rule layer is on PR #200 (`2602c4d`, board-green, unmerged). This entry
 [EPIC-08C (#11)](https://github.com/superposition/qualia/issues/11); tickets
 [T33 #49](https://github.com/superposition/qualia/issues/49) and
 [T34 #50](https://github.com/superposition/qualia/issues/50).
-
-<!-- ASK: which committed figure pair (one chart, one diagram or render) ships with this entry? No docs/figures/ directory exists for the slug the-ladder; T38/T42/T43 own figures, and Step 42 names four concentric rings standing for the 3/5/8 thresholds as this entry's hero render. The chart should make clear the thresholds are specification, not measurement. -->
 
 ## What this does not establish
 

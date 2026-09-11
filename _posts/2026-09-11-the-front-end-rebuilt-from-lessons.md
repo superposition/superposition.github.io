@@ -26,6 +26,19 @@ and the line `braid gen {n} · belief lag: {ms} ms`, and `grep -rn QUALIA_OPS_UR
 GUI it is host-only by definition: the board is headless, so its aarch64 artifact is the board
 evidence.
 
+<figure class="measurement">
+  <picture>
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-front-end-rebuilt-from-lessons/hero.webp"
+         width="1100" height="619"
+         alt="The extruded psi monogram beside five staggered extruded tiles, one per view the console opens, in the order the crate declares them: mission, belief, world, evidence, telemetry.">
+  </picture>
+  <figcaption>
+    <p>The extruded mark beside the console's five views as five staggered extruded tiles, in
+    <code>VIEWS</code> order — mission, belief, world, evidence, telemetry: the five floating windows
+    the console opens.</p>
+  </figcaption>
+</figure>
+
 ## What we tried
 
 **The lessons document ran before the crate, deliberately.** Step 25 exists so that
@@ -35,6 +48,20 @@ in a private repository read-only clone; nothing was copied, and the document re
 paths only. `docs/inspiration.md` indexes every private path that was read. `runners/ops` is written
 up as a lesson and not as a component, because Step 27 deletes it and this repository never carried
 it.
+
+<figure class="measurement">
+  <picture>
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-front-end-rebuilt-from-lessons/lesson-sources.svg"
+         width="1100" height="494"
+         alt="How many of the console's decisions each of the five front ends that docs/frontend-lessons.md read informs, counted from the document's closing Comes from column, with the most-named source picked out.">
+  </picture>
+  <figcaption>
+    <p>How many of the console's decisions each of the five front ends that
+    <code>docs/frontend-lessons.md</code> read informs, counted from the document's closing
+    "Comes from" column; the most-named source is picked out. The lessons document is the entry's
+    substance — this is the route to it.</p>
+  </figcaption>
+</figure>
 
 **The stacked top headers were built, then thrown away.** The first console had a top bar, a tab row
 and per-view headers; the operator's direction replaced them with five floating, movable, resizable
@@ -118,8 +145,6 @@ of the TUI change. Its epic is [EPIC-09 (#10)](https://github.com/superposition/
 tickets [T25 #41](https://github.com/superposition/qualia/issues/41),
 [T26 #42](https://github.com/superposition/qualia/issues/42),
 [T27 #43](https://github.com/superposition/qualia/issues/43).
-
-<!-- ASK: which committed figure pair (one chart, one diagram or render) ships with this entry? No docs/figures/ directory exists for the slug the-front-end-rebuilt-from-lessons; T38/T42/T43 own figures, and Step 42 names the five console panels as extruded tiles for this entry's hero render. The figure should also carry docs/frontend-lessons.md to readers, which the text above only cites. -->
 
 ## What this does not establish
 

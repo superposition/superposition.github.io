@@ -126,8 +126,6 @@ merge that put the backend `couple_prior` on `main`. Epics:
 [EPIC-05 (#5)](https://github.com/superposition/qualia/issues/5),
 [EPIC-06 (#6)](https://github.com/superposition/qualia/issues/6).
 
-<!-- ASK: which committed figure pair (one chart, one diagram or render) ships with this entry? No docs/figures/ directory exists for the slug the-fly-in-the-belief-matrices — T38/T42/T43 own figures. The 4090 kernel durations and the coupling normalisation are the likely chart; the flag/prior/backend boundary is the likely diagram. -->
-
 ## What this does not establish
 
 - **T17 and T18 have not landed.** CPU/CUDA parity for the three new kernels is `status:ready`
@@ -145,3 +143,8 @@ merge that put the backend `couple_prior` on `main`. Epics:
   total and the unit tests are the evidence; a mission that moves the belief has not been run.
 - **The 4090 numbers are one contended session.** No error bar and no repeated-run spread are
   recorded in the T16 capture; compare shape and launch count first.
+- **No figure ships with this entry.** No directory under `docs/figures/` matches the slug
+  `the-fly-in-the-belief-matrices`. The nearest committed set — T51's `fly-brain`
+  (`brain-layout.svg`, `brain-firing.svg`, `brain-matrices.svg`, `turntable.glb`, under
+  `docs/figures/fly-brain/`) — is the figure set for T51's own `fly-brain` entry, not this slug, so
+  this entry ships without a figure rather than reusing another entry's.
