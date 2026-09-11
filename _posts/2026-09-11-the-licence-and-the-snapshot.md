@@ -10,7 +10,7 @@ sources:
   - https://github.com/superposition/qualia/issues/66
   - https://raw.githubusercontent.com/superposition/qualia/main/LICENSE
   - https://raw.githubusercontent.com/superposition/qualia/main/NOTICE
-  - https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-licence-and-the-clean-room-snapshot/provenance.json
+  - https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-licence-and-the-snapshot/provenance.json
 ---
 
 **The claim.** The public repository opens at commit `776bff0` with a five-file first commit —
@@ -70,7 +70,7 @@ whose work is *included*; CC-BY covers data *derived* from a published dataset. 
 
 <figure class="measurement">
   <picture>
-    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-licence-and-the-clean-room-snapshot/licence-flow.svg"
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-licence-and-the-snapshot/licence-flow.svg"
          width="1100" height="420"
          alt="A dashed boundary labelled clean room separates the private reference (read for interfaces only) from this repository. Below the line, three attribution sources — the relicensed workspace root, Leash under MIT, the Male CNS dataset under CC-BY 4.0 — fan into a NOTICE box, which is guarded by the notice-check script.">
   </picture>
@@ -89,7 +89,7 @@ count is smaller than the tracked count — 104 of 157, then 110 of 170.
 
 <figure class="measurement">
   <picture>
-    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-licence-and-the-clean-room-snapshot/provenance-check.svg"
+    <img src="https://raw.githubusercontent.com/superposition/qualia/main/docs/figures/the-licence-and-the-snapshot/provenance-check.svg"
          width="1100" height="460"
          alt="For each of two commits, three bars: files tracked in this repository, files whose relative path also exists in the private reference checkout, and files byte-identical to it. At 144bb6d: 157, 104, 0. At a59b836: 170, 110, 0.">
   </picture>
@@ -115,7 +115,7 @@ count is smaller than the tracked count — 104 of 157, then 110 of 170.
 | Byte-identical at `a59b836` | 0 | files | same ^2 |
 
 ^1 Read from the committed file at `main`, not from this text.
-^2 `docs/figures/the-licence-and-the-clean-room-snapshot/provenance.json`. The two runs were taken in
+^2 `docs/figures/the-licence-and-the-snapshot/provenance.json`. The two runs were taken in
 a later session than the commits they measure; the commits are `144bb6d` (which introduced the check)
 and `a59b836` (the head then).
 
