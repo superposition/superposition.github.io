@@ -1,7 +1,7 @@
 ---
 title: "The 4090 and the Nano"
 description: The same 13 CUDA launches cost 4.78 ms on the RTX 4090 and 39.18 ms on the Orin NX — 8.19×, with residency ruled out as the cause — and the first deploy of the stack to the board found a hang, not a mission.
-date: 2026-09-11 21:35:00 -0400
+date: 2026-09-11 17:05:00 -0400
 updated: 2026-09-11
 tags: [cuda, jetson, profiling, deployment]
 math: false

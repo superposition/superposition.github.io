@@ -1,7 +1,7 @@
 ---
 title: "The connectome as a prior"
 description: Turning a 929,735-edge type-level connectome into a checked, attributed artifact a belief layer can load — built offline, from two Feather files, with a 12-row fixture standing in for the dataset.
-date: 2026-09-11 21:05:00 -0400
+date: 2026-09-11 16:35:00 -0400
 updated: 2026-09-11
 tags: [connectome, csr, offline-build, provenance]
 math: true

@@ -1,7 +1,7 @@
 ---
 title: "The fly in the belief matrices"
 description: A connectome prior loaded, digest-checked, coupled into the belief layers behind an off-by-default feature, and watching its own rate model publish observe-only — seven tickets, a 1.75 coupling total on the 4090, and three CUDA kernels measured at 2.50, 10.59 and 11.84 µs.
-date: 2026-09-11 21:10:00 -0400
+date: 2026-09-11 16:40:00 -0400
 updated: 2026-09-11
 tags: [connectome, cuda, coupling, belief]
 math: true
