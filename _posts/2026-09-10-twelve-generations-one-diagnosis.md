@@ -1,6 +1,6 @@
 ---
-title: "Twelve generations, one interaction"
-description: A benchmark that proposes its own kernel variants kept three changes, and the last one turned out to be half of a combination that is faster than either half — after two of its own claims were withdrawn by better measurement.
+title: "Twelve generations, one diagnosis"
+description: A benchmark that proposes its own kernel variants kept three changes. What it produced was not a faster kernel but a diagnosis about where the time waits — and a hand-written pipeline then answered it, 11% further on.
 date: 2026-09-10 19:40:00 -0400
 updated: 2026-09-10
 tags: [kernels, measurement, performance]
@@ -10,7 +10,7 @@ math: true
 ---
 The third field note left the Rust matrix multiply at 80.0 microseconds of GPU kernel time. The change that got it there was chosen by an argument — a deliberately worse tile identified shared-memory load instructions as the limit, and the count of resident threads chose the layer normalization change. Both arguments required a person to make them.
 
-This entry is about what happened when the harness was given the ability to make them instead: propose a variant, build it, check it, measure it against both the configuration it holds and the committed kernel, decide, and write down why. Twelve generations later it had kept three changes. Two of its own claims were withdrawn along the way, and the result was not what its ledger said it was.
+This entry is about what happened when the harness was given the ability to make them instead: propose a variant, build it, check it, measure it against both the configuration it holds and the committed kernel, decide, and write down why. Twelve generations later it had kept three changes. Two of its own claims were withdrawn along the way — and what it produced in the end was not a faster kernel but a **diagnosis**, which a hand-written pipeline then answered by going 11% further.
 
 ## The question
 
@@ -42,33 +42,47 @@ The third is where it disagreed with the published record. The earlier captures 
 
 The field notes quote GPU kernel time from Nsight Systems captures. The loop quotes the event span around the call. Re-capturing the retained configuration with the published instrument, in paired sessions:
 
-| staging structure | contraction step | kernel µs | vs committed |
+| staging structure | contraction step | kernel µs | vs that session |
 | --- | ---: | ---: | ---: |
-| one loop, shared quad decomposition (the committed kernel) | 64 | 80.31 | 1.000 |
+| one loop, shared quad decomposition (the committed kernel then) | 64 | 80.31 | 1.000 |
 | guard-free loops | 64 | 80.29 | 0.999 |
 | guard-free loops | 32 | 82.43 | 1.028 |
 | one branch per tile | 64 | 82.97 | 1.034 |
 | **one branch per tile** | **32** | **76.29** | **0.951** |
 
-The contraction step the loop kept is *slower* in the structure that has no branches, and the branch structure is slower at the old step. Neither change explains the result on its own. The combination is 4.9% faster than the committed kernel, and a loop that measured one change at a time could only reach it by keeping a step whose stated reason — "32 is faster than 64" — was wrong.
+The contraction step the loop kept is *slower* in the structure that has no branches, and the branch structure is slower at the old step. Neither change explains the result on its own. The combination was 4.9% faster than the kernel of that session — and a loop that measured one change at a time could only reach it by keeping a step whose stated reason, "32 is faster than 64", was wrong.
 
-That the committed arm reproduced its published value (79.8–81.0 against the recorded 80.00) is what makes the comparison usable at all. Triton's published matmul value swings between 71.94 and 83.78 µs across sessions, wider than any difference being discussed here, so all four implementations were captured in one session:
+Look again at what those two structures differ in. They load the same tiles from the same places, in the same order, into the same shared memory. The only difference is how the copies are issued: one form puts the $A$ and $B$ copies in a single basic block, the other separates them behind their own predicates. An 8% difference between two arrangements that move identical bytes is a statement about **where the time waits** — not about arithmetic, and not about how much memory traffic there is.
+
+## What answered it
+
+That diagnosis had a consequence nobody in the loop could act on: the generated templates have no way to express asynchronous copies. A hand-written kernel does. `tiled_matmul_pipeline` double-buffers the shared memory and issues the next K tile's global-to-shared copies with `cp.async` while the current tile is still being multiplied, so the load latency overlaps the arithmetic instead of preceding it.
+
+| Implementation | Three rounds (µs/iter) | Median |
+| --- | --- | ---: |
+| **Rust, committed (`tiled_matmul_pipeline`)** | 69.02, 68.76, 68.44 | **68.76** |
+| Rust, the configuration the loop retained | 77.09, 76.25, 76.09 | 76.25 |
+| Triton (`matrix_kernel`) | 79.32, 86.22, 86.50 | 86.22 |
+| PyTorch → cuBLAS (`cutlass simt sgemm 128x64`) | 49.26, 50.50, 56.03 | 50.50 |
+
+The pipeline is 11% faster than the configuration the loop retained, and 13.8% faster than the kernel it replaced (79.76 µs in the earlier session). So the loop's kernel is superseded on this shape, and that is the honest reading of its contribution: it produced the question the pipeline answers.
 
 <figure class="measurement">
   <picture>
     <source media="(max-width: 520px)" srcset="{{ '/mage/assets/figures/mage-005/kernel-time-comparison-mobile.svg' | relative_url }}">
-    <img src="{{ '/mage/assets/figures/mage-005/kernel-time-comparison.svg' | relative_url }}" width="740" height="399" alt="Left: GPU kernel time per iteration for four implementations in one session — committed Rust 79.8, evolved Rust 76.3, Triton 84.5, and PyTorch through cuBLAS 49.9 microseconds. Right: the evolved configuration split into its two halves, where guard-free loops at step 32 and one branch per tile at step 64 are both slower than the committed kernel, and only the combination is faster.">
+    <img src="{{ '/mage/assets/figures/mage-005/kernel-time-comparison.svg' | relative_url }}" width="740" height="399" alt="Left: GPU kernel time per iteration for the committed matrix multiply at 79.76 microseconds, the configuration the loop retained at 76.34, and the pipelined kernel at 68.76, with reference lines for Triton at 86.2 and cuBLAS at 50.5. Right: the retained configuration split into its two halves, where guard-free loops at step 32 measure 82.43 and one branch per tile at step 64 measures 82.97, both slower than the committed kernel of that session at 80.31, while the combination measures 76.29.">
   </picture>
   <figcaption>
-    <p>Left: one session, four implementations, with the three round values marked on each bar. Right: the same configuration split into its two halves, each row a paired session. Lower is better.</p>
+    <p>Left: the three Rust kernels, with the library references from the same sessions. Right: the retained configuration split into its two halves, each row a paired session against the kernel as it stood before the pipeline landed. Lower is better.</p>
     <details>
       <summary>Values (µs of GPU kernel time per iteration)</summary>
       <table>
-        <caption class="visually-hidden">GPU kernel time per iteration, by implementation and by staging structure</caption>
-        <thead><tr><th scope="col">Implementation or structure</th><th scope="col">Rounds</th><th scope="col">Median</th></tr></thead>
+        <caption class="visually-hidden">GPU kernel time per iteration, by kernel and by staging structure</caption>
+        <thead><tr><th scope="col">Kernel or structure</th><th scope="col">Rounds</th><th scope="col">Median</th></tr></thead>
         <tbody>
-          <tr><th scope="row">Rust, committed</th><td>81.00, 79.24, 79.76</td><td>79.76</td></tr>
-          <tr><th scope="row">Rust, evolved</th><td>76.34, 76.34, 75.95</td><td>76.34</td></tr>
+          <tr><th scope="row">Rust, committed (registers)</th><td>81.00, 79.24, 79.76</td><td>79.76</td></tr>
+          <tr><th scope="row">Rust, the loop's configuration</th><td>76.34, 76.34, 75.95</td><td>76.34</td></tr>
+          <tr><th scope="row">Rust, pipelined</th><td>69.02, 68.76, 68.44</td><td>68.76</td></tr>
           <tr><th scope="row">Triton</th><td>88.95, 80.04, 84.51</td><td>84.51</td></tr>
           <tr><th scope="row">PyTorch / cuBLAS</th><td>49.88, 43.51, 50.54</td><td>49.88</td></tr>
           <tr><th scope="row">guard-free, step 32</th><td colspan="2">82.43</td></tr>
@@ -80,7 +94,7 @@ That the committed arm reproduced its published value (79.8–81.0 against the r
   </figcaption>
 </figure>
 
-cuBLAS is 1.53× ahead, and its own spread across three rounds is as wide as the gap, so it is quoted with that caveat rather than presented as a target that was reached.
+Triton's published matmul value swings between 71.94 and 83.78 µs across sessions, wider than most of the differences being discussed, so it is captured in the same session rather than compared across them. cuBLAS is 1.36× ahead of the best Rust kernel, and its own spread across three rounds is as wide as some of the gaps here, so it is quoted with that caveat.
 
 ## Two claims withdrawn
 
@@ -100,10 +114,10 @@ That work did surface a real defect. The two-warp kernel splits a row in whole 3
 
 ## What the numbers do not establish
 
-One shape, 1024³, one dtype, FP32, one GPU with unlocked clocks. Nothing here speaks to training shapes or to another device. No hardware counters were available, so the interaction is *attributed* by paired captures and not *explained* by a bounded resource — the guard branches are the only structural difference between the two forms that bracket the result at the same contraction step, and why they help is open. And the loop optimizes what it measures: every kept step improved the event span, only the final configuration also improved kernel time, and the loop could not tell those apart while it was running.
+One shape, 1024³, one dtype, FP32, one GPU with unlocked clocks. Nothing here speaks to training shapes or to another device. No hardware counters were available, so the interaction is *attributed* by paired captures and not *explained* by a bounded resource — the pipeline's win suggests the answer lies in where the copies wait rather than in how many there are, but that is an inference from two measurements, not a counter reading. And the loop optimizes what it measures: every kept step improved the event span, only the retained configuration also improved kernel time, and it never proposed anything structural — no `cp.async`, no split-K — because its templates cannot express them.
 
 ## Measured values
 
-Kernel time per iteration, 1024³ FP32, Nsight Systems captures of 100 iterations, three interleaved rounds, medians: committed Rust **79.76 µs**, evolved Rust **76.34 µs**, Triton **84.51 µs**, PyTorch through cuBLAS **49.88 µs**. The interaction, one paired session per row: guard-free at step 32 **82.43**, one branch per tile at step 64 **82.97**, one branch per tile at step 32 **76.29**.
+Kernel time per iteration, 1024³ FP32, Nsight Systems captures of 100 iterations, three interleaved rounds, medians: committed Rust with registers **79.76 µs**, the loop's configuration **76.34 µs**, the pipelined kernel **68.76 µs**, Triton **84.51–86.22 µs** across the two sessions, PyTorch through cuBLAS **49.88–50.50 µs**. The interaction, one paired session per row, against the pre-pipeline kernel: guard-free at step 32 **82.43**, one branch per tile at step 64 **82.97**, one branch per tile at step 32 **76.29**.
 
-The loop's own view — event spans around the call — and the twelve-generation ledger with its rejections are in the [measurement record](https://github.com/superposition/mage/blob/master/docs/experiments/mage-005.md), along with the search space, the static constraints, the audit that renders and checks all 51 reachable configurations, and the regression tests. The captures are one file per paired session under `docs/assets/results/evolution-loop/kernel-time/`.
+The loop's own view — event spans around the call — and the twelve-generation ledger with its rejections are in the [measurement record](https://github.com/superposition/mage/blob/master/docs/experiments/mage-005.md), along with the search space, the static constraints, the audit that renders and checks all 51 reachable configurations, and the regression tests. The captures are one file per paired session under `docs/assets/results/evolution-loop/kernel-time/`, and the next thing to add is a `cp.async` form to the generated templates so the loop can be asked to tune inside the pipelined structure.
