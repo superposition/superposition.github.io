@@ -45,7 +45,8 @@ dispatcher.
 opened with base `ticket/T11` and merged into that branch; when `ticket/T11` was later rebased onto
 `main`, the rebase dropped the merge commit and with it T12's commits, so the work was an ancestor of
 neither. That is now decision D-019, and the replay (`ticket/T12-replay`, PR #198) is a single
-`cherry-pick -x` of the reviewed commit. It is open, not merged.
+`cherry-pick -x` of the reviewed commit. It was open when this entry was written and merged on
+2026-09-11T19:55:37Z in `14b60de` (PR #198).
 
 **The simulator was kept away from the motor path by construction.** The dataset carries no dynamics
 and no sign; the model is invented. So it is a separate crate (`qualia-fly-circuit`, feature `sim`
@@ -128,13 +129,16 @@ merge that put the backend `couple_prior` on `main`. Epics:
 
 ## What this does not establish
 
-- **T17 and T18 have not landed.** CPU/CUDA parity for the three new kernels is `status:ready`
-  (`#32`), and the ≤ 6 GiB memory plan and the `sm_87`/`sm_89` fatbin targets are `status:ready`
-  (`#33`). The three kernels have host oracles and a capture, not a parity assertion, and no fatbin
-  for the board exists yet.
-- **T12 is not on `main`.** The runner wiring that reads `QUALIA_FLY_MODE` and loads the prior at
-  start-up is a replay on PR #198, still open. What is on `main` today is the backend coupling, the
-  manifests' env keys and the tests.
+- **T17 has not landed; T18 landed after this entry's period.** CPU/CUDA parity for the three new
+  kernels was `status:ready` (`#32`) and is now `status:review` (`#32`, still open): the three kernels
+  have host oracles and a capture, not a parity assertion. The ≤ 6 GiB memory plan and the
+  `sm_87`/`sm_89` fatbin targets were `status:ready` (`#33`); T18 landed in `60beee4` (PR #207, merged
+  2026-09-11T20:16:14Z), and its board capture shows the sm_87 cubins loading on Pinkie with no
+  `CUDA_ERROR_UNSUPPORTED_PTX_VERSION` (`docs/evidence/T18/fatbin-sm-87/`).
+- **T12 was not on `main` when this entry was written.** The runner wiring that reads
+  `QUALIA_FLY_MODE` and loads the prior at start-up was the replay on PR #198, then still open; it
+  merged in `14b60de` (2026-09-11T19:55:37Z). At the entry's endpoint, `main` carried the backend
+  coupling, the manifests' env keys and the tests.
 - **`semantic_novelty` and dimorphism are not derivable.** The artifact aggregates dimorphism away and
   the runtime carries no cell-to-type map; the exploration ticket sends a documented `0.0`.
 - **The simulator has no drive.** Nothing in the JEPA path is an input to the type graph, so the

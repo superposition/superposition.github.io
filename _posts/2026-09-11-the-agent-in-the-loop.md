@@ -119,12 +119,15 @@ merge that landed the exploration mission. Epics:
 
 ## What this does not establish
 
-- **The self-improvement loop has not landed.** EPIC-08B is `status:ready` in all three parts: the
-  bounded `QUALIA_FLY_COUPLING_SCALE` dial (`#46`), closing the training/promotion loop through the
-  braid (`#47`) and its failure paths (`#48`). No coupling scale has been clamps-tested, no training
-  job has been submitted by an agent, and nothing has been promoted.
-- **T20's PR is open, not merged.** The `POST /braid` write edge and the strand reports are on
-  PR #196; the board exercised the head. T22 (`#37`, rollback and quarantine routing) is still ready.
+- **The self-improvement loop has not landed.** EPIC-08B still owes all three parts: the
+  bounded `QUALIA_FLY_COUPLING_SCALE` dial (`#46`, `status:claimed`), closing the training/promotion
+  loop through the braid (`#47`, `status:claimed`) and its failure paths (`#48`, `status:ready`). No
+  coupling scale has been clamps-tested, no training job has been submitted by an agent, and nothing
+  has been promoted.
+- **T20's PR merged after this entry's board leg.** The `POST /braid` write edge and the strand
+  reports are on PR #196, merged 2026-09-11T19:25:44Z in `9fd1e69`; the board exercised the head.
+  T22 (`#37`, rollback and quarantine routing) was `status:ready` when this entry was written and has
+  since landed too (`5c304dc`, PR #204, merged 2026-09-11T20:06:32Z; `#37` closed, `status:review`).
 - **The sync-types `fly_governed` field defaults false and has never been true at runtime.** It landed
   with the C04 rewrite (`3b4fa66`), and the test asserts the default and a round trip, not a mission
   that set it.

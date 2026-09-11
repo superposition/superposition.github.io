@@ -1,6 +1,6 @@
 ---
 title: "The front end, rebuilt from lessons"
-description: Five existing front ends read as evidence, the lessons written down before the crate existed, then one egui binary with five views, four snapshot tests and a screen that was actually read back — plus a TUI panel and a headless board that can build the GUI but not display it.
+description: Five existing front ends read as evidence, the lessons written down before the crate existed, then one egui binary with five views, six snapshot tests and a screen that was actually read back — plus a TUI panel and a headless board that can build the GUI but not display it.
 date: 2026-09-11 21:15:00 -0400
 updated: 2026-09-11
 tags: [frontend, egui, tui, testing]
@@ -17,7 +17,7 @@ sources:
 reads **five** front ends — the ratatui engine TUI, an egui ops dashboard, a native understanding
 viewer, an Ink terminal app and a Vite/React SPA — every cited path resolving (**42 of 42**), and ends
 in a table mapping each `apps/qualia-console` decision to the source that produced it. The crate then
-shipped as one egui/eframe binary with **five** views, **four** snapshot tests written for the empty
+shipped as one egui/eframe binary with **five** views, **six** snapshot tests written for the empty
 and error cases first, and **16** tests total, with no `192.168.` literal in `src/`. It was smoke-run
 for real: against a live shared region and a stub `GET /braid`, all five views were read back through
 the window's accessibility tree — belief layers `live` at 443 ms, pose `x 1.250 m, z -0.500 m,
@@ -93,9 +93,10 @@ recorded as **blocked**, not as a build. The console was then built natively on 
 The view set is fixed — mission, belief, world, evidence, telemetry — one module each under
 `src/views/`, and the agent's base URL comes from `QUALIA_AGENT_URL` (default
 `http://127.0.0.1:8080`) with no host literal in the source. The snapshots are
-`mission_healthy`, `mission_degraded`, `belief_stale`, `evidence_empty`, all driven from one committed
-`braid-state.json` fixture so no live stack is needed; the empty and error cases were written first
-because those are the ones that regress.
+`mission_healthy`, `mission_degraded`, `belief_stale`, `evidence_empty`, `world_fresh` and
+`default_arrangement`, all driven from one committed `braid-state.json` fixture — `world_fresh`
+attaches a fresh region of its own — so no live stack is needed; the empty and error cases were
+written first because those are the ones that regress.
 
 The TUI half is the same data on a terminal: `runners/watch` gained a Mission panel reading
 `GET /braid` and the chrome line `braid gen {n} · belief lag: {ms} ms`, with the milliseconds from
@@ -122,9 +123,9 @@ headlessly, so the panel rendering is covered by `tests/view.rs` and `tests/brai
 | Quantity | Value | Unit | Source |
 | --- | ---: | --- | --- |
 | Sources read for the lessons doc | 5 | front ends | `docs/frontend-lessons.md` |
-| Cited paths that resolve | 42 of 42 | paths | PR #119 comment ^1 |
+| Cited paths that resolve | 42 of 42 | paths | PR #119 body ^1 |
 | Console views | 5 | views | `apps/qualia-console/src/views/` |
-| Committed snapshots | 4 | snapshots | `tests/snapshots.rs` |
+| Committed snapshots | 6 | snapshots | `tests/snapshots.rs` |
 | Console tests | 16 passed / 0 failed | tests | T26 comment ^2 |
 | Console aarch64 artifact | 317,755,264 | bytes | Board2/Board3 comments, PR #152 ^2 |
 | Console artifact SHA-256 | `f02168cc…` | — | same ^2 |
@@ -140,8 +141,7 @@ the session that recovered the crashed worktree, and the Pinkie artifacts by the
 board artifacts were built in different legs, and the console's was reproduced byte-for-byte by a
 second leg.
 
-The commit range this entry describes is [`665c1ab..2306c4c`](https://github.com/superposition/qualia/compare/665c1ab...2306c4c): the lessons commit through the board leg
-of the TUI change. Its epic is [EPIC-09 (#10)](https://github.com/superposition/qualia/issues/10);
+The commit range this entry describes is [`665c1ab..7ad59a1`](https://github.com/superposition/qualia/compare/665c1ab...7ad59a1): the lessons commit through the merge that carried the TUI change (T27, PR #191, merged 2026-09-11T18:15:39Z). The range has to end there, not at the TUI change's board leg `2306c4c`: the console (T26, PR #152, merge `4700e47`) is not an ancestor of `2306c4c` — `git merge-base --is-ancestor 4700e47 2306c4c` fails — while `7ad59a1` contains both. The console's five views, its 16-test board run and its artifacts describe the range's endpoint, where `VIEWS` is `[View; 5]`; at `main` it is `[View; 6]` because T51 added `View::Brain` (`a65f94f`, PR #201, merged 2026-09-11T19:55:40Z) after this entry's period. Its epic is [EPIC-09 (#10)](https://github.com/superposition/qualia/issues/10);
 tickets [T25 #41](https://github.com/superposition/qualia/issues/41),
 [T26 #42](https://github.com/superposition/qualia/issues/42),
 [T27 #43](https://github.com/superposition/qualia/issues/43).

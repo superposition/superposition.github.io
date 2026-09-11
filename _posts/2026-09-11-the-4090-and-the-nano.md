@@ -31,9 +31,12 @@ default address was `https://127.0.0.1:8080`, llama.cpp's plain-HTTP port.
 **The mission tickets have not run, and this entry says so rather than inventing them.** Step 28 (an
 end-to-end mission on the 4090) is [T28 (#44)](https://github.com/superposition/qualia/issues/44) and
 Step 29 (the same on the Orin Nano) is [T29 (#45)](https://github.com/superposition/qualia/issues/45).
-T28 has no comments at all; T29's only comment is a blocked deploy smoke, not a mission. Neither is
-`status:done`. What has actually been verified on the two machines is the kernel suite, and that is
-what the numbers above measure.
+When these numbers were taken on 2026-09-11T19:24Z, T28 had no comments at all and T29's only comment
+was a blocked deploy smoke, not a mission. Both have been claimed since: `#44` carries a
+`state: working` note (20:12:36Z) and `#45` three — the deploy smoke, a claim (20:04:23Z) and the
+board half for PR #211 (20:20:28Z). Neither has run the mission, and neither is `status:done`. What
+has actually been verified on the two machines is the kernel suite, and that is what the numbers above
+measure.
 
 **The board deploy was attempted early, on purpose, and recorded as blocked.** Deploying `25f2b6f7`
 to `~/qualia-deploy/` and building natively on the board was cheap and proved the deploy path; the
@@ -117,7 +120,9 @@ of the T50 Pinkie capture. This entry's epic is
   so contention moved the second decimal, not the number — but the runs are reported as agreeing
   rather than undisturbed.
 - **The memory budget is unproven on the board.** The ≤ 6 GiB plan and the `sm_87`/`sm_89` fatbin
-  targets are T18 (`#33`), `status:ready`. Nothing here shows the stack fitting in the board's 8 GB.
+  targets were T18 (`#33`, then `status:ready`); T18 has since landed (`60beee4`, PR #207, merged
+  2026-09-11T20:16:14Z, capture at `docs/evidence/T18/fatbin-sm-87/`). Nothing in this entry shows the
+  stack fitting in the board's 8 GB.
 - **The board clock is about 10 days behind** (`date -u` read 2026-09-01 when the host read
   2026-09-11), which the deploy comment flags as a hazard for anything depending on TLS to a remote
   upstream; nothing in this entry depends on it.

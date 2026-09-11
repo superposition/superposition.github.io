@@ -133,7 +133,7 @@ table, and the board re-ran the whole crate at 24 passed.
 tree compares a drift to them.
 
 The commit range this entry describes is [`7cac730..7b3bd15`](https://github.com/superposition/qualia/compare/7cac730...7b3bd15) — the drift commit through the merge of
-T34. The rule layer is on PR #200 (`2602c4d`, board-green, unmerged). This entry's epic is
+T34. The rule layer landed in `2891580` (PR #200, `2602c4d`, merged 2026-09-11T19:25:47Z). This entry's epic is
 [EPIC-08C (#11)](https://github.com/superposition/qualia/issues/11); tickets
 [T33 #49](https://github.com/superposition/qualia/issues/49) and
 [T34 #50](https://github.com/superposition/qualia/issues/50).
@@ -141,7 +141,8 @@ T34. The rule layer is on PR #200 (`2602c4d`, board-green, unmerged). This entry
 ## What this does not establish
 
 - **The ladder has not landed.** `crates/braid/src/heal.rs` does not exist; T35 (`#51`) is
-  `status:ready`, and T36 (`#52`, the authority bound on safe stop) with it. So no step has been
+  `status:claimed`, with the ladder on PR #209 (`ticket/T35`, head `d8b05af`, in review), and T36
+  (`#52`, the authority bound on safe stop) is still `status:ready`. So no step has been
   selected from a real drift, no rollback has been requested, and no safe stop has been requested.
 - **The drift thresholds are uncalibrated.** 3, 5 and 8 are the plan's numbers. No run has measured
   what a *normal* drift looks like on this stack, so there is no evidence that these values separate
