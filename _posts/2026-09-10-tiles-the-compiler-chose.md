@@ -1,64 +1,117 @@
 ---
 title: "Tiles the compiler chose"
-description: A tile compiler met the hand-written kernels on five FP32 operations. It won one, matched another and lost two — and most of the gap in the timing column turned out to be the launch path, not the kernels.
+description: A tile compiler met the hand-written kernels on five FP32 operations. It won one, matched another and lost two — and the losses are exactly where data reuse is highest, which is where layout decides the answer.
 date: 2026-09-10 20:55:00 -0400
-updated: 2026-09-10
+updated: 2026-09-11
 tags: [kernels, measurement, performance, cutile]
 experiment_id: mage-004
 technical_record: https://github.com/superposition/mage/blob/master/docs/experiments/mage-004.md
 field_note: https://superposition.github.io/mage/experiments/mage-004/
 math: true
+mesh_band: true
 ---
-The previous three rounds of this investigation wrote the GPU kernels by hand. Each thread owned a register tile, and the shared-memory layout, the vector width and the barriers were chosen deliberately; the measured wins came from those choices. This round hands the choices to a compiler. [cuTile Rust](https://github.com/NVlabs/cutile-rs) takes *tile* programs — single-threaded code over tiles — and maps them onto warps, blocks, shared memory and tensor cores through CUDA Tile IR.
+<figure class="mesh-band" data-colors="#93caff,#91dbba,#c9b2ff,#e0a08a" data-weights="0.74,1,0.62,0.90">
+  <canvas aria-hidden="true" focusable="false"></canvas>
+  <noscript><img src="https://superposition.github.io/mage/assets/figures/mage-004/mesh-band.png" alt="A dark field with four soft spots of colour — blue, green, lavender and warm sand — scaled by how competitive each implementation is." width="1107" height="327"></noscript>
+  <figcaption>
+    <p>The four spots are the four implementations in the evidence table, opacity set by the geometric mean of their kernel times relative to the best implementation on each operation: Triton brightest, cuTile Rust dimmest.</p>
+    <span class="mesh-band-credit">Field: <a href="https://github.com/paper-design/shaders" rel="noopener">Paper Shaders</a> mesh gradient (Apache-2.0), palette and weights from this post.</span>
+  </figcaption>
+</figure>
+**The claim.** Give a compiler the job of deciding how a GPU kernel places its data, and it will do
+well where reuse is low and worse where reuse is high. On five FP32 operations, the cuTile Rust tile
+kernels beat the hand-written kernels on bias + GELU — $8.19\ \mu s$ against $11.0$ — drew on layer
+normalization, and lost on matrix multiply, triangle contraction and neighbor aggregation by
+$1.6\times$, $1.4\times$ and $3.4\times$.
 
-The question is what the compiler is worth. The answer has two parts, and the second one is the more useful.
+Two arguments carry that claim, and both are about memory rather than arithmetic.
 
-## What the kernels cost
+## Reuse is a layout problem
 
-Five forward FP32 operations, the same inputs and hashes as the earlier rounds, every output checked against PyTorch with TF32 disabled. GPU kernel time comes from separate Nsight Systems captures of 100 launches; the span around the call comes from CUDA events, three rotating rounds of 100 samples.
+A thread that computes one output element of $C = A B$ reads one value of $A$ and one of $B$ per
+multiply-add. A thread that computes a $4\times4$ block reads four of each and performs sixteen
+multiply-adds, so shared-memory reads per multiply-add fall from $\tfrac{2}{1}$ to
+$\tfrac{8}{16} = 0.5$ — and loading those as 128-bit quads takes it to $0.125$: one instruction
+fetching all four values the thread needs.
+
+![Two schematics side by side: the cuTile Rust tile layout on the left, the cuda-oxide register-tile layout with a transposed A and row stride 68 on the right](/mage/assets/figures/mage-004/matmul-layouts.svg)
+
+*The same product, two ways of placing it in memory. Left, the compiler decides how the output tile
+is threaded and how wide the loads are; right, the kernel author does. The transposed $A$ with a row
+stride of 68 exists so each thread's four rows are contiguous — one 128-bit read instead of four
+scattered ones. [Download the SVG](/mage/assets/figures/mage-004/matmul-layouts.svg).*
+
+The tile compiler is not blind to any of this: it widens loads too, and it partitions the output into
+$32\times128$ tiles with $32\times32$ operands per contraction step. What it cannot know is that this
+problem wants a particular arrangement. Its matrix multiply is $1.6\times$ slower, and no arithmetic
+explains that — only where the operands sit when the multiply issues.
+
+## The clock measures two things
+
+Time around a call is submission plus execution:
+
+$$\text{span} \;=\; \underbrace{t_{\text{submit}}}_{\text{host builds and queues}} \;+\; \underbrace{t_{\text{kernel}}}_{\text{device runs}} \;+\; \text{idle}$$
+
+The tile runtime submits lazily, and one awaited call costs $14\text{–}23\ \mu s$ of host time
+against $2\text{–}3\ \mu s$ for the hand-written kernel. It is the difference between a taxi meter
+that starts when you pick up the phone and one that starts when the wheels turn: a comparison that
+waits for every call is comparing phone calls, not journeys. Bias + GELU measures
+$29.97\ \mu s$ around a kernel that runs in $8.19\ \mu s$. Queue the calls, or replay them from a
+recorded CUDA graph, and every operation lands on its kernel time:
+
+| Operation | awaited | queued in tens | kernel only |
+| --- | ---: | ---: | ---: |
+| Matrix multiplication $1024^3$ | 150.53 | 127.07 | 131.56 |
+| Bias + GELU $4096\times768$ | 25.76 | 8.50 | 8.19 |
+| LayerNorm $4096\times768$ | 30.62 | 10.64 | 10.76 |
+| Triangle contraction $128\times32$ | 136.19 | 121.80 | 116.08 |
+| Neighbor aggregation $4096\times64\times65536$ | 49.28 | 33.28 | 35.37 |
+
+*Microseconds, mean of 100 launches. Replay reaches $7.77\ \mu s$ on bias + GELU. Timed the same way,
+Triton and PyTorch also improve, by $6\text{–}7\ \mu s$ and about $1\ \mu s$ per call.*
+
+## Evidence
+
+Kernel time from separate Nsight Systems captures, 100 launches each. Every output was checked
+against PyTorch with TF32 disabled before any timing was believed.
 
 | Operation | PyTorch | Triton | cuTile Rust | cuda-oxide Rust |
-| --- | --- | --- | --- | --- |
-| Matrix multiplication 1024³ | 56.04 | 83.06 | 131.56 | 80.00 |
-| Bias + GELU 4096×768 | 15.88 | 7.73 | **8.19** | 11.0 |
-| LayerNorm 4096×768 | 11.42 | 8.15 | 10.76 | 10.05 |
-| Triangle contraction 128×32 | 28.64 | 102.19 | 116.08 | 80.1 |
-| Neighbor aggregation 4096×64×65536 | 67.32 | 7.97 | 35.37 | 10.3 |
+| --- | ---: | ---: | ---: | ---: |
+| Matrix multiplication $1024^3$ | 56.04 | 83.06 | 131.56 | **80.00** |
+| Bias + GELU $4096\times768$ | 15.88 | 7.73 | **8.19** | 11.0 |
+| LayerNorm $4096\times768$ | 11.42 | 8.15 | 10.76 | 10.05 |
+| Triangle contraction $128\times32$ | 28.64 | 102.19 | 116.08 | 80.1 |
+| Neighbor aggregation $4096\times64\times65536$ | 67.32 | 7.97 | 35.37 | 10.3 |
 
-*(µs of GPU kernel time per operation. PyTorch's bias + GELU is two kernels, its triangle contraction three and its neighbor aggregation four; the counts come from the capture, not from what the operation should launch.)*
+*Microseconds of GPU kernel time per operation. Layer normalization is worth reading twice: the tile
+kernel pads every $768$-wide row out to $1024$, because tile dimensions must be powers of two, so a
+third of its lanes do nothing — and it still draws.*
 
-The tile compiler **beats the hand-written kernel on bias + GELU** — 8.19 µs against 11.0 — and lands level on layer norm, 10.76 against 10.05, even though its layer norm pads a row of 768 columns to 1024 because tile dimensions must be powers of two. It trails on the matmul-shaped operations, 1.6× and 1.4×, and by 3.4× on the irregular one, where the safe tile model gave out and the kernel had to reach for raw device pointers.
-
-## The column that was measuring something else
-
-The event span around the call says something different, and worse: 29.97 µs for a bias + GELU whose kernel takes 8.19 µs.
-
-That gap is not the kernel. Each timed iteration records an event, launches, records a second event and synchronizes. For a runtime whose device operations are lazy, that pattern prices the *host submission path*, and the tile runtime's costs 14–23 µs per awaited launch against the hand-written runtime's 2–3 µs. Queue the launches behind one event pair, or capture them into a CUDA graph and replay it, and the spans fall onto the kernel times:
-
-| Operation | single | batched by ten | replayed graph | kernel |
-| --- | --- | --- | --- | --- |
-| Matrix multiplication 1024³ | 138.24 | 133.02 | **122.87** | 131.56 |
-| Bias + GELU 4096×768 | 25.60 | 8.40 | **7.77** | 8.19 |
-
-Bias + GELU replays at 7.77 µs against an 8.19 µs kernel: the host cost that dominated the column is gone. Timed the same way, PyTorch and Triton also improve — Triton by 6–7 µs per call — so with all three launch paths matched the tile kernels' wins and losses are the ones in the first table, and nothing else.
-
-The lesson generalizes past this comparison. A column of "time around the call" is a joint measurement of two things, and when the languages being compared submit their work differently, the cheaper-looking one may simply be the one that blocks less.
-
-## The tile shape, and a search that beat me
-
-The matrix multiply started from the upstream tutorial's 16 × 16 × 8 tile and was slow. Twelve hand-picked configurations, each a separate specialization producing the same output, moved it from 738.0 µs of span to 201.5 µs at 128 × 64 × 8. The shape is not monotone in any dimension: deepening the contraction step from 8 to 32 costs 42% at a 16 × 16 tile but only 6% at 64 × 64, and 128 × 128 × 8 is 2.3× *slower* than 128 × 64 × 8 — the signature of a register or occupancy cliff rather than of arithmetic.
-
-Then the library's own autotuner, given the same powers of two and 36 candidates, chose 32 × 128 × 32 and beat the hand-picked tile in both views: 137.28 against 189.44 µs single-launch, 121.75 against 174.90 batched. The two searches were optimizing different things — mine the span, which includes submission; the tuner kernel time alone — but its answer was better in both. Twelve configurations chosen to trace a ratio are not a search, and the library found the better region in 17 seconds.
+Tile shape turned out to be the same kind of decision: the identical kernel measured $738\ \mu s$ at
+the tutorial's $16\times16\times8$ tile and $131.56\ \mu s$ at $32\times128\times32$, and
+$128\times128\times8$ was $2.3\times$ slower than a *smaller* tile. That non-monotonicity is a
+register or occupancy cliff, not arithmetic.
 
 ## What was tried and not kept
 
-- **A broadcast product instead of `mma`**: the first strict-FP32 formulation multiplied broadcast tiles and reduced, and it did not compile — the tile types would not unify. `mma` on `f32` turned out to keep FP32 accuracy anyway: 1.5e-05 against the strict reference on K = 1024, which is accumulation error, not a 10-bit mantissa's.
-- **Deeper K steps at small tiles**: 16 × 16 × 32 measured 1072.4 µs against 738.0 for 16 × 16 × 8.
-- **A loop over the triangle contraction's channel axis**: every channel received the first channel's value, because a partition load indexed by a loop variable does not vary. The channel is a grid axis now.
-- **One row per program for the whole of layer norm**: it works, but it forces the 768 → 1024 padding; a kernel that could reduce across row tiles would not pay it.
+- **A broadcast product instead of the matrix instruction.** It did not compile, and the matrix
+  instruction kept FP32 accuracy anyway: $1.5\times10^{-5}$ against the strict reference at
+  $K = 1024$ — accumulation error, not a 10-bit mantissa's.
+- **Deeper contraction steps at small tiles.** $16\times16\times32$ measured $1072\ \mu s$ against
+  $738$ at $16\times16\times8$.
+- **A loop over the channel axis in the triangle kernel.** Every channel read the first channel's
+  values; a partition load indexed by a loop variable does not vary, so the channel has to come from
+  the grid axes.
+- **One row per program for layer norm.** It runs, but it forces the $768 \to 1024$ padding.
 
-## What the numbers do not establish
+## What these numbers do not establish
 
-No hardware counters were available, so occupancy, register pressure and memory traffic are inferred from ratios rather than read. The cuda-oxide column is the previous round's measurement, not taken in the same session as these numbers. Event spans are sensitive to device contention: a repeat that shared the GPU with another capture measured three to twenty times larger spans for the same binary, and it was caught only because PyTorch's own matmul kernel moved with it. One capture per operation means kernel time carries no interval of its own, clocks are unlocked, and compilation, transfers and process startup are excluded throughout.
+No hardware counters are available on this host, so occupancy and bandwidth are inferred from ratios
+rather than read. The cuda-oxide column is a previous round's measurement, not taken in the same
+session, so the two Rust columns should not be subtracted from each other. One capture per operation
+means a kernel time carries no interval of its own, and compilation, transfers and process startup
+are excluded throughout.
 
-The [field note](https://superposition.github.io/mage/experiments/mage-004/) carries the tables in full, and the [technical record](https://github.com/superposition/mage/blob/master/docs/experiments/mage-004.md) has the method, the reproduction commands and the open items.
+The [field note](https://superposition.github.io/mage/experiments/mage-004/) has the full tables, and
+the [technical record](https://github.com/superposition/mage/blob/master/docs/experiments/mage-004.md)
+has the method, the compiler's constraints and the reproduction commands.

@@ -148,3 +148,15 @@ mjx-container[display] { overflow-x: auto; overflow-y: hidden; padding-block: 8p
   .idea-threads > div { display: grid; grid-template-columns: 90px 1fr; align-items: baseline; gap: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Mesh band: a canvas field whose spots carry this post's own ratios. Paper
+   Shaders' mesh gradient (Apache-2.0), drawn by mesh-band.js from the mage site. */
+.mesh-band { position: relative; margin: 30px 0; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: radial-gradient(120% 160% at 18% 28%, rgba(145, 219, 186, .22), transparent 62%), radial-gradient(110% 150% at 78% 62%, rgba(201, 178, 255, .20), transparent 60%), radial-gradient(90% 130% at 52% 92%, rgba(147, 202, 255, .16), transparent 58%), var(--paper); }
+.mesh-band canvas { display: block; width: 100%; height: auto; aspect-ratio: 740 / 220; opacity: 0; transition: opacity .7s ease; }
+.mesh-band[data-ready] canvas { opacity: 1; }
+.mesh-band noscript img { display: block; width: 100%; height: auto; }
+.mesh-band figcaption { padding: 10px 14px 12px; border-top: 1px solid var(--rule); background: var(--surface); font-size: 12px; line-height: 1.7; color: var(--muted); }
+.mesh-band figcaption > p { margin: 0 0 6px; }
+.mesh-band-credit { display: block; margin-top: 6px; font: 11px/1.6 var(--mono); color: #6f7b8f; }
+.mesh-band-credit a { color: #6f7b8f; }
+.mesh-band-credit a:hover { color: var(--muted); }
