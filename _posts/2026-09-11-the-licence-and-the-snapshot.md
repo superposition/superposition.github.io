@@ -1,7 +1,7 @@
 ---
 title: "The licence and the snapshot"
 description: In a clean-room rewrite the licence and the proof of non-copying are the deliverable, not paperwork around it. Apache-2.0, a NOTICE carrying three attributions, and a gate that compared 104 then 110 files against the private reference and found 0 identical.
-date: 2026-09-11 21:00:00 -0400
+date: 2026-09-11 16:30:00 -0400
 updated: 2026-09-11
 tags: [clean-room, licence, provenance, engineering]
 math: false

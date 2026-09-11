@@ -1,7 +1,7 @@
 ---
 title: "The agent in the loop"
 description: A braid that stores nothing, a write edge invented because two strands are separate processes, a belief clock that lets the map degrade instead of stopping, and an exploration mission that opens itself — with an uncertainty weight of 0.625 measured on the robot.
-date: 2026-09-11 21:20:00 -0400
+date: 2026-09-11 16:50:00 -0400
 updated: 2026-09-11
 tags: [braid, agent, missions, pacing]
 math: false

@@ -1,7 +1,7 @@
 ---
 title: "The ladder"
 description: The neuro-symbolic seam as one number — squared Mahalanobis distance from the predictor's mean, computed with the JEPA crate's own routine — plus a rule table, and a healing ladder that is still only a specification.
-date: 2026-09-11 21:25:00 -0400
+date: 2026-09-11 16:55:00 -0400
 updated: 2026-09-11
 tags: [braid, drift, neuro-symbolic, healing]
 math: true

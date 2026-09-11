@@ -1,7 +1,7 @@
 ---
 title: "The front end, rebuilt from lessons"
 description: Five existing front ends read as evidence, the lessons written down before the crate existed, then one egui binary with five views, six snapshot tests and a screen that was actually read back — plus a TUI panel and a headless board that can build the GUI but not display it.
-date: 2026-09-11 21:15:00 -0400
+date: 2026-09-11 16:45:00 -0400
 updated: 2026-09-11
 tags: [frontend, egui, tui, testing]
 math: false
