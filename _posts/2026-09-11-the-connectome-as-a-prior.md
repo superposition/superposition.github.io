@@ -59,7 +59,8 @@ features = ["ipc"] }`, and the lock churn is exactly the arrow 53 stack leaving 
 
 **The binary was rebuilt three times for line endings.** `860235a` → `b56789e`, `d4eff4c` →
 `a61fdb9`, `d670f93` → `6799365`: a staging script had introduced CRLF into the new files, and the
-provenance gate treats line-ending differences as real (see the licence entry). Content unchanged
+provenance gate treats line-ending differences as real (see [the licence
+entry](https://superposition.github.io/journal/the-licence-and-the-snapshot/)). Content unchanged
 each time; the LF rewrite was cheaper than teaching the gate an exception.
 
 **`edge_count` had two defensible readings and we fixed one.** The manifest says `edge_count`, and
@@ -119,11 +120,11 @@ the same thing on stderr and exits non-zero (`prior: prior already built from th
 | `UnmappedRows` in the injected case | 1 of 13 | rows | `skips_unmapped_rows_and_warns` |
 | Arrow version used | 56 | — | `crates/connectome-prior/Cargo.toml` |
 | Packages dropped with arrow 53 | 14 | packages | `ticket/T06` comment |
-| Target-scale type edges (dataset) | 929,735 | edges | the earlier `the-male-cns-as-arrays` entry ^1 |
+| Target-scale type edges (dataset) | 929,735 | edges | the earlier [`the-male-cns-as-arrays`](https://superposition.github.io/journal/the-male-cns-as-arrays/) entry ^1 |
 | Target-scale types (dataset) | 11,687 | types | same ^1 |
 
 ^1 The 929,735 / 11,687 pair is the dataset release figure quoted in the earlier journal entry
-`the-male-cns-as-arrays`, which was written in a different session from this one. It is the scale this
+[`the-male-cns-as-arrays`](https://superposition.github.io/journal/the-male-cns-as-arrays/), which was written in a different session from this one. It is the scale this
 builder targets; it is **not** a measurement made by this ticket, whose only measured graph is the
 9-pair fixture. The dataset numbers and the fixture numbers are different quantities and are not
 comparable.
