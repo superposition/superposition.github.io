@@ -1,9 +1,21 @@
 ---
-layout: page
+layout: default
 title: Journal
 permalink: /journal/
-description: Motivations, working hypotheses, evidence, and changes of mind.
+description: Marks, motion, matter. A journal in images.
+image: /assets/art/orbits.png
 ---
-{% for post in site.posts %}
-<article class="entry"><p class="meta">{{ post.date | date: "%d %b %Y" }}</p><div><h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2><p>{{ post.description }}</p></div></article>
-{% endfor %}
+<header class="page-heading"><p class="eyebrow">Superposition / A visual journal</p><h1>JOURNAL</h1><p>Marks, motion, matter.</p></header>
+<nav class="journal-index" aria-label="Visual studies"><a href="#marks">01 / Marks ↓</a><a href="#motion">02 / Motion ↓</a><a href="#matter">03 / Matter ↓</a></nav>
+<section class="visual-study" id="marks" aria-labelledby="marks-title">
+  <div class="study-caption"><p class="issue-number">01</p><h2 id="marks-title">MARKS</h2><p>A mark becomes an idea.</p></div>
+  <div class="study-art mark-study" role="img" aria-label="An angular spiral carved into a rough black shape, with red tally marks.">{% include glyph.html shape="spiral" %}<div class="study-accent">{% include glyph.html shape="tally" %}</div></div>
+</section>
+<section class="visual-study" id="motion" aria-labelledby="motion-title">
+  <div class="study-caption"><p class="issue-number">02</p><h2 id="motion-title">MOTION</h2><p>Between stillness and change.</p></div>
+  <div class="study-art motion-study"><img src="{{ '/assets/art/orbits.webp' | relative_url }}" width="1902" height="827" alt="Rough black orbital rings cross a bright red disc." loading="lazy"></div>
+</section>
+<section class="visual-study" id="matter" aria-labelledby="matter-title">
+  <div class="study-caption"><p class="issue-number">03</p><h2 id="matter-title">MATTER</h2><p>A closer look at what remains.</p></div>
+  <div class="study-art matter-study" role="img" aria-label="A fractured black stone silhouette beneath a red disc."><span class="matter-sun"></span>{% include glyph.html shape="stone" %}</div>
+</section>

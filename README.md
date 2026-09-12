@@ -1,26 +1,15 @@
 # Superposition
 
-Public journal at https://superposition.github.io/. Markdown + Jekyll, published with GitHub Pages.
+A visual journal at https://superposition.github.io/. Jekyll, published with GitHub Pages.
 
-## Write
+The homepage uses a large live-type wordmark, rough ink orbital artwork, and three visual themes: marks, motion, and matter. The journal presents visual studies. The previous 16 generated articles were removed from publication on 12 September 2026 and remain recoverable in Git history. About, topics, projects, and the 404 page share the new design.
 
-Start from `_drafts/experiment-template.md`. Drafts are excluded from production builds.
-Preview drafts with `bundle exec jekyll serve --drafts`. Publish by moving the entry
-to `_posts/YYYY-MM-DD-slug.md`, setting its date, and merging to `main`.
+## Build and publish
 
-Use an `experiment_id` and `technical_record` link for work documented in Mage.
-Keep public writing focused on the mathematical ideas and why they matter.
-The Mage field notes live at https://superposition.github.io/mage/.
-Link code, setup, test logs, and detailed measurements to https://github.com/superposition/mage/.
+Run `bundle install`, then `bundle exec jekyll build --strict_front_matter` or `bundle exec jekyll serve`. Pull requests build a downloadable preview artifact. Pushes to main deploy through .github/workflows/pages.yml.
 
-## Build
+## Artwork and type
 
-```sh
-bundle install
-bundle exec jekyll build --strict_front_matter
-bundle exec jekyll serve
-```
+Orbital artwork: generated with OpenAI's built-in image-generation tool from the user-approved concept, then extracted with the same tool. PNG is the source; WebP is the delivery format. Prompt: preserve the two interlocking rough black orbital rings and vermilion disc, remove all typography, navigation, captions, dividers, and thumbnails; render on a pure white background for ink blending on the site. Initial concept: bold primitive graphic journal with oversized condensed Superposition lettering, pale paper, black ink, a red disc, and sparse typography.
 
-Pull requests build a downloadable preview artifact. Default-branch pushes deploy.
-No GPU, Python environment, or analytics account is needed. The previous homepage
-remains recoverable in Git history. Identity: Superposition; Telegram @SuprPosition.
+Glyphs are original inline SVG in _includes/glyph.html. Anton is self-hosted from the Google Fonts repository under the included SIL Open Font License (assets/fonts/OFL-Anton.txt). Body copy uses system monospace fonts. No runtime JavaScript, analytics, or third-party scripts are required.

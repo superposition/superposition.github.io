@@ -3,35 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101217">
+  <meta name="theme-color" content="#f3ebd9">
   {% seo %}
   {% feed_meta %}
-  <link rel="icon" type="image/svg+xml" href="{{ '/assets/mark/psi.svg' | relative_url }}">
-  <link rel="apple-touch-icon" href="{{ '/assets/mark/psi-180.png' | relative_url }}">
-  <link rel="stylesheet" href="{{ '/assets/notebook.css' | relative_url }}">
-  {% if page.math %}
-  <script>window.MathJax = {tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]}, options: {skipHtmlTags: ['script','noscript','style','textarea','pre','code']}};</script>
-  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
-  {% endif %}
-  {% if page.mesh_band %}<script defer src="https://superposition.github.io/mage/assets/mesh-band.js?v=2"></script>{% endif %}
+  <link rel="icon" type="image/svg+xml" href="{{ '/assets/mark/primitive.svg' | relative_url }}">
+  <link rel="preload" href="{{ '/assets/fonts/anton-regular.ttf' | relative_url }}" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="{{ '/assets/notebook.css' | relative_url }}?v=primitive-1">
 </head>
 <body>
   <a class="skip" href="#content">Skip to content</a>
   <header class="site-header wrap">
-    <a class="wordmark" href="{{ '/' | relative_url }}"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
-  <path d="M 50 26.06 L 50 69.74 Z" fill="none" stroke="#edf0f5" stroke-width="7.14" stroke-linecap="square" stroke-linejoin="miter" stroke-miterlimit="4"/>
-  <path d="M 50 38.24 L 20.6 18.5 L 50 44.12 Z" fill="none" stroke="#edf0f5" stroke-width="7.14" stroke-linecap="square" stroke-linejoin="miter" stroke-miterlimit="4"/>
-  <path d="M 50 38.24 L 79.4 18.5 L 50 44.12 Z" fill="none" stroke="#edf0f5" stroke-width="7.14" stroke-linecap="square" stroke-linejoin="miter" stroke-miterlimit="4"/>
-  <path d="M 50 69.74 L 50 84.02 Z" fill="none" stroke="#91dbba" stroke-width="7.14" stroke-linecap="square" stroke-linejoin="miter" stroke-miterlimit="4"/>
-</svg> {{ site.title }}</a>
+    <a class="home-link" href="{{ '/' | relative_url }}" aria-label="Superposition home">{% include glyph.html shape="tally" %}<span>Superposition</span></a>
     <nav aria-label="Main navigation">
-      {% for item in site.navigation %}<a href="{% if item.external %}{{ item.url }}{% else %}{{ item.url | relative_url }}{% endif %}" {% if page.url == item.url %}aria-current="page"{% endif %}>{{ item.title }}</a>{% endfor %}
+      <a href="{{ '/journal/' | relative_url }}" {% if page.url == '/journal/' %}aria-current="page"{% endif %}>Journal</a>
+      <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>About</a>
     </nav>
   </header>
-  <main id="content" class="wrap">{{ content }}</main>
+  <main id="content" class="wrap" tabindex="-1">{{ content }}</main>
   <footer class="site-footer wrap">
-    <p>Superposition · An open notebook.</p>
-    <p><a href="https://t.me/SuprPosition">Telegram @SuprPosition</a> <span aria-hidden="true">/</span> <a href="{{ '/feed.xml' | relative_url }}">RSS</a> <span aria-hidden="true">/</span> <a href="{{ site.repository_url }}">Source & corrections</a></p>
+    <a href="{{ '/' | relative_url }}">Superposition</a><span>A visual journal</span>
+    <a href="https://t.me/SuprPosition">Say hello <span aria-hidden="true">↗</span></a>
   </footer>
 </body>
 </html>

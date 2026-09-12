@@ -1,6 +1,6 @@
 title: Superposition
-subtitle: An open notebook
-description: Thinking above the code. Notes on AI, mathematics, kernels, and the directions they open.
+subtitle: A visual journal
+description: A visual journal. Marks, motion, matter.
 url: https://superposition.github.io
 baseurl: ""
 repository_url: https://github.com/superposition/superposition.github.io
@@ -9,16 +9,9 @@ timezone: America/New_York
 permalink: /journal/:title/
 plugins: [jekyll-feed, jekyll-seo-tag]
 markdown: kramdown
-kramdown:
-  math_engine: mathjax
 defaults:
   - scope: {path: ""}
     values: {layout: page}
   - scope: {path: "", type: posts}
     values: {layout: post}
-navigation:
-  - {title: Journal, url: /journal/}
-  - {title: Projects, url: /projects/}
-  - {title: Topics, url: /topics/}
-  - {title: About, url: /about/}
-exclude: [Gemfile, Gemfile.lock, README.md, vendor, scripts]
+exclude: [Gemfile, Gemfile.lock, README.md, vendor, scripts, docs]
