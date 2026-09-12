@@ -1,6 +1,13 @@
 ---
-layout: page
+layout: default
 title: Page not found
 permalink: /404.html
 ---
-This page may have moved. [Return to the notebook]({{ '/' | relative_url }}).
+<section class="notfound">
+  <div class="field" data-field="mesh" data-colors="#c9b2ff,#93caff,#91dbba" data-speed="0.12" data-distortion="1" data-swirl="0.7" aria-hidden="true"></div>
+  <div class="notfound-inner">
+    <p class="eyebrow">Error 404</p>
+    <h1>This page moved, or never existed.</h1>
+    <p>The notebook's entries are all under the journal. <a href="{{ '/' | relative_url }}">Start from the beginning</a>, or <a href="{{ '/journal/' | relative_url }}">read the entries</a>.</p>
+  </div>
+</section>

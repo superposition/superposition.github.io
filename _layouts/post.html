@@ -1,13 +1,37 @@
 ---
 layout: default
 ---
-<article class="page">
-  <header class="article-header">
+{%- comment -%}
+The entry's closing field takes its colours from the entry's first tag, so an entry
+about kernels and an entry about the connectome do not close with the same picture.
+{%- endcomment -%}
+{% assign field_colors = "#91baff,#c9b2ff,#91dbba" %}
+{% case page.tags.first %}
+  {% when "kernels" or "cuda" or "performance" or "profiling" or "offline-build" %}
+    {% assign field_colors = "#93caff,#91dbba,#c9b2ff" %}
+  {% when "connectome" or "neuro-symbolic" or "learning" or "mathematics" %}
+    {% assign field_colors = "#91dbba,#eac17d,#93caff" %}
+  {% when "braid" or "missions" or "provenance" or "testing" or "agents" %}
+    {% assign field_colors = "#eac17d,#91dbba,#91baff" %}
+  {% when "mark" or "music" or "robotics" %}
+    {% assign field_colors = "#c9b2ff,#93caff,#eac17d" %}
+{% endcase %}
+<article class="post">
+  <header class="post-header">
     <p class="eyebrow">Journal / {{ page.date | date: "%d %B %Y" }}{% if page.experiment_id %} / {{ page.experiment_id }}{% endif %}</p>
     <h1>{{ page.title }}</h1>
-    <p class="lede">{{ page.description }}</p>
-    <p class="meta">By Superposition{% if page.updated %} · Updated {{ page.updated | date: "%d %B %Y" }}{% endif %}</p>
+    {% if page.description %}<p class="lede">{{ page.description }}</p>{% endif %}
+    <p class="post-meta meta">By {{ site.author }}{% if page.updated %} · Updated {{ page.updated | date: "%d %B %Y" }}{% endif %}</p>
   </header>
   <div class="prose">{{ content }}</div>
-  {% if page.technical_record %}<p class="reading-note"><a href="{{ page.technical_record }}">Code, measurements, and reproduction in GitHub ↗</a></p>{% endif %}
+  <footer class="post-footer">
+    <div class="field-band" aria-hidden="true">
+      <div class="field" data-field="mesh" data-colors="{{ field_colors }}" data-grain-overlay="0.05" data-swirl="0.5" data-distortion="0.9" data-frame="38000"></div>
+    </div>
+    {% if page.technical_record %}<p class="post-source"><a href="{{ page.technical_record }}">Code, measurements, and reproduction in GitHub ↗</a></p>{% endif %}
+    <nav class="post-nav" aria-label="Journal navigation">
+      {% if page.next %}<a href="{{ page.next.url | relative_url }}"><span class="label">Newer entry</span>{{ page.next.title }}</a>{% else %}<span></span>{% endif %}
+      {% if page.previous %}<a href="{{ page.previous.url | relative_url }}"><span class="label">Older entry</span>{{ page.previous.title }}</a>{% endif %}
+    </nav>
+  </footer>
 </article>

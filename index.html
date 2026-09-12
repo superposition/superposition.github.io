@@ -1,24 +1,200 @@
----
-layout: default
-title: Thinking above the code
----
-<section class="idea-intro">
-  <p class="eyebrow">Superposition / An open notebook</p>
-  <h1>Thinking above the code.</h1>
-  <p>AI is making it easier for me to build. I want to use that opening to understand more: the mathematics behind our tools, the science they make approachable, and the questions worth spending time on.</p>
-</section>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Superposition — thinking above the code</title>
+<meta name="description" content="An open notebook: mathematics, GPU kernels, and the questions worth spending time on.">
+<meta name="theme-color" content="#101217">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Superposition">
+<meta property="og:title" content="Superposition — thinking above the code">
+<meta property="og:description" content="An open notebook: mathematics, GPU kernels, and the questions worth spending time on.">
+<meta property="og:url" content="https://superposition.github.io/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Superposition — thinking above the code">
+<meta name="twitter:description" content="An open notebook: mathematics, GPU kernels, and the questions worth spending time on.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap">
+<link rel="stylesheet" href="/assets/notebook.css">
+<link rel="icon" href="/assets/mark/psi.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/mark/psi-180.png">
+<link rel="alternate" type="application/atom+xml" href="/feed.xml" title="Superposition">
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
 
-<section aria-labelledby="notes">
-  <div class="section-heading"><h2 id="notes">Notes & investigations</h2><a class="arrow-link" href="{{ '/journal/' | relative_url }}">Journal ↗</a></div>
-  {% for post in site.posts limit:5 %}
-  <article class="entry">
-    <p class="meta">{{ post.date | date: "%d %b %Y" }}<br>{{ post.experiment_id | default: "Starting point" }}</p>
-    <div><h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3><p>{{ post.description }}</p><div class="tags">{% for tag in post.tags %}<a class="tag" href="{{ '/topics/' | relative_url }}#{{ tag | slugify }}">{{ tag }}</a>{% endfor %}</div></div>
-  </article>
-  {% endfor %}
-  <article class="entry">
-    <p class="meta">Field note 001<br>Mathematics</p>
-    <div><h3><a href="https://superposition.github.io/mage/experiments/mage-001/">Computation is also movement.</a></h3><p>A matrix product contains opportunities for reuse. A reduction requires partial answers to meet. What happens when we follow those ideas into the hardware?</p><a class="read-link" href="https://superposition.github.io/mage/experiments/mage-001/">Explore the idea in Mage ↗</a></div>
-  </article>
-</section>
-<div class="reading-note"><p>Starting with linear algebra and GPU kernels. Following the connections into music, circuits, materials, medicine, and the wider world as the questions develop.</p></div>
+<header class="topbar">
+  <div class="topbar-inner wrap">
+    <a class="wordmark" href="/">
+      <img class="wordmark-mark" src="/assets/mark/psi.svg" alt="" width="22" height="22">
+      <span>Superposition</span>
+    </a>
+    <nav class="topnav" aria-label="Main navigation">
+      <a href="/journal/">Journal</a>
+      <a href="/projects/">Projects</a>
+      <a href="/topics/">Topics</a>
+      <a href="/about/">About</a>
+    </nav>
+    <a class="topbar-rss" href="/feed.xml">RSS</a>
+  </div>
+</header>
+
+<main id="content">
+
+  <section class="hero">
+    <div class="field" data-field="mesh" data-colors="#91baff,#c9b2ff,#91dbba,#eac17d" data-speed="0.15" data-distortion="0.85" data-swirl="0.62" data-grain-overlay="0.05" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <p class="eyebrow">An open notebook / notes from the work</p>
+      <h1>Thinking above the code.</h1>
+      <p class="lede">AI is making it easier for me to build. I want to use that opening to understand more: the mathematics behind our tools, the science they make approachable, and the questions worth spending time on.</p>
+      <p class="hero-actions">
+        <a class="button" href="/journal/">Read the journal</a>
+        <a class="button-ghost" href="https://superposition.github.io/mage/">Field notes in Mage ↗</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section wrap" aria-labelledby="notes">
+    <div class="section-head">
+      <h2 id="notes">Notes &amp; investigations</h2>
+      <a href="/journal/">All entries ↗</a>
+    </div>
+    <ol class="entry-list">
+      <li class="entry">
+        <span class="entry-index" aria-hidden="true">01</span>
+        <div class="entry-body">
+          <p class="entry-date meta">11 Sep 2026</p>
+          <h3><a href="/journal/the-4090-and-the-nano/">The 4090 and the Nano</a></h3>
+          <p>The same 13 CUDA launches cost 4.78 ms on the RTX 4090 and 39.18 ms on the Orin NX — 8.19×, with residency ruled out as the cause — and the first deploy of the stack to the board found a hang, not a mission.</p>
+          <div class="tags">
+            <a class="tag" href="/topics/#cuda">cuda</a>
+            <a class="tag" href="/topics/#jetson">jetson</a>
+            <a class="tag" href="/topics/#profiling">profiling</a>
+          </div>
+        </div>
+      </li>
+      <li class="entry">
+        <span class="entry-index" aria-hidden="true">02</span>
+        <div class="entry-body">
+          <p class="entry-date meta">11 Sep 2026</p>
+          <h3><a href="/journal/the-mark/">The mark</a></h3>
+          <p>The psi monogram as geometry — a 738-byte JSON file, an SVG generated from it, and a Blender pipeline whose two runs are byte-identical — with the flat mark and the 3D mesh unable to drift apart.</p>
+          <div class="tags">
+            <a class="tag" href="/topics/#mark">mark</a>
+            <a class="tag" href="/topics/#blender">blender</a>
+            <a class="tag" href="/topics/#determinism">determinism</a>
+          </div>
+        </div>
+      </li>
+      <li class="entry">
+        <span class="entry-index" aria-hidden="true">03</span>
+        <div class="entry-body">
+          <p class="entry-date meta">11 Sep 2026</p>
+          <h3><a href="/journal/the-ladder/">The ladder</a></h3>
+          <p>The neuro-symbolic seam as one number — squared Mahalanobis distance from the predictor's mean, computed with the JEPA crate's own routine — plus a rule table, and a healing ladder that is still only a specification.</p>
+          <div class="tags">
+            <a class="tag" href="/topics/#braid">braid</a>
+            <a class="tag" href="/topics/#neuro-symbolic">neuro-symbolic</a>
+            <a class="tag" href="/topics/#healing">healing</a>
+          </div>
+        </div>
+      </li>
+      <li class="entry">
+        <span class="entry-index" aria-hidden="true">04</span>
+        <div class="entry-body">
+          <p class="entry-date meta">11 Sep 2026</p>
+          <h3><a href="/journal/the-agent-in-the-loop/">The agent in the loop</a></h3>
+          <p>A braid that stores nothing, a write edge invented because two strands are separate processes, a belief clock that lets the map degrade instead of stopping, and an exploration mission that opens itself — with an uncertainty weight of 0.625 measured on the robot.</p>
+          <div class="tags">
+            <a class="tag" href="/topics/#braid">braid</a>
+            <a class="tag" href="/topics/#agent">agent</a>
+            <a class="tag" href="/topics/#missions">missions</a>
+          </div>
+        </div>
+      </li>
+      <li class="entry">
+        <span class="entry-index" aria-hidden="true">05</span>
+        <div class="entry-body">
+          <p class="entry-date meta">11 Sep 2026</p>
+          <h3><a href="/journal/the-front-end-rebuilt-from-lessons/">The front end, rebuilt from lessons</a></h3>
+          <p>Five existing front ends read as evidence, the lessons written down before the crate existed, then one egui binary with five views, six snapshot tests and a screen that was actually read back — plus a TUI panel and a headless board that can build the GUI but not display it.</p>
+          <div class="tags">
+            <a class="tag" href="/topics/#frontend">frontend</a>
+            <a class="tag" href="/topics/#egui">egui</a>
+            <a class="tag" href="/topics/#tui">tui</a>
+          </div>
+        </div>
+      </li>
+      <li class="entry">
+        <span class="entry-index" aria-hidden="true">06</span>
+        <div class="entry-body">
+          <p class="entry-date meta">11 Sep 2026</p>
+          <h3><a href="/journal/the-fly-in-the-belief-matrices/">The fly in the belief matrices</a></h3>
+          <p>A connectome prior loaded, digest-checked, coupled into the belief layers behind an off-by-default feature, and watching its own rate model publish observe-only — seven tickets, a 1.75 coupling total on the 4090, and three CUDA kernels measured at 2.50, 10.59 and 11.84 µs.</p>
+          <div class="tags">
+            <a class="tag" href="/topics/#connectome">connectome</a>
+            <a class="tag" href="/topics/#cuda">cuda</a>
+            <a class="tag" href="/topics/#belief">belief</a>
+          </div>
+        </div>
+      </li>
+      <li class="entry">
+        <span class="entry-index" aria-hidden="true">M1</span>
+        <div class="entry-body">
+          <p class="entry-date meta">Field note 001 · Mathematics</p>
+          <h3><a href="https://superposition.github.io/mage/experiments/mage-001/">Computation is also movement.</a></h3>
+          <p>A matrix product contains opportunities for reuse. A reduction requires partial answers to meet. What happens when we follow those ideas into the hardware?</p>
+          <div class="tags"><a class="tag" href="https://superposition.github.io/mage/experiments/mage-001/">Mage ↗</a></div>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="threads" aria-labelledby="threads">
+    <div class="field" data-field="mesh" data-colors="#91dbba,#c9b2ff,#93caff" data-frame="52000" data-distortion="1" data-swirl="0.4" data-grain-overlay="0.06" aria-hidden="true"></div>
+    <div class="threads-inner wrap">
+      <div class="thread">
+        <p class="label">01 · Mathematics</p>
+        <h3>Linear algebra, where it becomes hardware</h3>
+        <p>Reuse, reduction, and the shape a compiler chooses when the same numbers must move through many cores.</p>
+      </div>
+      <div class="thread">
+        <p class="label">02 · Machines</p>
+        <h3>Kernels, models, and the evidence</h3>
+        <p>What a measurement changes, what it cannot show, and how a claim survives being re-run on a second machine.</p>
+      </div>
+      <div class="thread">
+        <p class="label">03 · Directions</p>
+        <h3>Music, circuits, materials, medicine</h3>
+        <p>Interests this notebook is following outward, rather than finished projects.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="reading-note">
+      <p>Starting with linear algebra and GPU kernels. Following the connections into music, circuits, materials, medicine, and the wider world as the questions develop.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <img class="mark" src="/assets/mark/psi.svg" alt="" width="26" height="26">
+      <p>Superposition — an open notebook. Notes on AI, mathematics, kernels, and the directions they open.</p>
+    </div>
+    <nav aria-label="Elsewhere">
+      <a href="https://t.me/SuprPosition">Telegram · @SuprPosition</a>
+      <a href="/feed.xml">RSS feed</a>
+      <a href="https://github.com/superposition/superposition.github.io">Source &amp; corrections</a>
+    </nav>
+  </div>
+</footer>
+
+<script type="module" src="/assets/paper-field.js"></script>
+</body>
+</html>
