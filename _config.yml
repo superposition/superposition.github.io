@@ -12,6 +12,4 @@ markdown: kramdown
 defaults:
   - scope: {path: ""}
     values: {layout: page}
-  - scope: {path: "", type: posts}
-    values: {layout: post}
 exclude: [Gemfile, Gemfile.lock, README.md, vendor, scripts, docs]
