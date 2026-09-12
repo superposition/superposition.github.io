@@ -1,9 +1,6 @@
 ---
 title: Topics
 permalink: /topics/
-description: Follow a thread across the notebook.
+description: Marks. Motion. Matter.
 ---
-{% assign tags = site.tags | sort %}
-{% for tag in tags %}
-<section id="{{ tag[0] | slugify }}"><h2>{{ tag[0] }}</h2><ul>{% for post in tag[1] %}<li><a href="{{ post.url | relative_url }}">{{ post.title }}</a> <span class="meta">{{ post.date | date: "%d %b %Y" }}</span></li>{% endfor %}</ul></section>
-{% endfor %}
+<div class="link-list"><a href="{{ '/journal/#marks' | relative_url }}">01 / Marks ↗</a><a href="{{ '/journal/#motion' | relative_url }}">02 / Motion ↗</a><a href="{{ '/journal/#matter' | relative_url }}">03 / Matter ↗</a></div>

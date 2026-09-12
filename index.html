@@ -1,24 +1,22 @@
 ---
 layout: default
-title: Thinking above the code
+title: Superposition
+description: A visual journal. Marks, motion, matter.
+image: /assets/art/orbits.png
 ---
-<section class="idea-intro">
-  <p class="eyebrow">Superposition / An open notebook</p>
-  <h1>Thinking above the code.</h1>
-  <p>AI is making it easier for me to build. I want to use that opening to understand more: the mathematics behind our tools, the science they make approachable, and the questions worth spending time on.</p>
+<h1 class="masthead"><span class="visually-hidden">Superposition</span><svg viewBox="0 0 1470 262" aria-hidden="true" focusable="false"><text x="1" y="235" textLength="1467" lengthAdjust="spacingAndGlyphs">SUPERPOSITION</text></svg></h1>
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-caption">
+    <span class="issue-number">001</span><span class="dash" aria-hidden="true">—</span>
+    <h2 id="hero-title">A mark<br>becomes<br>an idea.</h2>
+    <div class="hero-tally">{% include glyph.html shape="tally" %}</div>
+  </div>
+  <a class="hero-art" href="{{ '/journal/' | relative_url }}" aria-label="Explore the visual journal"><img src="{{ '/assets/art/orbits.webp' | relative_url }}" alt="Two rough black ink rings intersect a vermilion disc." width="1902" height="827" fetchpriority="high"></a>
+  <div class="edge-tally" aria-hidden="true">{% include glyph.html shape="three" %}</div>
 </section>
-
-<section aria-labelledby="notes">
-  <div class="section-heading"><h2 id="notes">Notes & investigations</h2><a class="arrow-link" href="{{ '/journal/' | relative_url }}">Journal ↗</a></div>
-  {% for post in site.posts limit:5 %}
-  <article class="entry">
-    <p class="meta">{{ post.date | date: "%d %b %Y" }}<br>{{ post.experiment_id | default: "Starting point" }}</p>
-    <div><h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3><p>{{ post.description }}</p><div class="tags">{% for tag in post.tags %}<a class="tag" href="{{ '/topics/' | relative_url }}#{{ tag | slugify }}">{{ tag }}</a>{% endfor %}</div></div>
-  </article>
-  {% endfor %}
-  <article class="entry">
-    <p class="meta">Field note 001<br>Mathematics</p>
-    <div><h3><a href="https://superposition.github.io/mage/experiments/mage-001/">Computation is also movement.</a></h3><p>A matrix product contains opportunities for reuse. A reduction requires partial answers to meet. What happens when we follow those ideas into the hardware?</p><a class="read-link" href="https://superposition.github.io/mage/experiments/mage-001/">Explore the idea in Mage ↗</a></div>
-  </article>
+<section class="subjects" aria-label="Explore the journal">
+  <a class="subject" href="{{ '/journal/#marks' | relative_url }}">{% include glyph.html shape="spiral" %}<div><h2>01 / Marks</h2><span class="dash" aria-hidden="true">—</span><p>Traces, thoughts,<br>new patterns.</p></div><span class="subject-arrow" aria-hidden="true">↗</span></a>
+  <a class="subject" href="{{ '/journal/#motion' | relative_url }}">{% include glyph.html shape="star" %}<div><h2>02 / Motion</h2><span class="dash" aria-hidden="true">—</span><p>Between stillness<br>and change.</p></div><span class="subject-arrow" aria-hidden="true">↗</span></a>
+  <a class="subject" href="{{ '/journal/#matter' | relative_url }}">{% include glyph.html shape="stone" %}<div><h2>03 / Matter</h2><span class="dash" aria-hidden="true">—</span><p>A closer look<br>at what remains.</p></div><span class="subject-arrow" aria-hidden="true">↗</span></a>
 </section>
-<div class="reading-note"><p>Starting with linear algebra and GPU kernels. Following the connections into music, circuits, materials, medicine, and the wider world as the questions develop.</p></div>
+<div class="ink-strip" aria-hidden="true"><span>/////</span><span>●</span><span>/////</span></div>
