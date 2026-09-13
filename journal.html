@@ -4,6 +4,23 @@ title: Journal
 permalink: /journal/
 description: Motivations, working hypotheses, evidence, and changes of mind.
 ---
-{% for post in site.posts %}
-<article class="entry"><p class="meta">{{ post.date | date: "%d %b %Y" }}</p><div><h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2><p>{{ post.description }}</p></div></article>
+{% assign posts_by_year = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+{% for year in posts_by_year %}
+<p class="journal-year">{{ year.name }} <span class="visually-hidden">entries</span></p>
+<ul class="journal-list">
+  {% for post in year.items %}
+  <li class="journal-entry">
+    <a href="{{ post.url | relative_url }}">
+      <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%d %b" }}{% if post.experiment_id %} · {{ post.experiment_id }}{% endif %}</time>
+      <div>
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.description }}</p>
+      </div>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
 {% endfor %}
+<div class="field-band" aria-hidden="true">
+  <div class="field" data-field="grid" data-back="#101217" data-fill="#1e2531" data-stroke="#91baff" data-gap="46" data-dot-size="7" data-stroke-width="1" data-size-range="0.6" data-opacity-range="0.5" data-shape="circle"></div>
+</div>
