@@ -6,23 +6,30 @@
   <meta name="theme-color" content="#f3ebd9">
   {% seo %}
   {% feed_meta %}
+  {% include jsonld.html %}
   <link rel="icon" type="image/svg+xml" href="{{ '/assets/mark/primitive.svg' | relative_url }}">
   <link rel="preload" href="{{ '/assets/fonts/anton-regular.ttf' | relative_url }}" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="{{ '/assets/notebook.css' | relative_url }}?v=primitive-1">
+  <link rel="stylesheet" href="{{ '/assets/notebook.css' | relative_url }}?v=2">
+  {% if page.math %}
+  <script>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]],displayMath:[["$$","$$"],["\\[","\\]"]],processEscapes:true},options:{skipHtmlTags:["script","noscript","style","textarea","pre","code"]}};</script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+  {% endif %}
 </head>
 <body>
   <a class="skip" href="#content">Skip to content</a>
   <header class="site-header wrap">
-    <a class="home-link" href="{{ '/' | relative_url }}" aria-label="Superposition home">{% include glyph.html shape="tally" %}<span>Superposition</span></a>
+    <a class="home-link" href="{{ '/' | relative_url }}">Superposition</a>
     <nav aria-label="Main navigation">
-      <a href="{{ '/journal/' | relative_url }}" {% if page.url == '/journal/' %}aria-current="page"{% endif %}>Journal</a>
+      <a href="{{ '/journal/' | relative_url }}" {% if page.url == '/journal/' or page.collection == 'posts' %}aria-current="page"{% endif %}>Journal</a>
+      <a href="{{ '/topics/' | relative_url }}" {% if page.url == '/topics/' %}aria-current="page"{% endif %}>Topics</a>
+      <a href="{{ '/projects/' | relative_url }}" {% if page.url == '/projects/' %}aria-current="page"{% endif %}>Repositories</a>
       <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>About</a>
     </nav>
   </header>
   <main id="content" class="wrap" tabindex="-1">{{ content }}</main>
   <footer class="site-footer wrap">
-    <a href="{{ '/' | relative_url }}">Superposition</a><span>A visual journal</span>
-    <a href="https://t.me/SuprPosition">Say hello <span aria-hidden="true">↗</span></a>
+    <p>Superposition · {{ site.subtitle }}</p>
+    <p><a href="{{ '/feed.xml' | relative_url }}">RSS</a> <span aria-hidden="true">/</span> <a href="https://github.com/superposition">GitHub</a> <span aria-hidden="true">/</span> <a href="https://t.me/SuprPosition">Say hello</a></p>
   </footer>
 </body>
 </html>
