@@ -1,0 +1,15 @@
+title: Superposition
+subtitle: A visual journal
+description: A visual journal. Marks, motion, matter.
+url: https://superposition.github.io
+baseurl: ""
+repository_url: https://github.com/superposition/superposition.github.io
+author: Superposition
+timezone: America/New_York
+permalink: /journal/:title/
+plugins: [jekyll-feed, jekyll-seo-tag]
+markdown: kramdown
+defaults:
+  - scope: {path: ""}
+    values: {layout: page}
+exclude: [Gemfile, Gemfile.lock, README.md, vendor, scripts, docs]

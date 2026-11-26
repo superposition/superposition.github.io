@@ -1,0 +1,20 @@
+<svg class="glyph glyph-{{ include.shape }}" viewBox="0 0 160 140" aria-hidden="true" focusable="false" fill="currentColor">
+{% case include.shape %}
+{% when 'spiral' %}
+<path d="M8 115 19 66 54 22 91 13 132 31 153 80 150 129 47 132Z"/>
+<path d="m72 126-22-26-1-31 26-25 30 1 25 26-3 27-22 17-24-4-13-20 8-16 16-1 12 13-8 8" fill="none" stroke="var(--paper)" stroke-width="7" stroke-linejoin="bevel"/>
+<path d="m15 112 10-28-4 33m108-76 8 16-5-4M43 124l13 3-20-1" stroke="var(--paper)" stroke-width="2" fill="none"/>
+{% when 'star' %}
+<path d="m78 4 9 46 30-36-16 42 50-17-37 33 44 13-48 6 31 37-47-22-8 33-9-37-38 34 19-43L6 90l43-19-33-35 48 21Z"/>
+<path d="m80 22 2 32m30 64-20-24m-59-8 26-5" stroke="var(--paper)" stroke-width="1.6" fill="none"/>
+{% when 'stone' %}
+<path d="m5 130 12-68 32-16 25-28 27-11 13 43 23-18 12 54 8 44Z"/>
+<path d="m74 23-7 48-15 56 20-46 9-51m23 14-5 55 5 32 4-37m17-19-7 34 11-29" fill="var(--paper)"/>
+<path d="m22 116 11-39 4-12m101 40 5 20" stroke="var(--paper)" stroke-width="2" fill="none"/>
+{% when 'three' %}
+<path d="m33 18 8-4 4 100-7 8-6-22Zm42-7 8-5 4 113-9 8-5-17Zm42-3 8-5 4 115-9 8-5-17Z"/>
+{% else %}
+<path d="m26 13 7-5 5 122-9-3-4-41Zm29-7 9-5 3 126-8 6-5-62Zm30-3 8 1 4 125-9 3-4-69Zm31 5 7 6 6 113-10 3-5-68Z"/>
+<path d="m9 109-5-10 145-64 6 12-72 32Z"/>
+{% endcase %}
+</svg>
