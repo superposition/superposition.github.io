@@ -1,0 +1,31 @@
+---
+permalink: /llms.txt
+layout: null
+sitemap: false
+---
+# {{ site.title }}
+
+> {{ site.description }}
+
+{{ site.title }} is a visual journal published at {{ '/' | absolute_url }}. It is a static Jekyll site: no JavaScript, no analytics, no third-party scripts. New writing appears in the journal and in the feed at {{ '/feed.xml' | absolute_url }}.
+
+## Pages
+{% assign ordered = site.pages | where_exp: "p", "p.title" | where_exp: "p", "p.url != '/404.html'" | sort: "url" %}{% for entry in ordered %}
+- [{{ entry.title }}]({{ entry.url | absolute_url }}){% if entry.description %}: {{ entry.description }}{% endif %}{% endfor %}
+
+## Repositories
+
+- [Repositories]({{ '/projects/' | absolute_url }}): {{ site.data.repos.repos | size }} public repositories, with language and last push.
+- [GitHub](https://github.com/superposition): the same repositories, including forks and work not listed here.
+
+## Elsewhere
+
+- [Mage](https://superposition.github.io/mage/): field notes on mathematics, information, and the computation that produces them.
+- [Telegram](https://t.me/SuprPosition): where to write.
+
+## Journal entries
+{% if site.posts.size > 0 %}{% for post in site.posts %}
+- [{{ post.title }}]({{ post.url | absolute_url }}){% if post.description %}: {{ post.description | strip_html | strip_newlines }}{% endif %} ({{ post.date | date: "%Y-%m-%d" }}){% endfor %}
+{% else %}
+No entries are published yet; the feed carries them as they appear.
+{% endif %}
