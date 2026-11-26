@@ -1,0 +1,26 @@
+---
+layout: default
+---
+{% assign topic = site.data.topics | where: "slug", page.topic | first %}
+<article class="entry-page">
+  <header class="entry-head">
+    <p class="eyebrow">{{ topic.name | default: "Journal" }} / {{ page.date | date: "%d %B %Y" }}</p>
+    <h1>{{ page.title }}</h1>
+    {% if page.description %}<p class="lede">{{ page.description }}</p>{% endif %}
+  </header>
+  {% if page.audio %}
+  <figure class="audio">
+    <figcaption>
+      {% if page.audio.title %}<p class="audio-title">{{ page.audio.title }}</p>{% endif %}
+      {% if page.audio.note %}<p class="audio-note">{{ page.audio.note }}</p>{% endif %}
+    </figcaption>
+    {% if page.audio.embed %}
+    <div class="audio-embed"><iframe src="{{ page.audio.embed }}" title="{{ page.audio.title | default: 'Recording' }}" loading="lazy" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    {% elsif page.audio.src %}
+    <audio controls preload="metadata" src="{{ page.audio.src | relative_url }}">Your browser cannot play this recording. <a href="{{ page.audio.src | relative_url }}">Download it instead.</a></audio>
+    {% endif %}
+  </figure>
+  {% endif %}
+  <div class="prose">{{ content }}</div>
+  <footer class="entry-foot"><a class="text-link" href="{{ '/journal/' | relative_url }}">← All entries</a></footer>
+</article>

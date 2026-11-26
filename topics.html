@@ -1,6 +1,13 @@
 ---
+layout: default
 title: Topics
 permalink: /topics/
-description: Marks. Motion. Matter.
+description: Data informatics, AI, matrices, kinematics and cryptographic proofs.
 ---
-<div class="link-list"><a href="{{ '/journal/#marks' | relative_url }}">01 / Marks ↗</a><a href="{{ '/journal/#motion' | relative_url }}">02 / Motion ↗</a><a href="{{ '/journal/#matter' | relative_url }}">03 / Matter ↗</a></div>
+<header class="page-heading">
+  <h1>Topics</h1>
+</header>
+<p class="intro">Every entry belongs to one of these five topics.</p>
+<ul class="topic-list">
+  {% for topic in site.data.topics %}<li>{{ topic.name }}</li>{% endfor %}
+</ul>
