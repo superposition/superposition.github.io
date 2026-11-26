@@ -1,0 +1,27 @@
+{%- comment -%}
+Structured data for what jekyll-seo-tag does not already describe. The seo tag
+in _layouts/default.html emits a WebSite or WebPage block for every page and a
+BlogPosting for each entry; this include adds the identity behind the site, the
+topic of an entry, and the repository list, and adds nothing twice.
+
+To reach every page, add one line to the head of _layouts/default.html:
+
+    {% include jsonld.html %}
+
+It is inert on pages that do not match a branch below.
+{%- endcomment -%}
+{%- assign site_name = site.author | default: site.title -%}
+{%- assign description = page.description | default: page.excerpt | strip_html | strip_newlines | truncate: 200 -%}
+{%- if page.url == '/' -%}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","@id":{{ site.url | append: '/#person' | jsonify }},"name":{{ site_name | jsonify }},"url":{{ site.url | jsonify }},"description":{{ site.description | jsonify }},"sameAs":[{{ site.repository_url | jsonify }},"https://t.me/SuprPosition"]}
+</script>
+{%- elsif page.url == '/projects/' -%}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"ItemList","name":"Public repositories","description":{{ description | jsonify }},"numberOfItems":{{ site.data.repos.repos.size }},"itemListOrder":"https://schema.org/ItemListOrderDescending","itemListElement":[{% for repo in site.data.repos.repos %}{"@type":"ListItem","position":{{ forloop.index }},"item":{"@type":"SoftwareSourceCode","name":{{ repo.name | jsonify }},"description":{{ repo.description | jsonify }},"codeRepository":{{ repo.url | jsonify }}{% if repo.language %},"programmingLanguage":{{ repo.language | jsonify }}{% endif %},"dateModified":{{ repo.pushed | jsonify }}}}{% unless forloop.last %},{% endunless %}{% endfor %}]}
+</script>
+{%- elsif page.url contains '/journal/' and page.url != '/journal/' -%}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"TechArticle","headline":{{ page.title | jsonify }},"description":{{ description | jsonify }},"url":{{ page.url | absolute_url | jsonify }},"datePublished":{{ page.date | date_to_xmlschema | jsonify }},"author":{"@type":"Person","name":{{ site_name | jsonify }},"url":{{ site.url | jsonify }}}{% if page.tags.size > 0 %},"about":[{% for tag in page.tags %}{"@type":"Thing","name":{{ tag | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}]{% endif %}}
+</script>
+{%- endif %}
