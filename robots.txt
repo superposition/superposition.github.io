@@ -1,0 +1,7 @@
+# https://superposition.github.io
+# Everything here is public, static, and meant to be crawled. There are no
+# dynamic paths, session parameters, or faceted URLs to trap a crawler.
+User-agent: *
+Allow: /
+
+Sitemap: https://superposition.github.io/sitemap.xml
