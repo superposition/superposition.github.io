@@ -1,6 +1,6 @@
 title: Superposition
-subtitle: A visual journal
-description: A visual journal. Marks, motion, matter.
+subtitle: Data informatics, AI, matrices, kinematics, cryptographic proofs
+description: Notes on mathematics, AI, and the systems behind them.
 url: https://superposition.github.io
 baseurl: ""
 repository_url: https://github.com/superposition/superposition.github.io
@@ -9,7 +9,12 @@ timezone: America/New_York
 permalink: /journal/:title/
 plugins: [jekyll-feed, jekyll-seo-tag]
 markdown: kramdown
+kramdown:
+  math_engine: ~
+  syntax_highlighter: rouge
 defaults:
   - scope: {path: ""}
     values: {layout: page}
-exclude: [Gemfile, Gemfile.lock, README.md, vendor, scripts, docs]
+  - scope: {path: "", type: posts}
+    values: {layout: post, math: true}
+exclude: [Gemfile, Gemfile.lock, README.md, vendor, scripts, node_modules]
