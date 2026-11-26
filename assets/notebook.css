@@ -12,10 +12,14 @@
 
 :root {
   color-scheme: light;
-  --paper: #f3ebd9;
-  --ink: #171713;
+  --paper: #f7e4cb;
+  --ink: #2e261c;
+  --umber: #484235;
+  --moss: #a59876;
+  --cool-shadow: #b5aaa6;
+  --glow: #d6be9e;
   --red: #b02a12;
-  --rule: #615b4e;
+  --rule: #a59876;
   --mono: 'Courier New', Courier, monospace;
   --display: Anton, Impact, 'Arial Narrow', sans-serif;
   --gutter: 24px;
@@ -67,8 +71,8 @@ h1, h2, h3, p, figure, blockquote { margin: 0; }
 
 .site-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding-block: 16px 4px;
-  font-size: 12px; text-transform: uppercase; letter-spacing: .08em;
+  padding-block: 18px 4px;
+  font-size: 13px; text-transform: uppercase; letter-spacing: .04em;
 }
 .home-link { text-decoration: none; font-weight: bold; }
 .site-header nav { display: flex; gap: 20px; }
@@ -79,8 +83,8 @@ h1, h2, h3, p, figure, blockquote { margin: 0; }
   margin-top: clamp(40px, 6vw, 64px);
   padding-block: 16px 30px;
   border-top: 1px solid var(--rule);
-  font-size: 11px; line-height: 1.8; text-transform: uppercase; letter-spacing: .07em;
-  color: var(--rule);
+  font-size: 13px; line-height: 1.8; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--umber);
 }
 .site-footer p + p { margin-top: 6px; }
 .site-footer a { text-decoration: none; color: var(--ink); }
@@ -89,69 +93,83 @@ h1, h2, h3, p, figure, blockquote { margin: 0; }
 /* Home ----------------------------------------------------------------- */
 
 .masthead {
-  margin-top: clamp(28px, 5vw, 56px);
+  position: relative;
+  margin-top: clamp(56px, 9vw, 120px);
   font: clamp(38px, 9vw, 68px)/1 var(--display);
   letter-spacing: -.02em;
+}
+.masthead::before {
+  content: "";
+  position: absolute; z-index: -1;
+  inset: -140% 0 -45%;
+  pointer-events: none;
+  background: radial-gradient(85% 55% at 50% 20%, rgba(214, 190, 158, .7), transparent 70%);
 }
 
 .intro { margin-top: 18px; max-width: 58ch; }
 
 .topic-list {
   list-style: none; display: flex; flex-wrap: wrap;
-  gap: 4px 20px; margin: 22px 0 0; padding: 0;
-  font-size: 15px;
+  gap: 6px 22px; margin: 24px 0 0; padding: 0;
+  font-size: 17px;
 }
 
 .recent { margin-top: clamp(32px, 4vw, 44px); }
 .recent h2 {
   padding-top: 14px; border-top: 1px solid var(--rule);
-  font: 11px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .1em;
-  color: var(--rule);
+  font: 13px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .04em;
+  color: var(--umber);
 }
-.more { margin-top: 14px; font-size: 12px; text-transform: uppercase; letter-spacing: .07em; }
+.more { margin-top: 14px; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
 
 .elsewhere {
   margin-top: clamp(26px, 3.4vw, 38px);
-  font-size: 12px; text-transform: uppercase; letter-spacing: .07em;
+  font-size: 13px; text-transform: uppercase; letter-spacing: .04em;
 }
 
-.band { margin-top: clamp(28px, 4vw, 44px); }
-.band img { width: 100%; max-height: 200px; object-fit: cover; mix-blend-mode: multiply; }
+/* Not on the page yet: no artwork in this register. Uncomment with the markup
+   in index.html when there is one. A 3/2 frame on desktop, 4/5 on a phone. */
+.band {
+  margin-top: clamp(32px, 4.4vw, 52px);
+  aspect-ratio: 3 / 2;
+  display: flex; align-items: center;
+}
+.band img { width: 100%; height: auto; max-height: 100%; }
 
 /* Index pages ---------------------------------------------------------- */
 
 .page-heading { padding-block: clamp(30px, 5vw, 52px) clamp(8px, 1.4vw, 14px); }
 .page-heading h1 { font: clamp(30px, 5vw, 46px)/1.05 var(--display); letter-spacing: -.02em; }
 
-.issue-number { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--rule); }
-.empty { font-size: 15px; color: var(--rule); }
+.issue-number { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--umber); }
+.empty { font-size: 15px; color: var(--umber); }
 .empty a { color: var(--ink); }
 
 .journal-topic { margin-top: clamp(28px, 3.6vw, 40px); scroll-margin-top: 16px; }
 .journal-topic h2 {
   padding-top: 12px; border-top: 1px solid var(--rule);
-  font: 12px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .08em;
-  color: var(--rule); margin-bottom: 8px;
+  font: 13px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .04em;
+  color: var(--umber); margin-bottom: 8px;
 }
 
 .entry-list { list-style: none; margin: 0; padding: 0; }
 .entry-list li + li { margin-top: 7px; }
 .entry { display: block; font-size: 15px; line-height: 1.7; text-decoration: none; }
 .entry:hover .entry-title { text-decoration: underline; text-decoration-color: var(--red); }
-.entry-date { color: var(--rule); }
+.entry-date { color: var(--umber); }
 .entry-date::after { content: "  "; white-space: pre; }
 .entry-title { font-weight: bold; }
 
 /* An entry ------------------------------------------------------------- */
 
 .entry-head { padding-block: clamp(30px, 4.4vw, 52px) clamp(6px, 1.2vw, 12px); }
-.eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--rule); margin-bottom: 12px; }
+.eyebrow { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--umber); margin-bottom: 12px; }
 .entry-head h1 { font: clamp(26px, 4.4vw, 40px)/1.15 var(--display); letter-spacing: -.015em; }
 .lede { margin-top: 12px; font-size: 17px; line-height: 1.6; }
 .entry-foot {
   margin-top: clamp(28px, 3.4vw, 40px); padding-top: 14px;
   border-top: 1px solid var(--rule);
-  font-size: 12px; text-transform: uppercase; letter-spacing: .08em;
+  font-size: 13px; text-transform: uppercase; letter-spacing: .04em;
 }
 .text-link { text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 2px; }
 
@@ -165,19 +183,19 @@ h1, h2, h3, p, figure, blockquote { margin: 0; }
 .prose ul, .prose ol { padding-left: 1.3em; }
 .prose li + li { margin-top: .4em; }
 .prose blockquote {
-  border-left: 3px solid var(--red);
+  border-left: 3px solid var(--umber);
   padding: 2px 0 2px 18px;
   font-size: 17px; line-height: 1.65;
 }
 .prose hr { border: 0; border-top: 1px solid var(--rule); margin-block: 2.2em; }
-.prose code { font-size: .9em; background: rgba(23, 23, 19, .07); padding: .12em .32em; }
+.prose code { font-size: .9em; background: rgba(181, 170, 166, .3); padding: .12em .32em; }
 .prose pre {
   background: var(--ink); color: var(--paper);
   padding: 16px 18px; overflow-x: auto;
   font-size: 13.5px; line-height: 1.6;
 }
 .prose pre code { background: none; padding: 0; font-size: inherit; }
-.prose a { text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: 2px; }
+.prose a { text-decoration: underline; text-decoration-color: var(--umber); text-decoration-thickness: 2px; }
 .prose table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; font-size: 14px; }
 .prose th, .prose td { border-bottom: 1px solid var(--rule); padding: 8px 14px 8px 0; text-align: left; }
 .prose th { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; }
@@ -195,9 +213,9 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 
 /* Audio, only when a post declares it ---------------------------------- */
 
-.audio { margin: 0 0 26px; border: 1px solid var(--rule); padding: 13px 15px 15px; }
+.audio { margin: 0 0 26px; border: 1px solid var(--cool-shadow); padding: 13px 15px 15px; }
 .audio-title { font: bold 13px/1.5 var(--mono); text-transform: uppercase; letter-spacing: .06em; }
-.audio-note { margin-top: 4px; font-size: 12px; line-height: 1.6; color: var(--rule); }
+.audio-note { margin-top: 4px; font-size: 13px; line-height: 1.6; color: var(--umber); }
 .audio audio { width: 100%; margin-top: 12px; }
 .audio-embed { position: relative; margin-top: 12px; padding-top: 56.25%; background: var(--ink); }
 .audio-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
@@ -207,11 +225,11 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 @media (max-width: 640px) {
   :root { --gutter: 18px; }
   body { font-size: 16.5px; }
-  .site-header { font-size: 11px; padding-top: 14px; }
+  .site-header { font-size: 13px; padding-top: 16px; }
   .site-header nav { gap: 14px; }
   .masthead { font-size: 40px; margin-top: 26px; }
-  .topic-list { font-size: 14px; }
-  .band img { max-height: 140px; }
+  .topic-list { font-size: 17px; }
+  .band { aspect-ratio: 4 / 5; }
 }
 
 @media (prefers-reduced-motion: reduce) {
