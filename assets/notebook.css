@@ -829,11 +829,18 @@ html[data-lab="a"] .entry-dek { font-family: var(--font-mono); }
 
 /* Entry page -------------------------------------------------------------- */
 
+/* A reading page, so the container is wide and each block centres itself: the
+   headline in a 52rem block, the prose at 39rem, plates up to --figure-max.
+   The alternative — keeping the 44rem container and pulling figures out with
+   negative margins — has to compute its own breakout from 100vw, and 100vw
+   includes the desktop scrollbar, so it overflows by the scrollbar's width at
+   every breakpoint where the plate is the whole page. */
 .entry-page { padding-bottom: var(--space-section); }
-.entry-head { padding-block: var(--space-open) var(--space-2); }
+.entry-head { max-width: var(--measure-head); margin-inline: auto; padding-block: var(--space-open) var(--space-2); }
 .entry-head h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
 .entry-head .lede { margin-top: var(--space-2); }
 .entry-foot {
+  max-width: var(--measure); margin-inline: auto;
   margin-top: var(--space-section); padding-top: var(--space-2);
   border-top: var(--border-hair);
   font: var(--step-1)/1.7 var(--font-mono);
@@ -845,13 +852,49 @@ html[data-lab="a"] .entry-dek { font-family: var(--font-mono); }
 
 .prose { font-size: var(--step-3); line-height: var(--leading-body); }
 .prose > * + * { margin-top: var(--flow); }
+/* An entry's prose gets the rule the repository pages already have. The field
+   shows an article plate at 0.38 of the viewport on the one page that is
+   about photographs, while the same prose on a repository page fills 0.83;
+   the rule existed as .repo-body > :not(figure) and had no entry twin. The
+   prose box is now as wide as a plate may be, the text inside it is not, and
+   the figure is the one child that fills it. The caption stays on the text
+   measure: a caption that runs the whole width of the picture is a second
+   paragraph set in 13px. */
+.entry-body { max-width: var(--figure-max); margin-inline: auto; }
+.entry-body > * { max-width: var(--measure); margin-inline: auto; }
+.entry-body > figure { max-width: var(--figure-max); }
+.entry-body figcaption { max-width: var(--measure); }
+/* In-body section headings. The field's median first h2 inside an essay is
+   24px; ours was 13px mono upper case, the size the field uses for labels, so
+   an essay with six sections read as six footnotes. Option (a), shipped: the
+   display face at --step-4 (22px) in the writer's case, with the mono demoted
+   to the .eyebrow above it. Eric has not chosen between (a) and (b) yet, so
+   the choice is one declaration: swap the SWITCH line for the commented twin
+   under it and the machine voice returns at body size. Case and tracking are
+   shared, so (b) sets the writer's case in mono rather than the label's
+   uppercase — that is the price of one line, and it is a heading at 20px
+   either way. */
 .prose h2 {
-  font: 600 var(--step-1)/1.5 var(--font-mono);
-  text-transform: uppercase; letter-spacing: var(--track-label);
+  font: 400 var(--step-4)/var(--leading-tight) var(--font-display); /* SWITCH */
+  /* font: 600 var(--step-3)/1.5 var(--font-mono); */
+  letter-spacing: var(--track-display);
   color: var(--star);
   margin-top: var(--space-5); padding-top: var(--space-2);
   border-top: var(--border-hair);
 }
+/* The mono the option-(a) heading demoted: a section may carry one eyebrow
+   above its display heading, as Quanta and Nautilus do. Authored as
+   <p class="eyebrow">Field notes</p> before the ## line; optional, and absent
+   on a section that needs no category. The hairline moves up with it so the
+   rule still opens the section. */
+.prose .eyebrow {
+  font: 600 var(--step-1)/1.5 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+  margin-top: var(--space-5); padding-top: var(--space-2);
+  border-top: var(--border-hair);
+}
+.prose .eyebrow + h2 { margin-top: var(--space-1); padding-top: 0; border-top: 0; }
 .prose h3 {
   font: 600 var(--step-1)/1.5 var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
@@ -902,7 +945,7 @@ mjx-container[display="true"] { margin-block: var(--space-3) !important; }
 
 /* Audio ------------------------------------------------------------------- */
 
-.audio { margin-bottom: var(--space-5); border: var(--border-hair); padding: var(--space-2) var(--space-3); }
+.audio { max-width: var(--measure); margin-inline: auto; margin-bottom: var(--space-5); border: var(--border-hair); padding: var(--space-2) var(--space-3); }
 .audio-title { font: 600 var(--step-1)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); }
 .audio-note { margin-top: var(--space-half); font: var(--step-1)/var(--leading-body) var(--font-mono); color: var(--dust); }
 .audio audio { width: 100%; margin-top: var(--space-2); }
