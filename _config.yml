@@ -20,7 +20,7 @@ defaults:
   - scope: {path: ""}
     values: {layout: page}
   - scope: {path: "", type: posts}
-    values: {layout: post, math: true}
+    values: {layout: post, math: true, motion: rail}
   - scope: {path: "", type: repos}
-    values: {layout: repo}
+    values: {layout: repo, motion: reveal}
 exclude: [Gemfile, Gemfile.lock, README.md, vendor, scripts, node_modules, storybook]

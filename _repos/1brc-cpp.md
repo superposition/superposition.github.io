@@ -16,12 +16,8 @@ A Bazel workspace holding one data generator and six complete answers to the sam
 
 The problem is the One Billion Row Challenge. A file of `station;temperature` lines — thirteen gigabytes for a billion rows — has to be reduced to the minimum, mean and maximum temperature for each of the 160 station names, printed in one sorted line. The cost is turning text into integers a billion times without touching the heap more often than necessary. The repository's arrangement turns that into a ladder: six versions, each changing one thing, labelled by the README's own diagram — mmap 3×, custom hashmap 1.2×, integer parsing 1.4×, threads 3×.
 
-<figure>
-  <img src="/assets/repos/1brc-cpp/version-ladder-2000.webp"
-       srcset="/assets/repos/1brc-cpp/version-ladder-1000.webp 1000w, /assets/repos/1brc-cpp/version-ladder-2000.webp 2000w"
-       sizes="(min-width: 1040px) 1000px, 100vw"
-       width="2000" height="871" style="height:auto" loading="lazy" decoding="async"
-       alt="Horizontal bar chart of six C++ versions of the same reducer over ten million rows: v1 naive 0.94 s, v2 mmap 0.32 s, v3 custom hash 0.27 s, v4 fast parse 0.20 s, v5 parallel 0.07 s, v6 optimized 0.08 s, with speedup labels 1.0x to 14x.">
+<figure class="ladder" data-motion="figure">
+  {% include figure/ladder.html set="1brc" %}
   <figcaption>The README's benchmark table, ten million rows on sixteen cores, drawn as the ladder the repository is arranged around: one change per version. <code>run_benchmark.sh</code> produced these numbers with <code>time -p</code> and they are not reproduced in CI. The last bar is the interesting one — <code>v6_optimized</code> is slower than the <code>v5_parallel</code> it was meant to improve on.</figcaption>
 </figure>
 

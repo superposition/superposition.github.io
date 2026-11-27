@@ -3,7 +3,9 @@ layout: default
 title: Superposition
 description: Notes on mathematics, AI, and the systems behind them.
 image: /assets/art/galaxy/carina-1920.webp
+motion: opening
 ---
+<div class="hero-scene" data-motion="opening">
 <section class="hero" aria-labelledby="hero-title">
   <span class="skeleton skeleton-hero" aria-hidden="true"><span class="skeleton-label">Loading the Carina Nebula</span></span>
   <img src="{{ '/assets/art/galaxy/carina-1600.webp' | relative_url }}" srcset="{{ '/assets/art/galaxy/carina-1600.webp' | relative_url }} 1600w, {{ '/assets/art/galaxy/carina-1920.webp' | relative_url }} 1920w" sizes="100vw" width="1920" height="1111" alt="The Cosmic Cliffs of the Carina Nebula: clouds of rust and blue gas rising against black space." fetchpriority="high">
@@ -20,6 +22,7 @@ image: /assets/art/galaxy/carina-1920.webp
     </ul>
   </div>
 </section>
+</div>
 <div class="hazard" aria-hidden="true"></div>
 {% include campaign/strip.html %}
 <div class="wrap">
@@ -49,7 +52,7 @@ image: /assets/art/galaxy/carina-1920.webp
   {% endif %}
   <p class="kicker"><a class="text-link" href="{{ '/projects/' | relative_url }}">Repositories</a> <span aria-hidden="true">/</span> <a class="text-link" href="{{ '/about/' | relative_url }}">About</a></p>
 </div>
-<div class="wide">
+<div class="wide" data-motion="reveal">
   <div class="plates">
     <figure class="plate">
       <img src="{{ '/assets/art/galaxy/barred-1600.webp' | relative_url }}" srcset="{{ '/assets/art/galaxy/barred-1600.webp' | relative_url }} 1600w, {{ '/assets/art/galaxy/barred-1920.webp' | relative_url }} 1920w" sizes="(max-width: 700px) 100vw, 33vw" width="1600" height="912" loading="lazy" alt="A barred spiral galaxy: two bright arms sweeping out from a straight bar of stars.">

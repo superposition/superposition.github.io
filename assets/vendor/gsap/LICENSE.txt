@@ -1,0 +1,28 @@
+GSAP 3.15.1
+https://gsap.com
+Copyright 2026, GreenSock. All rights reserved.
+Subject to the terms at https://gsap.com/standard-license.
+
+The files in this directory are the unmodified `dist/` builds from the npm
+package `gsap@3.15.1`:
+
+    gsap.min.js
+    ScrollTrigger.min.js
+    SplitText.min.js
+
+Each carries its own notice in its header:
+
+    ! GSAP 3.15.1 | https://gsap.com
+    @license Copyright 2026, GreenSock. All rights reserved.
+    Subject to the terms at https://gsap.com/standard-license.
+
+The licence is GreenSock's standard "no charge" licence — the value of the
+`license` field in that package's `package.json`, and the licence under which
+GSAP, including every plugin, has been free for commercial and non-commercial
+use since 3.13 (April 2025). The package does not redistribute the licence
+text; the terms are the ones at the URL above, and they are not restated here
+because a paraphrase of a licence is not a licence.
+
+Nothing in this directory is a CDN copy, a fork, or a build of our own: the
+files are committed so the site makes no third-party request, and they are only
+served to pages that ask for motion in their front matter.
