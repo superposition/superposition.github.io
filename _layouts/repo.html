@@ -1,0 +1,22 @@
+---
+layout: default
+---
+{% assign repo_slug = page.slug | default: page.repo | split: "/" | last %}
+<article class="repo-page wide">
+  <header class="repo-head">
+    <p class="kicker">Repository{% if page.language %} / {{ page.language }}{% endif %}</p>
+    <h1>{{ page.title | default: repo_slug }}</h1>
+    {% if page.tagline %}<p class="lede">{{ page.tagline }}</p>{% endif %}
+    <p class="meta">
+      {% if page.language %}<span>{{ page.language }}</span>{% endif %}
+      {% if page.stars %}<span>{{ page.stars }} star{% if page.stars != 1 %}s{% endif %}</span>{% endif %}
+      {% if page.pushed %}<span>Last push {{ page.pushed | date: "%d %b %Y" }}</span>{% endif %}
+    </p>
+    {% if page.repo %}<p class="repo-links"><a class="text-link" href="https://github.com/{{ page.repo }}">View on GitHub</a>{% if page.site %} <a class="text-link" href="{{ page.site }}">Project site</a>{% endif %}</p>{% endif %}
+  </header>
+  <div class="prose repo-body">{{ content }}</div>
+  <footer class="entry-foot">
+    <a class="text-link" href="{{ '/projects/' | relative_url }}">All repositories</a>
+    {% if page.topic %}<a class="text-link" href="{{ '/journal/#' | append: page.topic | relative_url }}">{{ page.topic }}</a>{% endif %}
+  </footer>
+</article>

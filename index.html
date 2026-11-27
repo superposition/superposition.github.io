@@ -15,6 +15,18 @@ image: /assets/art/galaxy/carina-1920.webp
   </div>
 </section>
 <div class="wrap">
+  {% assign repos = site.repos | sort: "order" %}
+  <section class="repos-home" aria-labelledby="repos-title">
+    <h2 id="repos-title" class="section-title">Repositories</h2>
+    {% if repos.size > 0 %}
+    <ul class="repo-list">
+      {% for item in repos %}<li><a href="{{ item.url | relative_url }}">{{ item.title | default: item.slug }}{% if item.tagline %} — {{ item.tagline }}{% endif %}</a></li>{% endfor %}
+    </ul>
+    <p class="more kicker"><a class="text-link" href="{{ '/projects/' | relative_url }}">All repositories</a></p>
+    {% else %}
+    <p class="empty">Twenty repositories are getting a page each. Until they land, <a href="{{ '/projects/' | relative_url }}">every public repository</a> is listed together.</p>
+    {% endif %}
+  </section>
   {% if site.posts.size > 0 %}
   <section class="recent" aria-labelledby="recent-title">
     <h2 id="recent-title" class="section-title">Recent entries</h2>

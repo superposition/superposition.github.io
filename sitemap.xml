@@ -18,6 +18,11 @@ sitemap: false
 {%- endif %}
   </url>
 {%- endunless %}{% endfor %}
+{%- for item in site.repos %}
+  <url>
+    <loc>{{ item.url | absolute_url }}</loc>
+  </url>
+{%- endfor %}
 {%- for post in site.posts %}
   <url>
     <loc>{{ post.url | absolute_url }}</loc>

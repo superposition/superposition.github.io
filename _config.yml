@@ -7,6 +7,10 @@ repository_url: https://github.com/superposition/superposition.github.io
 author: Superposition
 timezone: America/New_York
 permalink: /journal/:title/
+collections:
+  repos:
+    output: true
+    permalink: /projects/:slug/
 plugins: [jekyll-feed, jekyll-seo-tag]
 markdown: kramdown
 kramdown:
@@ -17,4 +21,6 @@ defaults:
     values: {layout: page}
   - scope: {path: "", type: posts}
     values: {layout: post, math: true}
+  - scope: {path: "", type: repos}
+    values: {layout: repo}
 exclude: [Gemfile, Gemfile.lock, README.md, vendor, scripts, node_modules]

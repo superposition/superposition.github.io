@@ -307,6 +307,38 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .site-footer a { color: var(--starlight); text-decoration: none; }
 .site-footer a:hover { color: var(--rust-text); text-decoration: underline; }
 
+/* Repository pages ------------------------------------------------------- */
+
+.repo-page { padding-bottom: var(--space-5); }
+.repo-head { padding-block: var(--space-6) var(--space-2); }
+.repo-head h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
+.repo-head .lede { margin-top: var(--space-2); }
+.repo-head .meta { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: var(--space-2); }
+.repo-links { margin-top: var(--space-3); font: var(--step-1)/1.7 var(--font-mono); text-transform: uppercase; letter-spacing: .06em; }
+.repo-links .text-link + .text-link { margin-left: var(--space-3); }
+.repo-body { padding-top: var(--space-3); }
+.repo-body > :not(figure) { max-width: var(--measure); }
+.repo-body figure { max-width: min(100%, 1000px); }
+.repo-body figure img { width: 100%; }
+
+.repo-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-4) var(--space-3); }
+.repo-card a { display: flex; flex-direction: column; gap: 6px; text-decoration: none; border-top: var(--border-hair); padding-top: var(--space-2); }
+.repo-card img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; margin-bottom: var(--space-1); }
+.repo-name { font-family: var(--font-display); font-size: var(--step-4); line-height: 1.2; color: var(--star); }
+.repo-card a:hover .repo-name { color: var(--rust-text); }
+.repo-tagline { color: var(--starlight); font-size: var(--step-2); line-height: 1.5; }
+.repo-meta { font: var(--step-1)/1.6 var(--font-mono); color: var(--dust); text-transform: uppercase; letter-spacing: .06em; }
+
+.repos-home { margin-top: var(--space-5); }
+.repo-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; font: var(--step-2)/1.9 var(--font-mono); }
+.repo-list a { text-decoration: none; color: var(--star); }
+.repo-list a:hover { color: var(--rust-text); }
+
+.repo-index { margin-top: var(--space-6); }
+.repo-count { margin-top: var(--space-1); font: var(--step-1)/1.7 var(--font-mono); color: var(--dust); }
+.repo-line { margin-top: var(--space-2); font-size: var(--step-2); line-height: 1.6; }
+.repo-line small { color: var(--dust); font-family: var(--font-mono); font-size: var(--step-1); }
+
 /* Styleguide ------------------------------------------------------------- */
 
 .sg-section { margin-top: var(--space-6); }
