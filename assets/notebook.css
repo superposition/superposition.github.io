@@ -1378,6 +1378,88 @@ mjx-container[display="true"] { margin-block: var(--space-3) !important; }
 .showing-note a { color: var(--dust); }
 .showing-note a:hover { color: var(--star); }
 
+/* The scene ---------------------------------------------------------------- */
+
+/* /station/ is the one page on the site that is a drawing rather than writing.
+   The composed file is included inline, so its groups are in the page's DOM
+   and anything that can write a selector — this stylesheet, or a script — can
+   move them by name: #scene-city, #scene-traffic-back, #scene-haze,
+   #scene-station, #scene-traffic-front, #scene-action, and inside the action
+   #docking-shuttle, #alignment-beam, #drone-a, #drone-b, #signal-pulse. Each of
+   those handles is a bare group: the transform that places the thing sits on a
+   child, so the handle's own transform belongs to whoever animates it. */
+
+/* The frame takes the wide measure, holds the canvas ratio itself rather than
+   trusting the file's viewBox, and clips — so a drifting layer can never show
+   an edge, and the scene keeps its shape at every width. */
+.scene { max-width: none; }
+.scene-frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--void);
+  aspect-ratio: 8 / 5;
+}
+.scene-frame svg { display: block; width: 100%; height: 100%; }
+
+/* The pause control, on the crawl's pattern: a drawn box whose state is a
+   fill, a hidden checkbox, no script. WCAG 2.2.2 asks for a way to stop motion
+   that runs longer than five seconds, and this scene runs for minutes. */
+.scene-switch:checked ~ .scene-frame #scene-city,
+.scene-switch:checked ~ .scene-frame #scene-traffic-back,
+.scene-switch:checked ~ .scene-frame #scene-station,
+.scene-switch:checked ~ .scene-frame #scene-traffic-front,
+.scene-switch:checked ~ .scene-frame #signal-pulse,
+.scene-switch:checked ~ .scene-frame #docking-shuttle,
+.scene-switch:checked ~ .scene-frame #drone-a,
+.scene-switch:checked ~ .scene-frame #drone-b,
+.scene-switch:checked ~ .scene-frame #alignment-line { animation-play-state: paused; }
+.scene-hold {
+  margin-top: var(--space-2);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+}
+.scene-hold label { display: inline-flex; align-items: center; gap: var(--space-1); padding-block: var(--space-half); cursor: pointer; }
+.scene-hold label::before {
+  content: ""; flex: none;
+  width: var(--switch); height: var(--switch);
+  border: var(--hair) solid var(--dust);
+}
+.scene-switch:checked ~ .scene-hold label::before { background: var(--state); border-color: var(--state); }
+.scene-switch:focus-visible ~ .scene-hold label { outline: var(--ring) solid var(--state); outline-offset: var(--space-half); color: var(--star); }
+.scene-hold label:hover::before { border-color: var(--star); }
+.scene-hold label:active::before { background: var(--dust); }
+
+/* Three depths, three speeds. The travel is a handful of canvas units, which
+   at the width the page is read at is a few pixels over a minute or two: the
+   scene should feel held, not played. */
+@keyframes scene-drift-far { from { transform: translate(0, 0); } to { transform: translate(var(--drift-far), 0); } }
+@keyframes scene-drift-mid { from { transform: translate(0, 0); } to { transform: translate(var(--drift-mid), var(--drift-lift)); } }
+@keyframes scene-drift-near { from { transform: translate(0, 0); } to { transform: translate(var(--drift-near), var(--drift-lift)); } }
+.scene-frame #scene-city,
+.scene-frame #scene-traffic-back { animation: scene-drift-far var(--dur-drift-far) var(--ease-soft) infinite alternate; }
+.scene-frame #scene-station { animation: scene-drift-mid var(--dur-drift-mid) var(--ease-soft) infinite alternate; }
+.scene-frame #scene-traffic-front { animation: scene-drift-near var(--dur-drift-near) var(--ease-soft) infinite alternate; }
+
+/* The action. The pulse fades at both ends of its run, so the jump from the far
+   end of the truss back to the near end is never on screen; the beam's dashes
+   march out towards the hoop on the dash offset the file already draws. */
+@keyframes scene-pulse-run {
+  from { transform: translateX(0); opacity: 0; }
+  5% { opacity: 1; }
+  95% { opacity: 1; }
+  to { transform: translateX(var(--pulse-span)); opacity: 0; }
+}
+.scene-frame #signal-pulse { animation: scene-pulse-run var(--dur-pulse) linear infinite; }
+@keyframes scene-beam-march { to { stroke-dashoffset: var(--beam-march); } }
+.scene-frame #alignment-line { animation: scene-beam-march var(--dur-beam) linear infinite; }
+@keyframes scene-approach { from { transform: translate(0, 0); } to { transform: translate(var(--approach-x), var(--approach-y)); } }
+.scene-frame #docking-shuttle { animation: scene-approach var(--dur-approach) var(--ease-soft) infinite alternate; }
+@keyframes scene-cross-a { from { transform: translate(0, 0); } to { transform: translate(var(--drone-a-x), var(--drone-a-y)); } }
+@keyframes scene-cross-b { from { transform: translate(0, 0); } to { transform: translate(var(--drone-b-x), var(--drone-b-y)); } }
+.scene-frame #drone-a { animation: scene-cross-a var(--dur-drone) var(--ease-soft) infinite alternate; }
+.scene-frame #drone-b { animation: scene-cross-b var(--dur-drone) var(--ease-soft) infinite alternate; }
+
 /* Identity A — instrument ------------------------------------------------ */
 
 /* Alien's screens, not Alien's assets: amber phosphor on carbon, one accent
@@ -1657,4 +1739,17 @@ html[data-lab="b"] .empty-title { color: var(--star); }
   .card:focus-visible .card-media img { transform: none; }
   .strip-track { animation: none; }
   .strip-toggle, .strip-pause { display: none; }
+  /* The scene: every handle it moves stops, and a switch that pauses a still
+     scene is a control with nothing to do, so it goes with them. What is left
+     is the composed file exactly as it was written. */
+  .scene-frame #scene-city,
+  .scene-frame #scene-traffic-back,
+  .scene-frame #scene-station,
+  .scene-frame #scene-traffic-front,
+  .scene-frame #signal-pulse,
+  .scene-frame #docking-shuttle,
+  .scene-frame #drone-a,
+  .scene-frame #drone-b,
+  .scene-frame #alignment-line { animation: none; transform: none; }
+  .scene-switch, .scene-hold { display: none; }
 }
