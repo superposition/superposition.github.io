@@ -21,9 +21,9 @@
   <header class="site-header wide">
     <a class="home-link" href="{{ '/' | relative_url }}">Superposition</a>
     <nav aria-label="Main navigation">
+      <a href="{{ '/projects/' | relative_url }}" {% if page.url == '/projects/' or page.collection == 'repos' %}aria-current="page"{% endif %}>Repositories</a>
       <a href="{{ '/journal/' | relative_url }}" {% if page.url == '/journal/' or page.collection == 'posts' %}aria-current="page"{% endif %}>Journal</a>
       <a href="{{ '/topics/' | relative_url }}" {% if page.url == '/topics/' %}aria-current="page"{% endif %}>Topics</a>
-      <a href="{{ '/projects/' | relative_url }}" {% if page.url == '/projects/' %}aria-current="page"{% endif %}>Repositories</a>
       <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>About</a>
     </nav>
   </header>
