@@ -207,5 +207,11 @@ wake?.addEventListener('click', async () => {
   }
 });
 
+/* The poster's button is the one control this file answers, so it is hidden in
+   the markup and revealed here: a reader whose module never arrives keeps the
+   poster and the twenty sentences and is never offered a button that does
+   nothing. */
+if (wake) wake.hidden = false;
+
 if (next) next.addEventListener('click', () => show(current + 1));
 if (previous) previous.addEventListener('click', () => show(current - 1));
