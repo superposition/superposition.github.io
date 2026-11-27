@@ -343,6 +343,31 @@
   --dur-glide: 340ms;
   --ease-soft: ease-in-out;
   --ease-out: cubic-bezier(.2, .55, .25, 1);
+
+  /* The scene on /station/. Three depths drift at three speeds, so a still
+     drawing reads as a camera; the action keeps a clock of its own. The
+     travels are user units of the 2400 by 1500 canvas, so one number holds at
+     every width the page is read at. --pulse-span is the truss the pulse runs
+     out along: 0.83 of the station's 1280 units of canvas. */
+  --dur-drift-far: 120s;
+  --dur-drift-mid: 96s;
+  --dur-drift-near: 72s;
+  --dur-pulse: 16s;
+  --dur-approach: 20s;
+  --dur-drone: 44s;
+  --dur-beam: 6s;
+  --drift-far: 9px;
+  --drift-mid: 15px;
+  --drift-near: 30px;
+  --drift-lift: 6px;
+  --pulse-span: 942px;
+  --beam-march: -20px;
+  --approach-x: 26px;
+  --approach-y: -3.7px;
+  --drone-a-x: 26px;
+  --drone-a-y: -5px;
+  --drone-b-x: -22px;
+  --drone-b-y: 4px;
 }
 
 /* Instrument ------------------------------------------------------------ */
