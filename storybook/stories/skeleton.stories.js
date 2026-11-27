@@ -1,7 +1,7 @@
 export default {
   title: 'Components/Skeleton',
   parameters: {
-    usedOn: ['index.html'],
+    usedOn: ['style.md'],
     docs: {
       description: {
         component:
@@ -14,7 +14,11 @@ export default {
 };
 
 const heroShell = (inner) => `<section class="hero" style="min-height: 320px">${inner}</section>`;
-const skeleton = (label) => `<span class="skeleton skeleton-hero" aria-hidden="true"><span class="skeleton-label">${label}</span></span>`;
+/* The hero's own photograph left with the flat backplate, so what the site still
+   ships of this pattern is the design system's example on /style/. The stories
+   carry the frame and its label; the box that holds them is the caller's. */
+const skeleton = (label) =>
+  `<span class="skeleton" style="position:absolute;inset:0" aria-hidden="true"><span class="skeleton-label">${label}</span></span>`;
 
 export const Loading = {
   args: {
@@ -36,7 +40,7 @@ export const Failed = {
   args: {
     note: 'The error state, and the only place the red appears outside the 404: the file did not load, the label says which file, and the box does not collapse. This one is a .alert inside the skeleton label rather than a modifier class, so there is no state class to drift.',
     body: heroShell(
-      `<span class="skeleton skeleton-hero" aria-hidden="true"><span class="skeleton-label"><span class="alert">The photograph did not load</span> Carina Nebula</span></span>`,
+      `<span class="skeleton" style="position:absolute;inset:0" aria-hidden="true"><span class="skeleton-label"><span class="alert">The photograph did not load</span> Carina Nebula</span></span>`,
     ),
   },
 };

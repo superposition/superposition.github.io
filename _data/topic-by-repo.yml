@@ -1,0 +1,34 @@
+# Which topic each repository belongs to, for the home page's map.
+#
+# The map's edges are relations that exist in this repository's content: a
+# repository is filed under a topic, a series unit fronts a repository, an
+# entry belongs to a topic. The first of those has no home of its own yet:
+# `_repos/*.md` carries no `topic:` front matter, so the assignment is this
+# file. It is GALA-88's reading of the twenty taglines (the garden's
+# `TOPIC_BY_REPO` in scripts/flora/catalogue.py, PR #53), copied here rather
+# than re-derived so the two pages cannot disagree. The generator reads a
+# repository's own `topic:` front matter first and this file second, so the
+# day the collection grows one, this file retires. Absent or unknown slugs
+# are reported by scripts/scene/map.mjs rather than guessed.
+
+topics:
+  "1brc-cpp": data-informatics   # a billion rows parsed six ways
+  "91": matrices   # firmware for a synth: wavetables and signal
+  "bend-ml-lab": ai   # training epochs and weight-space diagnostics
+  "cairo_vault": cryptographic-proofs   # a Starknet contract holding balances
+  "cannoli-hell": kinematics   # Bevy and Rapier: bodies, colliders, motion
+  "coatcheck": data-informatics   # a contract measured against behaviour
+  "coldfront": kinematics   # a game: things that move and collide
+  "divulge": ai   # AI-assisted reverse engineering
+  "kotoba-line": data-informatics   # reading a document, one line at a time
+  "macos-metal-vslam": kinematics   # a camera's motion and the map it recovers
+  "mage": matrices   # GPU kernels for Triton and CUDA
+  "marigraph": matrices   # a volatility surface, drawn in the terminal
+  "ml-kem-ml-dsa-lab": cryptographic-proofs   # the NIST module-lattice standards
+  "nanda-ts": ai   # A2A agents, identity and a registry
+  "qualia": ai   # embodied agents and a JEPA runtime
+  "quantum-superposition": matrices   # states and complex amplitudes
+  "scenelab": matrices   # template-driven arrangement control
+  "space-bullet-hell": kinematics   # a shooter built on movement
+  "topcoat-blocks": data-informatics   # a library of blocks, catalogued
+  "zig-wasm-webgpu-hallway-shooter": kinematics   # a simulation compiled from Zig

@@ -147,6 +147,17 @@ const PAIRS = [
   ['poster focus ring',    '--state',        '--void',        'edge'],
   ['poster lit edge',      '--poster-edge',  '--void',        'divider'],
   ['poster frame',         '--poster-metal', '--void',        'divider'],
+
+  // The garden: a species is read by silhouette first, so these only have to
+  // be visible on the ground they are drawn on, and the leaf is measured as a
+  // divider because it is a fill under a --cream outline rather than an edge.
+  ['flora bloom',          '--flora-bloom',  '--void',        'edge'],
+  ['flora bloom block',    '--flora-bloom',  '--surface',     'edge'],
+  ['flora spore',          '--flora-spore',  '--void',        'edge'],
+  ['flora spore block',    '--flora-spore',  '--surface',     'edge'],
+  ['flora leaf fill',      '--flora-leaf',   '--void',        'divider'],
+  ['flora leaf on block',  '--flora-leaf',   '--surface',     'divider'],
+  ['flora leaf outline',   '--cream',        '--flora-leaf',  'edge'],
 ];
 
 let failures = 0;

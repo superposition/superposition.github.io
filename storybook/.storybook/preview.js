@@ -73,6 +73,7 @@ export default {
             'Skeleton',
             'Empty state',
             'Footer',
+            'Soundtrack',
             'Identity parts',
           ],
           'Series',

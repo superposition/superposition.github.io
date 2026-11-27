@@ -1,0 +1,50 @@
+---
+layout: default
+title: Station
+description: The station over the city, drawn in three layers and set in motion — what is in the frame, and what is happening in it.
+---
+<div class="wrap">
+  <header class="page-heading">
+    <h1>Station</h1>
+    <p class="lede">One scene, drawn rather than photographed: a station above a city, traffic on both sides of it, and a shuttle on final approach.</p>
+  </header>
+</div>
+
+<div class="wide">
+  <figure class="figure scene">
+    <input class="visually-hidden scene-switch" type="checkbox" id="scene-hold">
+    <div class="scene-frame">{% include scene/station.svg %}</div>
+    <p class="scene-hold"><label for="scene-hold">Hold the scene</label></p>
+    <figcaption>The station at the edge of the city. 2400 by 1500, composed from three drawn layers; the seed is in the file's header.</figcaption>
+  </figure>
+</div>
+
+<div class="wrap">
+  <div class="prose">
+    <p>Nothing in the frame is a photograph or a filter. It is stroked geometry on black, in the site's own colours, at line weights of one, two and four units of the canvas: depth is carried by value and by weight, never by hue.</p>
+    <p>Three scripts draw the layers, each from a seed, and a fourth composes them in z-order — city at the back, the far band of the traffic, the dust haze, the station, the near band of the traffic, the action on top. Same seed, same bytes, which is why the drawing in the browser can be diffed against the file in the repository.</p>
+    <h2>What is in the frame</h2>
+    <dl class="def">
+      <div class="def-row">
+        <dt>The station</dt>
+        <dd>Truss spine, habitat rings, solar wings on a panel pitch, one array part-deployed, a gantry over an open bay with a truss section on the hook, radiators, docking collars, antennae. Fitted into x 560 to 1840.</dd>
+      </div>
+      <div class="def-row">
+        <dt>The traffic</dt>
+        <dd>Two bands of one layer: the far band behind the station, the near band in front of it, so the station sits inside the traffic rather than on top of it. Each constellation rides a dotted track.</dd>
+      </div>
+      <div class="def-row">
+        <dt>The city</dt>
+        <dd>Below the horizon at y 860 and reaching back to it in one-point perspective: rows of towers, a launch yard, floodlights. The largest layer in the file and the quietest thing in the frame.</dd>
+      </div>
+      <div class="def-row">
+        <dt>Right now</dt>
+        <dd>A shuttle on final approach to the docking hoop at the end of the boom, its alignment beam open and its gates narrowing towards the collar; a signal pulse leaving the truss; two drones crossing on lit paths.</dd>
+      </div>
+    </dl>
+    <h2>What moves, and why</h2>
+    <p>The composed file is a still. The page moves it in CSS, with no script: three depths drift at three speeds — the city and the traffic behind it least, the station next, the traffic in front of it most — so a still drawing reads as a camera rather than as a diagram. The shuttle closes on the hoop while the alignment beam marches out towards it, the signal pulse runs the length of the truss, and the drones cross.</p>
+    <p>Every move stops at <code>prefers-reduced-motion: reduce</code>, and the <em>Hold the scene</em> switch above stops it without leaving the page. Stopped, the drawing is exactly where the file put it: nothing depends on the animation to be visible or readable.</p>
+    <p class="kicker"><a class="text-link" href="{{ '/style/' | relative_url }}">Design system</a> <span aria-hidden="true">/</span> <a class="text-link" href="{{ '/' | relative_url }}">Home</a></p>
+  </div>
+</div>

@@ -3,4 +3,5 @@ _site-drafts/
 .sass-cache/
 .jekyll-cache/
 .bundle/
-vendor/
+/vendor/
+__pycache__/
