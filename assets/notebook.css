@@ -418,7 +418,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   list-style: none; display: flex; flex-wrap: wrap;
   gap: var(--space-1) var(--space-3);
   padding: 0;
-  font: var(--step-3)/1.6 var(--font-mono);
+  font: var(--step-2)/1.6 var(--font-mono);
 }
 .topic-list a { color: var(--star); text-decoration: none; }
 .topic-list a:hover { color: var(--accent-text); text-decoration: underline; }
@@ -485,7 +485,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   gap: var(--space-4) var(--space-3);
 }
 
-.repos-home { margin-top: var(--space-5); }
+.repos-home, .recent { margin-top: var(--space-section); }
 .repo-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; }
 /* The name is an identifier, so it stays mono; the tagline is writing, so it is
    in the text face at the reading measure. A page of nothing but mono gives the
@@ -596,11 +596,11 @@ html[data-lab="a"] .repo-name { font-weight: 400; }
 
 /* Page heading and journal ----------------------------------------------- */
 
-.page-heading { padding-block: var(--space-6) var(--space-2); }
+.page-heading { padding-block: var(--space-open) var(--space-2); }
 .page-heading h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
 .page-heading .lede { margin-top: var(--space-3); }
 
-.journal-topic { margin-top: var(--space-5); scroll-margin-top: 16px; }
+.journal-topic { margin-top: var(--space-section); scroll-margin-top: 16px; }
 .journal-topic h2 {
   font: var(--step-2)/1.3 var(--font-display);
   color: var(--star);
@@ -631,7 +631,7 @@ html[data-lab="a"] .repo-name { font-weight: 400; }
 /* Entry page ------------------------------------------------------------- */
 
 .entry-page { padding-bottom: var(--space-5); }
-.entry-head { padding-block: var(--space-6) var(--space-2); }
+.entry-head { padding-block: var(--space-open) var(--space-2); }
 .entry-head h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
 .entry-head .lede { margin-top: var(--space-2); }
 .entry-foot {
@@ -645,8 +645,14 @@ html[data-lab="a"] .repo-name { font-weight: 400; }
 /* Prose ------------------------------------------------------------------ */
 
 .prose { font-size: var(--step-3); line-height: var(--leading-body); }
-.prose > * + * { margin-top: 1.1em; }
-.prose h2 { font-size: var(--step-4); line-height: 1.25; margin-top: 2em; }
+.prose > * + * { margin-top: var(--flow); }
+.prose h2 {
+  font: 600 var(--step-1)/1.5 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--star);
+  margin-top: var(--space-5); padding-top: var(--space-2);
+  border-top: var(--border-hair);
+}
 .prose h3 {
   font: 600 var(--step-1)/1.5 var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
@@ -669,6 +675,10 @@ html[data-lab="a"] .repo-name { font-weight: 400; }
 }
 .prose code {
   background: var(--surface); padding: .14em .34em;
+  /* A C++ identifier is one unbreakable token and longer than a phone column:
+     at 19px `std::thread::hardware_concurrency()` measures 362px in a 339px
+     column and pushed the page 5px wide at 375. Break it rather than scroll it. */
+  overflow-wrap: anywhere;
 }
 .prose pre, .code-block pre {
   background: var(--surface); color: var(--star);
@@ -729,7 +739,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 /* Footer ----------------------------------------------------------------- */
 
 .site-footer {
-  margin-top: var(--space-6);
+  margin-top: var(--space-open);
   padding-block: var(--space-3) var(--space-4);
   border-top: var(--border-hair);
   font: var(--step-1)/1.8 var(--font-mono);
@@ -743,7 +753,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 /* Repository pages ------------------------------------------------------- */
 
 .repo-page { padding-bottom: var(--space-5); }
-.repo-head { padding-block: var(--space-6) var(--space-2); }
+.repo-head { padding-block: var(--space-open) var(--space-2); }
 .repo-head h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
 .repo-head .lede { margin-top: var(--space-2); }
 .repo-head .meta { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: var(--space-2); }
@@ -752,14 +762,14 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .repo-body { padding-top: var(--space-3); }
 .repo-body > :not(figure) { max-width: var(--measure); }
 
-.repo-index { margin-top: var(--space-6); }
+.repo-index { margin-top: var(--space-section); }
 .repo-count { margin-top: var(--space-1); font: var(--step-1)/1.7 var(--font-mono); color: var(--dust); }
 .repo-line { margin-top: var(--space-2); font-size: var(--step-2); line-height: 1.6; }
 .repo-line small { color: var(--dust); font-family: var(--font-mono); font-size: var(--step-1); }
 
 /* Styleguide ------------------------------------------------------------- */
 
-.sg-section { margin-top: var(--space-6); }
+.sg-section { margin-top: var(--space-section); }
 .sg-section > h2 { font-size: var(--step-4); margin-bottom: var(--space-3); }
 .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--space-2); list-style: none; margin: 0; padding: 0; }
 .swatch { border: var(--border-hair); }
@@ -845,7 +855,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 
 /* Idents are a script: who on the left, the line at display size on the
    right, one hairline per speech. */
-.idents { margin-top: var(--space-6); }
+.idents { margin-top: var(--space-section); }
 .idents .lede { margin-top: var(--space-2); }
 .ident-list { list-style: none; margin-top: var(--space-3); padding: 0; }
 .ident {
@@ -861,7 +871,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 }
 .ident-line { font-size: var(--step-4); line-height: 1.45; color: var(--star); max-width: var(--measure); }
 
-.series-note { margin-top: var(--space-6); padding-top: var(--space-2); border-top: var(--border-hair); }
+.series-note { margin-top: var(--space-section); padding-top: var(--space-2); border-top: var(--border-hair); }
 .series-note .prose { margin-top: var(--space-3); max-width: var(--measure); }
 
 /* Identity A — instrument ------------------------------------------------ */
