@@ -411,6 +411,23 @@
   --dur-glide: 340ms;
   --ease-soft: ease-in-out;
   --ease-out: cubic-bezier(.2, .55, .25, 1);
+
+  /* Scene motion (GALA-87). The third family: what a page may do with the
+     scroll. One curve for all of it, a ladder of four durations, one stagger
+     and one distance. assets/motion.js reads every token below by name — and
+     builds its GSAP ease out of --ease-move — so a sequence in JavaScript and
+     a rule in notebook.css cannot disagree about how something moves. Nothing
+     here reaches a page that has not asked for motion in its front matter;
+     docs/motion.md is the spec, including when a page is allowed to ask. */
+  --ease-move: cubic-bezier(.22, .61, .36, 1); /* one curve: no bounce, no elastic */
+  --dur-quick: 160ms;    /* a reading the reader caused: the progress rail */
+  --dur-rise: 420ms;     /* one element arriving in place */
+  --dur-settle: 720ms;   /* a short lifted sequence */
+  --dur-scene: 900ms;    /* the longest single step a scene may take */
+  --stagger-step: 70ms;  /* between neighbours: rows, stills, letters */
+  --rise-distance: 18px; /* how far an element travels when it arrives */
+  --scene-pin: 100svh;   /* the scroll a pinned scene is held for */
+  --rail-height: 2px;    /* the reading rail on an entry */
 }
 
 /* Instrument ------------------------------------------------------------ */
@@ -528,5 +545,10 @@ html[data-lab="b"] {
     --dur-sweep: 0s;
     --dur-state: 0s;
     --dur-glide: 0s;
+    --dur-quick: 0s;
+    --dur-rise: 0s;
+    --dur-settle: 0s;
+    --dur-scene: 0s;
+    --stagger-step: 0s;
   }
 }

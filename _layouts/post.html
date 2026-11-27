@@ -2,11 +2,12 @@
 layout: default
 ---
 {% assign topic = site.data.topics | where: "slug", page.topic | first %}
-<article class="entry-page wide">
+<article class="entry-page wide" data-motion="rail">
+  <div class="reading-rail" aria-hidden="true"><span></span></div>
   <header class="entry-head">
-    <p><span class="decal">{{ topic.name | default: "Journal" }}</span> <span class="kicker"><time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: "%Y-%m-%d" }}</time></span></p>
-    <h1>{{ page.title }}</h1>
-    {% if page.description %}<p class="lede">{{ page.description }}</p>{% endif %}
+    <p data-reveal><span class="decal">{{ topic.name | default: "Journal" }}</span> <span class="kicker"><time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: "%Y-%m-%d" }}</time></span></p>
+    <h1 data-reveal="wipe">{{ page.title }}</h1>
+    {% if page.description %}<p class="lede" data-reveal>{{ page.description }}</p>{% endif %}
   </header>
   {% if page.audio %}
   <figure class="audio">
