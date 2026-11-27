@@ -41,9 +41,7 @@ const log = `<div class="wrap" style="padding: 24px 0;">
 </div>`;
 
 const crawl = `<section class="hero" style="min-height: 60svh;">
-  <span class="skeleton skeleton-hero" aria-hidden="true"><span class="skeleton-label">Loading the Carina Nebula</span></span>
-  <img src="/assets/art/galaxy/carina-1600.webp" width="1920" height="1111" alt="The Cosmic Cliffs of the Carina Nebula.">
-  <div class="starfield" aria-hidden="true"></div>
+  <img src="/assets/art/galaxy/carina-1600.webp" width="1920" height="1111" alt="">
   <div class="hero-inner wide">
     <h1>Superposition</h1>
     <input class="visually-hidden crawl-switch" type="checkbox" id="crawl-hold">
