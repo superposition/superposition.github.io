@@ -68,19 +68,21 @@ The instrument identity sets `--font-text` to the mono face as well, so everythi
 |---|---|---|
 | `--step-hero` | `clamp(48px, 10.4vw, 150px)` | the home wordmark |
 | `--step-5` | `clamp(28px, 4.4vw, 44px)` | page and entry h1 |
-| `--step-4` | `clamp(19px, 2vw, 22px)` | lede, section titles, prose h2 |
-| `--step-3` | `17px` | body |
+| `--step-4` | `clamp(19px, 2vw, 22px)` | lede, section titles |
+| `--step-3` | `19px` | body |
 | `--step-2` | `15px` | entry lines |
 | `--step-1` | `13px` | meta, captions, buttons |
 | `--step-decal` | `11px` | decal eyebrows |
 
-Line height is `--leading-body` (1.7) for prose and `--leading-tight` (1.1) for display sizes. Measures are `--measure` (64ch) for prose, `--measure-narrow` (46ch) for lede text, `--max-crawl` (56ch) for the crawl.
+Line height is `--leading-body` (1.6) for prose and `--leading-tight` (1.1) for display sizes. Measures are `--measure` (34rem, 544px) for prose, `--measure-narrow` (30rem) for lede text, `--max-crawl` (56ch) for the crawl.
+
+A prose section heading is not display type. `h2` in prose is the label voice — IBM Plex Mono 600 at `--step-1`, uppercase, `--track-label`, in `--star` on the hairline — one rung above the `h3` that sits in the same voice at `--starlight`. Anton starts at `--step-4` and is the name a page is called by, not a heading inside a column: at 22px in a 544px column the condensed face reads as a shout at text size, and it overhangs nothing only because every block now shares one measure.
 
 Tracking is three tokens: `--track-label` (.10em, .16em instrument, .20em poster) for uppercase labels, `--track-display` (−.01em) for display type, `--track-hero` (.04em) for the wordmark. Display names are uppercase; a repository's own name and an entry's own title keep the case they were written with.
 
 ## Space, edges and motion
 
-`--space-1` … `--space-6` run 6px, 12px, 20px, 32px, `clamp(40px,5.4vw,72px)`, `clamp(56px,8vw,112px)`. `--radius` is 0 and `--border-hair` is the one hairline. The single exception is `--radius-decal` (3px), because a hardware label is a physical chip.
+`--space-1` … `--space-6` run 6px, 12px, 20px, 32px, `clamp(40px,5.4vw,72px)`, `clamp(56px,8vw,112px)`. Those size the inside of a component. Three named roles size the gaps between them, so a break of one kind is one number: `--flow` (`calc(var(--step-3) * 1.25)`, 23.75px) between blocks of prose, `--space-section` (`clamp(40px,5.4vw,72px)`) between the sections of a page, `--space-open` (`clamp(56px,8vw,112px)`) between the nav and the page's first line and again before the footer. `--radius` is 0 and `--border-hair` is the one hairline. The single exception is `--radius-decal` (3px), because a hardware label is a physical chip.
 
 ### The decal chip
 
@@ -91,6 +93,33 @@ The **topic dots are one amber dot**. They used to carry five sampled hues, whic
 `--hud-tick` (14px) and `--hud-weight` (1px) size the corner ticks. `--rail-bar` (3px), `--rail-pitch` (10px) and `--rail-cap` (1.5px) size the gauge rail; `--rail` is its colour.
 
 Motion is one thing: the home page's opening statement drifts 26px up and back over `--dur-crawl` (52s, 64s in the poster identity, none in the instrument identity), inside a frame whose edges fade. `--dur-slow` (24s) is the hero photograph's drift, and only the instrument identity uses it. `.crawl .lede` stops on the page's own Hold switch — a checkbox, so it is CSS-only and is the pause mechanism WCAG 2.2.2 asks for — and `prefers-reduced-motion: reduce` removes the motion, the tilt and the fade together.
+
+The second family is the answer to a pointer or a key. Four readings, all CSS, none of them changing geometry — each is a `color`, `border-color`, `box-shadow`, `opacity` or `transform` change, so no state reflows a line:
+
+| Token | Value | Use |
+|---|---|---|
+| `--dur-sweep` | `200ms` | the hairline that draws under a command |
+| `--dur-state` | `140ms` | colour on a link; a button's fill, edge and bloom |
+| `--dur-glide` | `340ms` | the 2% growth of a card thumbnail |
+| `--ease-out` | `cubic-bezier(.2,.55,.25,1)` | every state reading |
+
+**Commands sweep, references underline.** The wordmark, nav links, topic links, card titles and the entry and repository rows carry a 1px hairline in `currentColor`, scaled from 0 to full width out of the left edge on hover, on `:focus-visible` and on `[aria-current]` — so the page you are on and the row the keyboard is on read like the row under the pointer. It is a `transform` on a pseudo-element, so it composites and takes whatever colour the identity sets the link in. Prose links and `.text-link` are references: they keep a resting rule and thicken from 1px to 2px.
+
+A link that can wrap is not a command. `.repo-list` was the one that proved it: its links fragment into two to four line boxes (19 of 20 at 1440, 20 of 20 at 420) and a pseudo-element hairline lands under the first line only, so those links underline on hover instead. Any new link that can wrap belongs with them.
+
+**Buttons fade, and press instantly.** `.btn` fades its fill, edge and bloom over `--dur-state`; the 1px `:active` press has no transition on purpose — a press that eases reads as lag.
+
+**Pictures develop.** The image inside `.prose figure`, `.plate` and `.cast-portrait` fades 0→1 over the first 25% of its own entry into the viewport, on its `view()` timeline. The caption never fades: a caption is text and keeps the contrast it was measured at. A browser without scroll-driven animations shows the picture at once, with nothing hidden behind a class or a script.
+
+**The card thumbnail grows** 2% under the pointer, inside the card's own 10px padding, so the HUD frame never clips it.
+
+### Reduced motion
+
+Both families stop, in the two places they are declared:
+
+- `tokens.css` zeroes `--dur-sweep`, `--dur-state` and `--dur-glide`, so every state still arrives — at once, with no fade to follow.
+- `notebook.css` stops the moves, which have no duration to zero: the crawl loses its motion, tilt and fade, and its Hold switch goes with them; the hero drift stops; the picture reveal is dropped and its images sit at full opacity; the thumbnail does not grow.
+
 
 ## Components
 
