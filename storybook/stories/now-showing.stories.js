@@ -9,13 +9,13 @@ const shows = [
   { title: 'NAIWAN 91', film: 'Three standards, one groovebox', genre: 'Musical', still: '/assets/repos/91/hero-752.webp' },
   { title: 'Cold Front', film: 'Eyes only, 71°10′N', genre: 'Espionage', still: '/assets/repos/coldfront/landing.webp' },
   { title: 'Hallway Shooter', film: 'Three hundred and twenty units', genre: 'Action', still: '/assets/art/galaxy/carina-1600.webp' },
-  { title: 'Cannoli Hell', film: 'Four caves, one capsule', genre: 'Action', still: '/assets/repos/cannoli-hell/arena.webp' },
+  { title: 'Cannoli Hell', film: 'Four caves, one capsule', genre: 'Action', still: '/assets/repos/cannoli-hell/arena-play-1280.webp' },
 ];
 
 const card = ({ title, film, genre, still, field }, i) => `<li class="strip-item">
   <article class="poster poster--${field ? 'field' : 'still'}">
     <a class="poster-link" href="#storybook-root">
-      <span class="poster-art">${field ? '' : `<img src="${still}" alt="" width="1200" height="1200" loading="lazy" decoding="async">`}<span class="poster-no">${i + 1} of 6</span></span>
+      <span class="poster-art">${field ? '' : `<img src="${still}" alt="" loading="lazy" decoding="async">`}<span class="poster-no">${i + 1} of 6</span></span>
       <span class="poster-body">
         <span class="poster-genre">${genre}</span>
         <span class="poster-title">${title}</span>
