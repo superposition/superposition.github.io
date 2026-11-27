@@ -2072,6 +2072,19 @@ html.motion .plate img { animation: none; }
   .strip-track { animation: none; }
   .strip-toggle, .strip-pause { display: none; }
   .map-bug .crawl-hold { display: none; }
+  /* The scene: every handle it moves stops, and a switch that pauses a still
+     scene is a control with nothing to do, so it goes with them. What is left
+     is the composed file exactly as it was written. */
+  .scene-frame #scene-city,
+  .scene-frame #scene-traffic-back,
+  .scene-frame #scene-station,
+  .scene-frame #scene-traffic-front,
+  .scene-frame #signal-pulse,
+  .scene-frame #docking-shuttle,
+  .scene-frame #drone-a,
+  .scene-frame #drone-b,
+  .scene-frame #alignment-line { animation: none; transform: none; }
+  .scene-switch, .scene-hold { display: none; }
 }
 
 /* Forest ------------------------------------------------------------------ */
@@ -2235,16 +2248,4 @@ html.motion .plate img { animation: none; }
   .forest-poster-title { font-size: var(--step-4); }
   .forest-poster-line { font-size: var(--step-1); }
   .forest-sentence { font-size: var(--step-2); min-height: calc(var(--step-2) * var(--leading-body) * 4); }
-  /* The scene: every handle it moves stops, and a switch that pauses a still
-     scene is a control with nothing to do, so it goes with them. What is left
-     is the composed file exactly as it was written. */
-  .scene-frame #scene-city,
-  .scene-frame #scene-traffic-back,
-  .scene-frame #scene-station,
-  .scene-frame #scene-traffic-front,
-  .scene-frame #signal-pulse,
-  .scene-frame #docking-shuttle,
-  .scene-frame #drone-a,
-  .scene-frame #drone-b,
-  .scene-frame #alignment-line { animation: none; transform: none; }
-  .scene-switch, .scene-hold { display: none; }}
+}
