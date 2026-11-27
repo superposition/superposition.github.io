@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="400" viewBox="0 0 320 400" role="img" aria-labelledby="series-gauge-title">
+  <title id="series-gauge-title">Gauge-3, the engine mechanic: a squat amber-suited figure in a cream diving-bell helmet whose face is a working pressure dial, one oversized cream fist on each side.</title>
+  <g stroke="#0b0a0d" stroke-width="7" stroke-linejoin="miter">
+    <!-- legs and boots -->
+    <rect x="104" y="284" width="44" height="38" fill="#E6DCC8"/>
+    <rect x="172" y="284" width="44" height="38" fill="#E6DCC8"/>
+    <path d="M92 320 L152 320 L152 348 L92 348 Z" fill="#E6DCC8"/>
+    <path d="M168 320 L228 320 L228 348 L168 348 Z" fill="#E6DCC8"/>
+    <!-- fists -->
+    <path d="M52 268 L100 268 L100 322 L52 322 Z" fill="#E6DCC8"/>
+    <rect x="58" y="286" width="34" height="10" fill="#8FD3FF" stroke="none"/>
+    <path d="M228 268 L272 268 L272 312 L228 312 Z" fill="#E6DCC8"/>
+    <rect x="234" y="284" width="32" height="10" fill="#8FD3FF" stroke="none"/>
+    <!-- arms -->
+    <rect x="58" y="224" width="30" height="48" fill="#FFC24A"/>
+    <rect x="234" y="224" width="30" height="48" fill="#FFC24A"/>
+    <!-- body -->
+    <path d="M78 190 L242 190 L232 288 L88 288 Z" fill="#FFC24A"/>
+    <!-- shoulder plates -->
+    <path d="M60 188 L98 188 L98 228 L60 228 Z" fill="#E6DCC8"/>
+    <path d="M222 188 L260 188 L260 228 L222 228 Z" fill="#E6DCC8"/>
+    <!-- chest inspection plate -->
+    <rect x="126" y="204" width="68" height="56" fill="#0b0a0d"/>
+    <g stroke="none">
+      <rect x="136" y="214" width="48" height="5" fill="#E6DCC8"/>
+      <rect x="136" y="228" width="48" height="5" fill="#E6DCC8"/>
+      <rect x="136" y="242" width="48" height="5" fill="#E6DCC8"/>
+      <rect x="176" y="212" width="7" height="42" fill="#8FD3FF"/>
+    </g>
+    <!-- helmet dome -->
+    <path d="M94 172 L94 132 C94 90 126 62 160 62 C194 62 226 90 226 132 L226 172 Z" fill="#E6DCC8"/>
+    <!-- chin band -->
+    <rect x="94" y="170" width="132" height="18" fill="#FFC24A"/>
+    <!-- the dial that is his face -->
+    <circle cx="160" cy="122" r="44" fill="#0b0a0d"/>
+    <path d="M124 109 A38 38 0 0 1 196 109" fill="none" stroke="#FFC24A" stroke-width="8"/>
+    <g fill="#FFC24A" stroke="none">
+      <rect x="122" y="102" width="6" height="10"/>
+      <rect x="157" y="84" width="6" height="10"/>
+      <rect x="192" y="102" width="6" height="10"/>
+    </g>
+    <path d="M152 138 L186 106" stroke="#E6DCC8" stroke-width="7" stroke-linecap="butt"/>
+    <circle cx="160" cy="122" r="11" fill="#8FD3FF" stroke="none"/>
+  </g>
+</svg>

@@ -28,6 +28,11 @@ sitemap: false
       <li class="swatch"><div class="chip" style="background: var(--teal-text)"></div><div class="label"><b>--teal-text</b>#3f97ad · 5.9:1</div></li>
       <li class="swatch"><div class="chip" style="background: var(--plum)"></div><div class="label"><b>--plum</b>#6b3f4d · fill only</div></li>
       <li class="swatch"><div class="chip" style="background: var(--plum-mark)"></div><div class="label"><b>--plum-mark</b>#9a5e72 · 3.4:1 mark</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--amber)"></div><div class="label"><b>--amber</b>#ffc24a · 12.3:1 · the series signal</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--cyan)"></div><div class="label"><b>--cyan</b>#8fd3ff · 12.2:1 · the second signal</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--cream)"></div><div class="label"><b>--cream</b>#e6dcc8 · 14.5:1 · the series body</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--alert)"></div><div class="label"><b>--alert</b>#e2402f · 4.1:1 surface · marks only</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--alert-text)"></div><div class="label"><b>--alert-text</b>#f4735f · 6.1:1 surface</div></li>
     </ul>
   </section>
 

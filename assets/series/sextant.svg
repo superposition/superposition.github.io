@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="400" viewBox="0 0 320 400" role="img" aria-labelledby="series-sextant-title">
+  <title id="series-sextant-title">Sextant-2, the navigator: a tall cream-robed figure with a narrow helmet and a single vertical cyan slit, standing inside a broken cyan orbit that carries two amber marks, one arm out to a small cream sighting ring.</title>
+  <!-- the broken orbit -->
+  <circle cx="160" cy="150" r="82" fill="none" stroke="#0b0a0d" stroke-width="21"/>
+  <circle cx="160" cy="150" r="82" fill="none" stroke="#8FD3FF" stroke-width="10" stroke-dasharray="176 30 96 30 168 30 24"/>
+  <circle cx="223" cy="97" r="13" fill="#FFC24A" stroke="#0b0a0d" stroke-width="5"/>
+  <circle cx="83" cy="122" r="13" fill="#FFC24A" stroke="#0b0a0d" stroke-width="5"/>
+  <g stroke="#0b0a0d" stroke-width="7" stroke-linejoin="miter">
+    <!-- left arm -->
+    <rect x="102" y="208" width="22" height="78" fill="#E6DCC8"/>
+    <!-- base -->
+    <path d="M116 320 L204 320 L216 348 L104 348 Z" fill="#E6DCC8"/>
+    <rect x="126" y="330" width="68" height="9" fill="#FFC24A" stroke="none"/>
+    <!-- robe -->
+    <path d="M126 196 L194 196 L210 320 L110 320 Z" fill="#E6DCC8"/>
+    <!-- chart panel -->
+    <rect x="140" y="212" width="40" height="76" fill="#0b0a0d"/>
+    <g stroke="none" fill="#8FD3FF">
+      <circle cx="150" cy="228" r="4"/>
+      <circle cx="170" cy="246" r="4"/>
+      <circle cx="156" cy="266" r="4"/>
+    </g>
+    <circle cx="166" cy="282" r="4" fill="#FFC24A" stroke="none"/>
+    <!-- neck -->
+    <rect x="150" y="178" width="20" height="18" fill="#0b0a0d" stroke="none"/>
+    <!-- helmet -->
+    <path d="M138 86 L182 86 L192 100 L192 164 L182 178 L138 178 L128 164 L128 100 Z" fill="#E6DCC8"/>
+    <rect x="155" y="100" width="10" height="64" fill="#8FD3FF" stroke="none"/>
+    <path d="M134 88 L186 88 L186 70 L134 70 Z" fill="#FFC24A"/>
+  </g>
+  <!-- sighting arm -->
+  <path d="M196 214 L240 258" fill="none" stroke="#0b0a0d" stroke-width="27"/>
+  <path d="M196 214 L240 258" fill="none" stroke="#E6DCC8" stroke-width="14"/>
+  <circle cx="248" cy="266" r="15" fill="none" stroke="#0b0a0d" stroke-width="20"/>
+  <circle cx="248" cy="266" r="15" fill="none" stroke="#E6DCC8" stroke-width="8"/>
+</svg>

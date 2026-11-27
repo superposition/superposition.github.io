@@ -67,6 +67,16 @@ const pairs = [
   ['hairline rule',       'line',        'void',        'divider'],
   ['hairline in block',   'line',        'surface',     'divider'],
   ['ghost hover fill',    'surface',     'void',        'divider'],
+  ['series signal',       'amber',       'void',        'text'],
+  ['series signal block', 'amber',       'surface',     'text'],
+  ['series second',       'cyan',        'void',        'text'],
+  ['series second block', 'cyan',        'surface',     'text'],
+  ['series body',         'cream',       'void',        'text'],
+  ['series body block',   'cream',       'surface',     'text'],
+  ['series alert type',   'alert-text',  'surface',     'text'],
+  ['series alert mark',   'alert',       'void',        'edge'],
+  ['series alert block',  'alert',       'surface',     'edge'],
+  ['series outline',      'void',        'cream',       'edge'],
 ];
 
 let failures = 0;

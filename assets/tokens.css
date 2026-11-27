@@ -16,6 +16,13 @@
      --teal-text    5.9 /  5.6 /  5.1   state where it is text
      --plum         2.3 /  2.2 /  2.0   never text; fill only
      --plum-mark    3.4 /  3.2 /  3.0   the plum mark on dark, at edge contrast
+
+   The Network series colours, measured the same way:
+     --amber       12.3 / 11.7 / 10.7   the series signal; type and light
+     --cyan        12.2 / 11.5 / 10.6   the series second signal; type and light
+     --cream       14.5 / 13.8 / 12.7   the series body; type
+     --alert        4.7 /  4.5 /  4.1   alerts: marks and edges only, never type
+     --alert-text   7.0 /  6.7 /  6.1   the same alert where it is small type
 */
 
 :root {
@@ -41,6 +48,16 @@
   --nebula-text: #6f93c9;
   --teal-text: #3f97ad;
   --plum-mark: #9a5e72;
+
+  /* The Network: the colours the series cast emits. Warmth here is light on
+     dark metal, not paint, so these run brighter than the sampled palette and
+     are used for light, marks and the cast's own type. --alert is edges only;
+     --alert-text is the lift that carries it as small type. */
+  --amber: #ffc24a;
+  --cyan: #8fd3ff;
+  --cream: #e6dcc8;
+  --alert: #e2402f;
+  --alert-text: #f4735f;
 
   /* Typefaces: display self-hosted, text and mono from the system. */
   --font-display: Anton, Impact, 'Arial Narrow', sans-serif;
