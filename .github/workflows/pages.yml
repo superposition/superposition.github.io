@@ -31,6 +31,24 @@ jobs:
         if: github.event_name != 'pull_request'
         with:
           path: ./_site
+  workbench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: storybook/package-lock.json
+      - name: Install
+        working-directory: storybook
+        run: npm ci
+      - name: Build the workbench
+        working-directory: storybook
+        run: npm run build-storybook
+      - name: Measure contrast
+        working-directory: storybook
+        run: npm run contrast
   deploy:
     if: github.event_name != 'pull_request'
     needs: build
