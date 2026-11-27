@@ -345,13 +345,15 @@ def build(seed, constellations, density, angle):
         x, y = orbit.point(t)
         return (x, y, orbit.tangent(t), size)
 
-    def craft_on(orbit, d0, d1, count, size, lo=130, hi=760):
+    def craft_on(orbit, d0, d1, count, size, lo=126, hi=760, pad=2.8):
+        """Place craft on a path, keeping each craft's own outline inside the band."""
         made = []
         for i in range(count):
+            s = rng.uniform(*size)
             t = d0 + (d1 - d0) * (i + rng.uniform(0.25, 0.75)) / count
             x, y = orbit.point(t)
-            if -140 < x < W + 140 and lo < y < hi:
-                made.append(craft_at(orbit, t, rng.uniform(*size)))
+            if -140 < x < W + 140 and lo + pad * s < y < hi:
+                made.append((x, y, orbit.tangent(t), s))
         return made
 
     def draw(made, family, band):
@@ -371,7 +373,9 @@ def build(seed, constellations, density, angle):
         orbit, d0, d1 = shape_orbit(shape, rng)
         d0, d1 = fit_band(orbit, d0, d1)
         back.append(trail(orbit, d0, d1, 2, density, 1, opacity))
-        made = craft_on(orbit, d0, d1, max(1, count + rng.choice((-1, 0, 0, 1))), size)
+        pad = {"inspector": 2.8, "relay": 1.6, "bus": 0.85}[family]
+        made = craft_on(orbit, d0, d1, max(1, count + rng.choice((-1, 0, 0, 1))), size,
+                        pad=pad)
         back.extend(draw(made, family, "sky"))
         rows.append(dict(name=name, rx=orbit.rx, ry=orbit.ry, rot=orbit.rot,
                          d0=d0, d1=d1, ext=extent(orbit, d0, d1), craft=len(made),
@@ -395,7 +399,7 @@ def build(seed, constellations, density, angle):
         orbit, d0, d1 = shape_orbit(shape, rng)
         d0, d1 = fit_band(orbit, d0, d1)
         back.append(trail(orbit, d0, d1, 1, density * 1.6, 1, opacity))
-        made = craft_on(orbit, d0, d1, count, (4.2, 5.6), 130, 960)
+        made = craft_on(orbit, d0, d1, count, (4.2, 5.6), 126, 960, 2.8)
         back.extend(draw(made, "inspector", "sky"))
         rows.append(dict(name=name, rx=orbit.rx, ry=orbit.ry, rot=orbit.rot,
                          d0=d0, d1=d1, ext=extent(orbit, d0, d1), craft=len(made),
@@ -407,7 +411,7 @@ def build(seed, constellations, density, angle):
     # near sky: a bowl across the bottom, cropped at both side edges
     bowl, b0, b1 = shape_orbit(FG_BOWL, rng)
     front.append(trail(bowl, b0, b1, 20, 36, 2, 0.65))
-    on_bowl = draw(craft_on(bowl, b0, b1, 1, (58, 58), 1080, 1460), "bus", "front")
+    on_bowl = draw(craft_on(bowl, b0, b1, 1, (58, 58), 1080, 1460, 0.85), "bus", "front")
     front.extend(on_bowl)
     rows.append(dict(name="bowl", rx=bowl.rx, ry=bowl.ry, rot=bowl.rot, d0=b0, d1=b1,
                      ext=extent(bowl, b0, b1), craft=len(on_bowl), live=True))

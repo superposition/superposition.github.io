@@ -71,5 +71,5 @@ and the far-focus arcs (the domes and the foreground bowl) carry their centre al
 with their radius jitter, so their visible extreme stays put. `--stats` prints each
 path's radii, span, x and y extent and craft count, which is how the band contract in
 this document was measured: across seeds 1977, 1042, 3301 and 8842 the far sky holds
-0.9–1.1% of its band in ink, the station's airspace 0.4–0.8%, and the foreground band
-8.3–8.8%, with nothing drawn above y 120.
+0.9–1.2% of its band in ink, the station's airspace 0.5–0.7%, and the foreground band
+8.3–8.7%, with nothing drawn above y 120.
