@@ -1,10 +1,15 @@
 - slug: data-informatics
   name: Data informatics
+  colour: clay
 - slug: ai
   name: AI
+  colour: pine
 - slug: matrices
   name: Matrices
+  colour: ochre
 - slug: kinematics
   name: Kinematics
+  colour: slate
 - slug: cryptographic-proofs
   name: Cryptographic proofs
+  colour: plum
