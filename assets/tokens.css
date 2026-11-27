@@ -394,6 +394,12 @@
   /* Heights and one-off measures. A hero is measured against the screen it
      opens on, so it is the one place a viewport unit is the honest answer. */
   --hero-min: 88svh;
+  /* The forest's stage. 4:3 is the console's own frame and the shape of the
+     320 × 240 framebuffer the scene draws into; 960px is the widest that frame
+     is allowed to get, which makes the upscale exactly 3× on a laptop and
+     leaves the picture hard-edged instead of smooth. */
+  --forest-aspect: 4 / 3;
+  --forest-stage: 960px;
   --hero-min-instrument: 82svh;
   --hero-min-poster: 92svh;
   --crawl-perspective: 760px;

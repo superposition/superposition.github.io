@@ -58,6 +58,7 @@
     <nav aria-label="Main navigation">
       <a href="{{ '/projects/' | relative_url }}" {% if page.url == '/projects/' or page.collection == 'repos' %}aria-current="page"{% endif %}>Repositories</a>
       <a class="nav-showing" href="{{ '/now-showing/' | relative_url }}" {% if page.url == '/now-showing/' %}aria-current="page"{% endif %}>Now showing</a>
+      <a class="nav-forest" href="{{ '/forest/' | relative_url }}" {% if page.url == '/forest/' %}aria-current="page"{% endif %}>Forest</a>
       <a href="{{ '/journal/' | relative_url }}" {% if page.url == '/journal/' or page.collection == 'posts' %}aria-current="page"{% endif %}>Journal</a>
       <a class="nav-series" href="{{ '/series/' | relative_url }}" {% if page.url == '/series/' %}aria-current="page"{% endif %}>Series</a>
       <a class="nav-garden" href="{{ '/garden/' | relative_url }}" {% if page.url == '/garden/' %}aria-current="page"{% endif %}>Garden</a>
