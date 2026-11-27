@@ -124,6 +124,7 @@ const CONTROLS = [
   { name: 'Button', selector: '.btn', disabled: true },
   { name: 'Command link', selector: '.text-link', type: ['--step-1', 1.7] },
   { name: 'Footer link', selector: '.site-footer a', type: ['--step-1', 1.8] },
+  { name: 'Soundtrack', selector: '.soundtrack-toggle', type: ['--step-1', 1.8] },
   { name: 'Nav link', selector: '.site-header nav a', type: ['--step-1', 1.6], narrowType: ['--step-header', 1.6] },
   { name: 'Wordmark', selector: '.home-link', type: ['--step-1', 1.6], narrowType: ['--step-header', 1.6] },
   { name: 'Topic link', selector: '.topic-list a', type: ['--step-2', 1.6] },

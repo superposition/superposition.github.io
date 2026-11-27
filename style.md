@@ -127,6 +127,15 @@ sitemap: false
     </div>
 
     <div class="sg-example">
+      <p class="kicker">Soundtrack · the footer of every page</p>
+      <div class="sg-stack">
+        <p><button class="soundtrack-toggle" type="button" aria-pressed="false" aria-label="Play the soundtrack"><svg class="soundtrack-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path class="soundtrack-play" d="M1 0.5 11 6 1 11.5Z"/><path class="soundtrack-pause" d="M1 0.5h3.2v11H1Zm6.8 0H11v11H7.8Z"/></svg>Soundtrack</button></p>
+        <p><button class="soundtrack-toggle" type="button" aria-pressed="true" aria-label="Pause the soundtrack" data-pref="on"><svg class="soundtrack-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path class="soundtrack-play" d="M1 0.5 11 6 1 11.5Z"/><path class="soundtrack-pause" d="M1 0.5h3.2v11H1Zm6.8 0H11v11H7.8Z"/></svg>Soundtrack</button></p>
+      </div>
+      <p class="meta">Play, then pause. It is the one control on the site sized to a thumb — 44px square, where every other target clears 24px from its padding — because it is pressed on a phone in the footer. The word never changes and the glyph swaps inside the same 12px box, so the row cannot reflow when the state does; the second one is what a listener who has asked for the music sees, in the accent, and the stored choice still never starts a note on its own. Hover, tab and hold: the states are live.</p>
+    </div>
+
+    <div class="sg-example">
       <p class="kicker">Table · /projects/, 33 repositories in one compact table</p>
       <table class="table table--compact">
         <caption>Every public repository, newest push first — four real rows</caption>
