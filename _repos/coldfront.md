@@ -19,7 +19,7 @@ Cold Front is a dark landing page for a fictional Arctic espionage mission. It o
   <img src="/assets/repos/coldfront/landing.webp"
        srcset="/assets/repos/coldfront/landing-1200.webp 1200w, /assets/repos/coldfront/landing-2400.webp 2400w"
        sizes="(min-width: 1040px) 1000px, 100vw"
-       width="1200" height="834" loading="lazy"
+       width="1200" height="834" loading="lazy" style="height:auto"
        alt="The Cold Front landing page: an oversized COLD FRONT headline beside a live-intelligence rail showing satellite cover at 04 percent.">
   <figcaption>The static export in a 1440×1000 window; the chip at top right is the auth dock reporting an unconfigured Clerk application.</figcaption>
 </figure>

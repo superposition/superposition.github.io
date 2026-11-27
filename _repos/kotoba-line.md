@@ -19,7 +19,7 @@ Kotoba Line is a Japanese reading game reached over `ssh`. There is no shell or 
   <img src="/assets/repos/kotoba-line/drill.webp"
        srcset="/assets/repos/kotoba-line/drill-1200.webp 1200w, /assets/repos/kotoba-line/drill-2400.webp 2400w"
        sizes="(min-width: 1040px) 1000px, 100vw"
-       width="1200" height="750" loading="lazy"
+       width="1200" height="750" loading="lazy" style="height:auto"
        alt="The Kotoba Line drill in a browser: a vocabulary panel showing 行く with its kana いく, and the form skill tree beside it.">
   <figcaption>The browser build in a 1280×800 window: the drill asking for the reading of 行く, with the skill tree beside it.</figcaption>
 </figure>
