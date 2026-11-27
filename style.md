@@ -197,6 +197,20 @@ sitemap: false
         <p class="empty-text">The first one is being written. <a href="#sg-parts">Follow by RSS</a> and it will arrive.</p>
       </div>
     </div>
+
+    <div class="sg-example">
+      <p class="kicker">Motion</p>
+      <p>Hover these, or tab through them. A command draws a 1px hairline under itself in 200ms; a reference link thickens its resting rule in 140ms. Neither moves anything else on the page.</p>
+      <ul class="topic-list">
+        <li><a href="#sg-parts">A command</a></li>
+        <li><a href="#sg-parts">another command</a></li>
+      </ul>
+      <ul class="entry-list" style="margin-top: var(--space-2)">
+        <li><a class="entry" href="#sg-parts"><span class="entry-date">27 Nov 2026</span><span class="entry-title">An entry row sweeps under the whole line</span></a></li>
+      </ul>
+      <p style="margin-top: var(--space-2)"><a class="text-link" href="#sg-parts">A reference link</a> · <a href="#sg-parts">a prose link</a></p>
+      <p class="empty">Figures develop on scroll with the entry and repository pages; the hero photograph drifts on the home page.</p>
+    </div>
   </section>
 
   <section class="sg-section" aria-labelledby="sg-identities">

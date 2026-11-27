@@ -67,6 +67,8 @@ a {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
+  transition: color var(--dur-state) var(--ease-out),
+              text-decoration-thickness var(--dur-state) var(--ease-out);
 }
 a:hover { text-decoration-thickness: 2px; }
 a:focus-visible { outline: 2px solid var(--state); outline-offset: 4px; box-shadow: var(--glow-state); }
@@ -326,8 +328,58 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 /* Link ------------------------------------------------------------------- */
 
 /* A chrome link: reads as text, carries an underline at rest. */
-.text-link { text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 2px; }
+.text-link {
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  transition: color var(--dur-state) var(--ease-out),
+              border-bottom-width var(--dur-state) var(--ease-out);
+}
 .text-link:hover { text-decoration: none; border-bottom-width: 2px; }
+
+/* A command link: the shared hover, focus and current-page signal for chrome
+   links and for the rows that behave like them, written once here rather than
+   per component. A 1px hairline in currentColor scales out of the left edge; it
+   is a transform on a pseudo-element, so it composites instead of repainting
+   the text above it, and it carries whatever colour the link is set in — amber
+   in the shipped identity, cyan where an identity makes state the accent. */
+.home-link,
+.site-header nav a,
+.topic-list a,
+.card-title,
+.repo-row,
+.entry { position: relative; --sweep: 0; }
+
+.home-link::after,
+.site-header nav a::after,
+.topic-list a::after,
+.card-title::after,
+.repo-row::after,
+.entry::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -1px 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(var(--sweep));
+  transform-origin: 0 50%;
+  transition: transform var(--dur-sweep) var(--ease-out);
+  pointer-events: none;
+}
+
+.home-link:hover,
+.home-link:focus-visible,
+.site-header nav a:hover,
+.site-header nav a:focus-visible,
+.site-header nav [aria-current],
+.topic-list a:hover,
+.topic-list a:focus-visible,
+.card:hover .card-title,
+.card:focus-visible .card-title,
+.repo-row:hover,
+.repo-row:focus-visible,
+.entry:hover,
+.entry:focus-visible { --sweep: 1; }
 
 /* Button ----------------------------------------------------------------- */
 
@@ -353,6 +405,11 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   text-decoration: none;
   cursor: pointer;
   appearance: none;
+  transition: color var(--dur-state) var(--ease-out),
+              border-color var(--dur-state) var(--ease-out),
+              background-color var(--dur-state) var(--ease-out),
+              box-shadow var(--dur-state) var(--ease-out),
+              border-bottom-width var(--dur-state) var(--ease-out);
 }
 .btn:hover { text-decoration: none; }
 .btn:focus-visible { outline: 2px solid var(--state); outline-offset: 3px; box-shadow: var(--glow-state); }
@@ -421,7 +478,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   font: var(--step-3)/1.6 var(--font-mono);
 }
 .topic-list a { color: var(--star); text-decoration: none; }
-.topic-list a:hover { color: var(--accent-text); text-decoration: underline; }
+.topic-list a:hover { color: var(--accent-text); }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
 .topic-list .dot { margin-right: 9px; }
 .topic-list li { display: flex; align-items: center; }
@@ -444,7 +501,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   text-decoration: none;
 }
 .card-media { display: block; margin-bottom: var(--space-1); }
-.card-media img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+.card-media img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; transition: transform var(--dur-glide) var(--ease-out); }
 .card-kicker {
   display: block;
   margin-bottom: 4px;
@@ -458,6 +515,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   font-size: var(--step-4);
   line-height: 1.2;
   color: var(--star);
+  transition: color var(--dur-state) var(--ease-out);
 }
 .card-text {
   display: block;
@@ -528,6 +586,7 @@ html[data-lab="a"] .repo-name { font-weight: 400; }
   text-decoration: none;
   font: var(--step-2)/1.7 var(--font-mono);
   padding-block: 2px;
+  color: var(--accent-text);
 }
 .entry-date {
   color: var(--dust);
@@ -553,7 +612,6 @@ html[data-lab="a"] .repo-name { font-weight: 400; }
   color: var(--accent-text);
 }
 .entry-dek { font-family: var(--font-text); color: var(--starlight); grid-column: 2; }
-.entry:hover .entry-title { text-decoration: underline; }
 
 /* Figure ----------------------------------------------------------------- */
 
@@ -1076,6 +1134,30 @@ html[data-lab="b"] .page-heading h1 { letter-spacing: .02em; }
 html[data-lab="b"] .entry-date::before { border-radius: 50%; }
 html[data-lab="b"] .empty-title { color: var(--star); }
 
+/* Motion ----------------------------------------------------------------- */
+/* What a picture does when the page reaches it. The reveal is tied to the
+   element's own view() timeline rather than to a timer, and it is on the image,
+   never the figure: a caption is text and keeps the contrast it was measured
+   at. A browser without scroll-driven animations shows the picture at once —
+   no class, no script, nothing hidden — and the reduced-motion block at the
+   end of this file stops it along with the rest. The page's own slow moves
+   (the crawl, the instrument's hero drift) are declared above, in their
+   sections. */
+
+@supports (animation-timeline: view()) {
+  .prose figure img,
+  .plate img,
+  .cast-portrait {
+    animation-name: figure-in;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 25%;
+  }
+}
+
+@keyframes figure-in { from { opacity: 0; } }
+
 /* Narrow ----------------------------------------------------------------- */
 
 @media (max-width: 700px) {
@@ -1128,8 +1210,19 @@ html[data-lab="b"] .empty-title { color: var(--star); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  /* The instrument identity declares the hero drift as `html[data-lab="a"]
+     .hero img`, which outranks a bare `.hero img`; without the attribute here
+     the photograph keeps drifting for the readers who asked it not to. */
+  html[data-lab] .hero img { animation: none; }
   .hero img { animation: none; }
   .crawl .lede { animation: none; transform: none; }
   .crawl { mask-image: none; -webkit-mask-image: none; }
   .crawl-hold, .crawl-switch { display: none; }
+  /* The state fades are zeroed in tokens.css; these are the moves, which have
+     no duration to zero. */
+  .prose figure img,
+  .plate img,
+  .cast-portrait { animation: none; opacity: 1; }
+  .card:hover .card-media img,
+  .card:focus-visible .card-media img { transform: none; }
 }

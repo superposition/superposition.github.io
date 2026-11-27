@@ -83,6 +83,33 @@ Tracking is three tokens: `--track-label` (.10em, .16em instrument, .20em poster
 
 Motion is one thing: the home page's opening statement drifts 26px up and back over `--dur-crawl` (52s, 64s in the poster identity, none in the instrument identity), inside a frame whose edges fade. `--dur-slow` (24s) is the hero photograph's drift, and only the instrument identity uses it. `.crawl .lede` stops on the page's own Hold switch — a checkbox, so it is CSS-only and is the pause mechanism WCAG 2.2.2 asks for — and `prefers-reduced-motion: reduce` removes the motion, the tilt and the fade together.
 
+The second family is the answer to a pointer or a key. Four readings, all CSS, none of them changing geometry — each is a `color`, `border-color`, `box-shadow`, `opacity` or `transform` change, so no state reflows a line:
+
+| Token | Value | Use |
+|---|---|---|
+| `--dur-sweep` | `200ms` | the hairline that draws under a command |
+| `--dur-state` | `140ms` | colour on a link; a button's fill, edge and bloom |
+| `--dur-glide` | `340ms` | the 2% growth of a card thumbnail |
+| `--ease-out` | `cubic-bezier(.2,.55,.25,1)` | every state reading |
+
+**Commands sweep, references underline.** The wordmark, nav links, topic links, card titles and the entry and repository rows carry a 1px hairline in `currentColor`, scaled from 0 to full width out of the left edge on hover, on `:focus-visible` and on `[aria-current]` — so the page you are on and the row the keyboard is on read like the row under the pointer. It is a `transform` on a pseudo-element, so it composites and takes whatever colour the identity sets the link in. Prose links and `.text-link` are references: they keep a resting rule and thicken from 1px to 2px.
+
+A link that can wrap is not a command. `.repo-list` was the one that proved it: its links fragment into two to four line boxes (19 of 20 at 1440, 20 of 20 at 420) and a pseudo-element hairline lands under the first line only, so those links underline on hover instead. Any new link that can wrap belongs with them.
+
+**Buttons fade, and press instantly.** `.btn` fades its fill, edge and bloom over `--dur-state`; the 1px `:active` press has no transition on purpose — a press that eases reads as lag.
+
+**Pictures develop.** The image inside `.prose figure`, `.plate` and `.cast-portrait` fades 0→1 over the first 25% of its own entry into the viewport, on its `view()` timeline. The caption never fades: a caption is text and keeps the contrast it was measured at. A browser without scroll-driven animations shows the picture at once, with nothing hidden behind a class or a script.
+
+**The card thumbnail grows** 2% under the pointer, inside the card's own 10px padding, so the HUD frame never clips it.
+
+### Reduced motion
+
+Both families stop, in the two places they are declared:
+
+- `tokens.css` zeroes `--dur-sweep`, `--dur-state` and `--dur-glide`, so every state still arrives — at once, with no fade to follow.
+- `notebook.css` stops the moves, which have no duration to zero: the crawl loses its motion, tilt and fade, and its Hold switch goes with them; the hero drift stops; the picture reveal is dropped and its images sit at full opacity; the thumbnail does not grow.
+
+
 ## Components
 
 `notebook.css` builds these over the tokens, one section per component:

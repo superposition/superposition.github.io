@@ -181,10 +181,22 @@
   --hud-tick: 14px;
   --hud-weight: 1px;
 
-  /* Motion. One slow move, on the home page only. */
+  /* Motion. Two families. The slow moves a page makes on its own: the opening
+     statement's crawl over --dur-crawl, the hero photograph's drift over
+     --dur-slow. And the state readings anything the reader touches gets in
+     answer: the hairline that draws under a command, colour on a link, the
+     growth of a thumbnail. The second family only ever animates color,
+     border-color, box-shadow, opacity and transform, so a state never reflows
+     a line. Under prefers-reduced-motion the second family's durations go to
+     zero — see the block at the end of this file — and the first family's
+     animations are stopped in notebook.css. */
   --dur-slow: 24s;
   --dur-crawl: 52s;
+  --dur-sweep: 200ms;
+  --dur-state: 140ms;
+  --dur-glide: 340ms;
   --ease-soft: ease-in-out;
+  --ease-out: cubic-bezier(.2, .55, .25, 1);
 
   /* Layout. */
   --gutter: 24px;
@@ -282,4 +294,18 @@ html[data-lab="b"] {
   :root { --gutter: 18px; --track-label: .10em; --track-hero: .03em; }
   html[data-lab="a"] { --track-label: .13em; }
   html[data-lab="b"] { --track-label: .15em; --track-hero: .04em; }
+}
+
+/* Reduced motion, the state half. The durations go to zero rather than the
+   transitions being removed, so every state still arrives — it arrives at
+   once, with no fade to follow. The slow moves (the crawl, the hero drift)
+   are stopped where they are declared in notebook.css, which is also where
+   the reduced block removes the fade and the pause control that only exist
+   for them. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-sweep: 0s;
+    --dur-state: 0s;
+    --dur-glide: 0s;
+  }
 }
