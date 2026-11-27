@@ -1,5 +1,8 @@
 @charset "UTF-8";
-/* Superposition components. Every value comes from assets/tokens.css. */
+/* Superposition components. Every value comes from assets/tokens.css.
+   One section per component, in the order a page uses them. The same file is
+   what the /style/ page renders and what the Storybook workbench imports, so a
+   story and a page cannot drift apart. */
 
 @font-face {
   font-family: Anton;
@@ -35,7 +38,7 @@ a {
 }
 a:hover { text-decoration-thickness: 2px; }
 a:focus-visible { outline: 2px solid var(--teal); outline-offset: 4px; }
-img, svg { display: block; max-width: 100%; }
+img, svg { display: block; max-width: 100%; height: auto; }
 h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 
 /* Shell ------------------------------------------------------------------ */
@@ -63,7 +66,7 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 }
 .skip:focus { top: 12px; }
 
-/* Nav -------------------------------------------------------------------- */
+/* Nav --------------------------------------------------------------------- */
 
 .site-header {
   position: relative; z-index: 2;
@@ -79,7 +82,7 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 .site-header nav a:hover { color: var(--rust-text); }
 .site-header nav [aria-current] { color: var(--rust-text); }
 
-/* Hero ------------------------------------------------------------------- */
+/* Hero -------------------------------------------------------------------- */
 
 .hero {
   position: relative; isolation: isolate;
@@ -118,7 +121,7 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
   to { transform: scale(1.06); }
 }
 
-/* Type ------------------------------------------------------------------- */
+/* Type -------------------------------------------------------------------- */
 
 .lede {
   max-width: var(--measure-narrow);
@@ -137,10 +140,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   border-top: var(--border-hair);
 }
 
-/* Links and small text --------------------------------------------------- */
-
-.text-link { text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 2px; }
-.text-link:hover { text-decoration: none; border-bottom-width: 2px; }
+/* Small text -------------------------------------------------------------- */
 
 .kicker {
   font: var(--step-1)/1.6 var(--font-mono);
@@ -154,6 +154,93 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   color: var(--dust);
 }
 
+/* Link ------------------------------------------------------------------- */
+
+/* A chrome link: reads as text, carries an underline at rest. */
+.text-link { text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 2px; }
+.text-link:hover { text-decoration: none; border-bottom-width: 2px; }
+
+/* Button ----------------------------------------------------------------- */
+
+/* Measured: --rust fill carries --void type at 4.53:1, --rust-text at 5.55:1;
+   the secondary and ghost-hover edge is --dust (6.6:1 on void), the secondary
+   hover edge --rust-text (5.6:1);
+   --teal focus ring is 4.3:1 on void, over the 3:1 edge minimum. A ghost
+   button has no boundary by design, so its --starlight type (11.4:1) is the
+   whole affordance. Disabled is --dust type (6.6:1) inside a dashed --dust
+   edge, which is why it never drops below the text minimum. */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--space-1);
+  padding: 11px 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--star);
+  font: var(--step-1)/1.2 var(--font-mono);
+  text-transform: uppercase; letter-spacing: .08em;
+  text-decoration: none;
+  cursor: pointer;
+  appearance: none;
+}
+.btn:hover { text-decoration: none; }
+.btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+
+.btn-primary { background: var(--rust); border-color: var(--rust); color: var(--void); }
+.btn-primary:hover { background: var(--rust-text); border-color: var(--rust-text); }
+.btn-primary:active { background: var(--rust); border-color: var(--rust-text); }
+
+.btn-secondary { border-color: var(--dust); color: var(--star); }
+.btn-secondary:hover { border-color: var(--rust-text); color: var(--rust-text); }
+.btn-secondary:active { border-color: var(--rust-text); color: var(--rust-text); background: var(--surface); }
+
+.btn-ghost { color: var(--starlight); }
+.btn-ghost:hover { background: var(--surface); border-color: var(--dust); color: var(--star); }
+.btn-ghost:active { background: var(--surface); border-color: var(--dust); color: var(--star); }
+
+/* A button that reads as a link, for actions inside a sentence or a row. */
+.btn-text {
+  padding: 0 0 2px;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  border-radius: 0;
+  color: var(--rust-text);
+  text-transform: none; letter-spacing: 0;
+}
+.btn-text:hover { border-bottom-width: 2px; color: var(--star); }
+
+.btn-sm { padding: 8px 12px; font-size: 12px; letter-spacing: .07em; }
+.btn-lg { padding: 15px 26px; font-size: var(--step-2); }
+.btn-block { display: flex; width: 100%; }
+
+.btn[disabled], .btn[aria-disabled="true"] {
+  background: none;
+  border: 1px dashed var(--dust);
+  color: var(--dust);
+  cursor: not-allowed;
+}
+.btn[disabled]:hover, .btn[aria-disabled="true"]:hover { background: none; border-color: var(--dust); color: var(--dust); }
+
+/* Badge ------------------------------------------------------------------ */
+
+/* The edge is currentColor, so a badge's border carries exactly the contrast
+   its own type was measured at and can never fall below the 3:1 edge minimum
+   while the type holds 4.5:1. */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 7px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius);
+  font: var(--step-1)/1.5 var(--font-mono);
+  text-transform: uppercase; letter-spacing: .07em;
+  color: var(--dust);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.badge-accent { color: var(--rust-text); }
+.badge-state { color: var(--teal-text); }
+.badge-solid { background: var(--surface); border-color: transparent; color: var(--starlight); }
+
 /* Topic row -------------------------------------------------------------- */
 
 .topic-list {
@@ -164,13 +251,72 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 }
 .topic-list a { color: var(--star); text-decoration: none; }
 .topic-list a:hover { color: var(--rust-text); text-decoration: underline; }
-.topic-list .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 9px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+.topic-list .dot { margin-right: 9px; }
 .topic-list li { display: flex; align-items: center; }
 .dot-rust { background: var(--rust); }
 .dot-nebula { background: var(--nebula); }
 .dot-teal { background: var(--teal); }
 .dot-plum { background: var(--plum-mark); }
 .dot-dust { background: var(--dust); }
+
+/* Card ------------------------------------------------------------------- */
+
+/* One card for both things the site cards: a repository, with a thumbnail,
+   and a journal entry, which has no image. The hairline is the top edge; the
+   title is the only thing that changes on hover. */
+.card {
+  display: block;
+  border-top: var(--border-hair);
+  padding-top: var(--space-2);
+  color: var(--star);
+  text-decoration: none;
+}
+.card-media { display: block; margin-bottom: var(--space-1); }
+.card-media img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+.card-kicker {
+  display: block;
+  margin-bottom: 4px;
+  font: var(--step-1)/1.6 var(--font-mono);
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--dust);
+}
+.card-title {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--step-4);
+  line-height: 1.2;
+  color: var(--star);
+}
+.card-text {
+  display: block;
+  margin-top: 6px;
+  font-size: var(--step-2);
+  line-height: 1.5;
+  color: var(--starlight);
+}
+.card-meta {
+  display: block;
+  margin-top: 6px;
+  font: var(--step-1)/1.6 var(--font-mono);
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--dust);
+}
+.card-foot { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-top: var(--space-2); }
+.card:hover .card-title, .card:focus-visible .card-title { color: var(--rust-text); }
+
+.entry-card .card-title { font-size: var(--step-4); }
+
+.repo-grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-4) var(--space-3);
+}
+
+.repos-home { margin-top: var(--space-5); }
+.repo-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; font: var(--step-2)/1.9 var(--font-mono); }
+.repo-list a { text-decoration: none; color: var(--star); }
+.repo-list a:hover { color: var(--rust-text); }
 
 /* Entry list ------------------------------------------------------------- */
 
@@ -185,7 +331,25 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 .entry:hover .entry-title { text-decoration: underline; }
 .entry-dek { color: var(--starlight); }
 
-/* Plates ----------------------------------------------------------------- */
+/* Figure ----------------------------------------------------------------- */
+
+/* The width and height of an <img> are its file's real ones, so the browser
+   reserves the right box before the file lands. They must never set the drawn
+   height: width 100% with height auto is the rule that keeps a picture
+   undistorted whatever its ratio. */
+.figure { margin-block: var(--space-4); max-width: min(100%, 1000px); }
+.figure img { width: 100%; }
+.figure figcaption,
+.code-block figcaption,
+.prose figcaption {
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+  border-top: var(--border-hair);
+  font: var(--step-1)/1.6 var(--font-mono);
+  color: var(--dust);
+}
+
+/* Plates ---------------------------------------------------------------- */
 
 .plates {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -214,9 +378,28 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   border-top: var(--border-hair);
   margin-bottom: var(--space-1);
 }
-.empty { color: var(--dust); font-size: var(--step-2); }
 
-/* Entry ------------------------------------------------------------------ */
+/* Empty state ------------------------------------------------------------ */
+
+.empty-state {
+  margin-top: var(--space-2);
+  padding-block: var(--space-3);
+  border-top: var(--border-hair);
+  border-bottom: var(--border-hair);
+  max-width: var(--measure);
+}
+.empty-title {
+  font: var(--step-2)/1.5 var(--font-mono);
+  color: var(--starlight);
+}
+.empty-text {
+  margin-top: 4px;
+  font-size: var(--step-2);
+  color: var(--dust);
+}
+.empty-text a { color: var(--dust); }
+
+/* Entry page ------------------------------------------------------------- */
 
 .entry-page { padding-bottom: var(--space-5); }
 .entry-head { padding-block: var(--space-6) var(--space-2); }
@@ -228,6 +411,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   font: var(--step-1)/1.7 var(--font-mono);
   text-transform: uppercase; letter-spacing: .06em;
 }
+.entry-foot .text-link + .text-link { margin-left: var(--space-3); }
 
 /* Prose ------------------------------------------------------------------ */
 
@@ -244,34 +428,51 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 .prose ul, .prose ol { padding-left: 1.4em; }
 .prose li + li { margin-top: .35em; }
 .prose blockquote {
-  border-left: 2px solid var(--plum);
+  border-left: 2px solid var(--plum-mark);
   padding: 2px 0 2px var(--space-3);
   color: var(--starlight);
 }
 .prose hr { border: 0; border-top: var(--border-hair); margin-block: 2.2em; }
 .prose a { color: var(--nebula-text); text-decoration-thickness: 1px; }
 .prose a:hover { text-decoration-thickness: 2px; }
-.prose code {
+.prose code, .code-block code {
   font-family: var(--font-mono); font-size: .88em;
+}
+.prose code {
   background: var(--surface); padding: .14em .34em;
 }
-.prose pre {
+.prose pre, .code-block pre {
   background: var(--surface); color: var(--star);
   padding: var(--space-3); overflow-x: auto;
   font: 13.5px/1.6 var(--font-mono);
 }
-.prose pre code { background: none; padding: 0; font-size: inherit; }
+.prose pre code, .code-block pre code { background: none; padding: 0; font-size: inherit; }
 .prose table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; font-size: var(--step-2); }
 .prose th, .prose td { border-bottom: var(--border-hair); padding: 8px 14px 8px 0; text-align: left; }
 .prose th { font: var(--step-1)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: .07em; color: var(--dust); }
 .prose figure { margin-block: 1.8em 1.9em; }
-.prose figure img { width: 100%; height: auto; }
-.prose figcaption {
-  margin-top: var(--space-1); padding-top: var(--space-1);
-  border-top: var(--border-hair);
-  font: var(--step-1)/1.6 var(--font-mono);
-  color: var(--dust);
+.prose figure img { width: 100%; }
+
+/* A callout is prose that is neither the argument nor a quotation: one teal
+   edge (3.8:1 on --surface), the raised block, secondary type. */
+.callout {
+  border-left: 2px solid var(--teal);
+  background: var(--surface);
+  padding: var(--space-2) var(--space-3);
+  color: var(--starlight);
 }
+.callout-title {
+  display: block;
+  margin-bottom: 4px;
+  font: bold var(--step-1)/1.5 var(--font-mono);
+  text-transform: uppercase; letter-spacing: .07em;
+  color: var(--star);
+}
+
+/* A code block carries a caption the way a figure does. */
+.code-block { margin-block: 1.8em; max-width: var(--measure); }
+.code-block pre { margin: 0; }
+
 /* Captions in the repository pages are raw HTML, so their inline code is bare. */
 .prose figcaption code { background: none; padding: 0; font-size: .95em; color: var(--starlight); }
 
@@ -292,7 +493,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .credit-list { list-style: none; margin: 0; padding: 0; }
 .credit-list li { padding-block: var(--space-2); border-top: var(--border-hair); }
 .credit-title { display: block; font-weight: bold; color: var(--star); }
-.credit-meta { display: block; font: var(--step-1)/1.7 var(--font-mono); color: var(--dust); }
+.credit-meta { display: block; font: var(--step-1)/1.7 var(--font-mono); color: var(--dust); overflow-wrap: anywhere; }
 .credit-meta a { color: var(--dust); }
 
 /* Footer ----------------------------------------------------------------- */
@@ -320,21 +521,6 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .repo-links .text-link + .text-link { margin-left: var(--space-3); }
 .repo-body { padding-top: var(--space-3); }
 .repo-body > :not(figure) { max-width: var(--measure); }
-.repo-body figure { max-width: min(100%, 1000px); }
-.repo-body figure img { width: 100%; height: auto; }
-
-.repo-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-4) var(--space-3); }
-.repo-card a { display: flex; flex-direction: column; gap: 6px; text-decoration: none; border-top: var(--border-hair); padding-top: var(--space-2); }
-.repo-card img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; margin-bottom: var(--space-1); }
-.repo-name { font-family: var(--font-display); font-size: var(--step-4); line-height: 1.2; color: var(--star); }
-.repo-card a:hover .repo-name { color: var(--rust-text); }
-.repo-tagline { color: var(--starlight); font-size: var(--step-2); line-height: 1.5; }
-.repo-meta { font: var(--step-1)/1.6 var(--font-mono); color: var(--dust); text-transform: uppercase; letter-spacing: .06em; }
-
-.repos-home { margin-top: var(--space-5); }
-.repo-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; font: var(--step-2)/1.9 var(--font-mono); }
-.repo-list a { text-decoration: none; color: var(--star); }
-.repo-list a:hover { color: var(--rust-text); }
 
 .repo-index { margin-top: var(--space-6); }
 .repo-count { margin-top: var(--space-1); font: var(--step-1)/1.7 var(--font-mono); color: var(--dust); }
@@ -353,7 +539,9 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .scale-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-3); padding-block: var(--space-2); border-top: var(--border-hair); }
 .scale-row > span:last-child { max-width: 100%; overflow-wrap: anywhere; }
 .scale-row .name { min-width: 96px; font: var(--step-1)/1.6 var(--font-mono); color: var(--dust); }
-.sg-example { padding-block: var(--space-3); border-top: var(--border-hair); }
+.sg-example { padding-block: var(--space-3) var(--space-4); border-top: var(--border-hair); }
+.sg-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.sg-stack > * + * { margin-top: var(--space-2); }
 
 /* Narrow ----------------------------------------------------------------- */
 

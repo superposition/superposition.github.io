@@ -13,18 +13,21 @@ description: The twenty repositories worth a page of their own, and every other 
   {% if repos.size > 0 %}
   <ul class="repo-grid">
     {% for item in repos %}
-    <li class="repo-card">
-      <a href="{{ item.url | relative_url }}">
-        {% if item.image %}<img src="{{ item.image | relative_url }}" alt="" width="600" height="375" loading="lazy">{% endif %}
-        <span class="repo-name">{{ item.title | default: item.slug }}</span>
-        {% if item.tagline %}<span class="repo-tagline">{{ item.tagline }}</span>{% endif %}
-        <span class="repo-meta">{% if item.language %}{{ item.language }}{% endif %}{% if item.stars %} · {{ item.stars }} star{% if item.stars != 1 %}s{% endif %}{% endif %}</span>
+    <li>
+      <a class="card" href="{{ item.url | relative_url }}">
+        {% if item.image %}<span class="card-media"><img src="{{ item.image | relative_url }}" alt="" width="600" height="375" loading="lazy"></span>{% endif %}
+        <span class="card-title">{{ item.title | default: item.slug }}</span>
+        {% if item.tagline %}<span class="card-text">{{ item.tagline }}</span>{% endif %}
+        <span class="card-meta">{% if item.language %}{{ item.language }}{% endif %}{% if item.stars %} · {{ item.stars }} star{% if item.stars != 1 %}s{% endif %}{% endif %}</span>
       </a>
     </li>
     {% endfor %}
   </ul>
   {% else %}
-  <p class="empty">The repository pages are being written. Until they land, every public repository is listed below.</p>
+  <div class="empty-state">
+    <p class="empty-title">No repository pages yet</p>
+    <p class="empty-text">They are being written. Until they land, every public repository is listed below.</p>
+  </div>
   {% endif %}
 
   <section class="repo-index" aria-labelledby="all-repos">
