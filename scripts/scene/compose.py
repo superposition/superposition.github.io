@@ -555,8 +555,8 @@ def compose(seed, layer_dir):
     head.append("  Regenerate: python scripts/scene/compose.py, seed %d" % seed)
     head.append("-->")
     head.append('<svg xmlns="%s" viewBox="0 0 %s %s" role="img" '
-                'aria-labelledby="scene-title scene-desc">' % (SVG_NS, fmt(W), fmt(H)))
-    head.append('  <title id="scene-title">The station above the city, with a shuttle on '
+                'aria-labelledby="station-scene-title station-scene-desc">' % (SVG_NS, fmt(W), fmt(H)))
+    head.append('  <title id="station-scene-title">The station above the city, with a shuttle on '
                 'final approach</title>')
     desc = ("A technical elevation on black. At the back, the city and its launch yard below "
             "the horizon at y 860, drawn in one-point perspective. Behind and in front of the "
@@ -567,7 +567,7 @@ def compose(seed, layer_dir):
             "crossing the frame on lit paths, and a signal pulse travelling the truss.")
     if missing:
         desc += " Not drawn yet: %s." % ", ".join(missing)
-    head.append('  <desc id="scene-desc">%s</desc>' % esc(desc))
+    head.append('  <desc id="station-scene-desc">%s</desc>' % esc(desc))
     head.append("")
     head.append("\n".join(body))
     head.append(action(rng))

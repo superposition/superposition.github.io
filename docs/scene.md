@@ -45,6 +45,14 @@ python scripts/scene/compose.py --layers DIR # compose from a directory of layer
 python scripts/scene/compose.py --out FILE   # one path, for a quick look
 ```
 
+The include is the whole swap: `{% include scene/station.svg %}` is one line,
+the file is a complete SVG with its own title and no wrapper markup, so a page
+that has a WebGL version of the scene can replace that one line with it as the
+static answer. Its accessible-name ids are `station-scene-title` and
+`station-scene-desc` rather than `scene-title` / `scene-desc`, because the map's
+own still (`_includes/scene/map.svg`) already owns those in this repository and
+two documents can end up on one page.
+
 Bands, in document order. Every one of them is present in every build, including
 the ones whose layer has not landed, so a script can address them unconditionally:
 
