@@ -10,7 +10,10 @@ Each value was sampled from the imagery, not chosen.
 
 | Token | Value | Comes from |
 |---|---|---|
-| `--void` | `#0b0a0d` | Deep Field shadow, Sombrero near-black |
+| `--void` | `#000000` | absolute black: the page contributes no light, so a photograph on it can only add light |
+| `--void-rgb` | `0, 0, 0` | the same ground as channels, so the hero scrim can follow it |
+| `--rim` | accent at 5.5%, radial at 50% −18% | one warm rim at the top of the page: light from above the screen |
+| `--panel` | `--deep` → `--void`, 180° | blocks and callouts are a gradient, never one flat fill |
 | `--deep` | `#131118` | Deep Field ground, `#13141b`–`#201a1e` |
 | `--surface` | `#1c1a20` | Deep Field, one step up from the ground |
 | `--line` | `rgba(242,230,216,.14)` | starlight at hairline weight |
