@@ -33,9 +33,27 @@ description: The twenty repositories worth a page of their own, and every other 
   <section class="repo-index" aria-labelledby="all-repos">
     <h2 id="all-repos" class="section-title">Every public repository</h2>
     <p class="repo-count">{{ site.data.repos.repos | size }} repositories, newest push first.</p>
-    {%- for repo in site.data.repos.repos %}
-    <p class="repo-line"><a href="{{ repo.url }}"><strong>{{ repo.name | escape }}</strong></a> — {{ repo.description | escape }}<br><small>{% if repo.language %}{{ repo.language | escape }} · {% endif %}{% if repo.stars > 0 %}{{ repo.stars }} star{% if repo.stars != 1 %}s{% endif %} · {% endif %}pushed <time datetime="{{ repo.pushed }}">{{ repo.pushed }}</time></small></p>
-    {%- endfor %}
+    <table class="table table--compact">
+      <caption>Every public repository on github.com/superposition, newest push first</caption>
+      <thead>
+        <tr>
+          <th scope="col">Repository</th>
+          <th scope="col">Language</th>
+          <th scope="col" class="num">Stars</th>
+          <th scope="col" class="nowrap">Last push</th>
+        </tr>
+      </thead>
+      <tbody>
+      {%- for repo in site.data.repos.repos %}
+        <tr>
+          <td><a href="{{ repo.url }}">{{ repo.name | escape }}</a><span class="table-note">{{ repo.description | escape }}</span></td>
+          <td class="nowrap">{% if repo.language %}{{ repo.language | escape }}{% else %}—{% endif %}</td>
+          <td class="num">{{ repo.stars }}</td>
+          <td class="nowrap"><time datetime="{{ repo.pushed }}">{{ repo.pushed }}</time></td>
+        </tr>
+      {%- endfor %}
+      </tbody>
+    </table>
   </section>
 </div>
 {% include jsonld.html %}

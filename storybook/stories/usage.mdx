@@ -6,43 +6,66 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 Pick the component by the job you are doing, not by the look. Everything below draws with the tokens in `assets/tokens.css`, and the workbench imports the site's own stylesheets, so what you see here is what ships.
 
+Four checks run in CI and fail the build, so this page is a description of the gate rather than advice:
+
+| Check | Command | What fails it |
+| --- | --- | --- |
+| Tokens | `npm run slop` | a colour, length, gradient, shadow, radius or font size written in `notebook.css` instead of named in `tokens.css`; a `var()` nothing declares; a token nothing reads; a component class no page renders; a story that does not name the page that adopts it |
+| States and targets | `npm run states` | a missing hover, focus-visible or active state (or disabled, where it applies); a control under 24 × 24px at 1440 or at 360; an image with no alt or no reserved box; a `<button>` with no type; an unlabelled input; an animation with no reduced-motion answer |
+| Contrast | `npm run contrast` | any of 213 pairs under 4.5:1 for text or 3:1 for a control edge, in any of the three identities |
+| Render | `npm run a11y` | an axe violation in any story in the static build |
+
 ## Button
 
-Use a button for an action: submit, follow, copy, toggle. If it goes somewhere, use a link. If it reads inside a sentence, use the text variant.
+Use a button for an action: submit, follow, copy, toggle. If it goes somewhere, use a link.
 
-**Primary** is the one action on a view. If two sit side by side, neither is primary. **Secondary** is the alternative beside it. **Ghost** is for rows and chrome, where a filled box is too loud — it has no boundary at rest, so check it on a photograph as well as on the ground. **Text** is an action that reads as a link, inside a sentence or a row of them.
-
-Sizes are `btn-sm` for dense rows and `btn-lg` for the one action on a page; `btn-block` fills its container. Hover, focus, active and disabled are live states, not classes you apply — tab to a button and look at it before you call it done.
+There is one variant, because a page has one action: **`btn-primary`**, amber fill carrying void type at 13.07:1. `/404.html` is the only page with one — "Back to the front page". Two buttons side by side means neither is primary, and a secondary button is a link that has not admitted it. Hover, focus, active and disabled are declared states, not classes you apply: `npm run states` fails if one is missing.
 
 ## Link
 
-Use a link to go somewhere, and let the form say where it is: a **chrome link** for the nav and footers, a **prose link** inside an article, and the bare `a` when nothing else owns the line.
+Use a link to go somewhere, and let the form say where it is: a **chrome link** (`.text-link`) for the nav and footers, a **prose link** inside an article, and the bare `a` when nothing else owns the line.
 
 The two colours are not decoration. A link in the chrome and a link inside a piece of writing are different things, and they are meant to look different. Never colour a heading amber to make it look clickable — make it a link or leave it alone.
 
-## Badge
-
-Use a badge for a short label that is not a link: a language, a topic, a state. Never use one as a button; a badge-shaped button is a trap.
-
-Neutral is for anything without its own colour, `badge-accent` is a topic, `badge-state` is progress or status — not emphasis — and `badge-solid` is a count on the raised block. The edge is drawn in the badge's own type colour, so a badge can never become less legible than the word in it.
-
 ## Card
 
-Use a card for an item in a grid of peers: a repository in `/projects/`, an entry in a journal grid. A single card is a page with a box drawn round it — if there is one item, write the page instead.
+Use a card for an item in a grid of peers: a repository on `/projects/`. A single card is a page with a box drawn round it — if there is one item, write the page instead.
 
-The repository card carries a thumbnail, a title in the display face, a tagline and a line of meta; the entry card carries a kicker, title, dek and a topic badge. Hover changes the title to amber and adds the bloom. Nothing moves.
+The frame is the HUD box: one hairline and two amber corner ticks. Hover changes the title to amber and thickens the hairline. Nothing moves and nothing casts a shadow — a shadow on a card is decoration standing in for hierarchy.
 
 ## Entry list
 
 The entry list is the site's default for a reading list: date, title, dek on one line, grouped by topic on `/journal/`. A list of dates scans faster than a grid of cards, and the site has one author, so it gets one list. The dek is optional — an entry with no description ends at its title.
 
-Nothing in the list is the empty state's job. When there are no entries, use the empty state; do not ship an empty list.
+Nothing in the list is the empty state's job. When there are no entries, use the empty state.
+
+## Table
+
+Use a table for columns of facts: the 33 public repositories on `/projects/`, the space scale on `/style/`. `.table--compact` is the same component with `--density-row` and `--density-cell` one step down — 8px rows and 12px between columns instead of 12 and 16 — and nothing else changes, so the two densities cannot drift apart.
+
+Stars are right-aligned with tabular figures, the link is the whole cell so a phone target is the column rather than the words in it, and a prose table in an entry takes the same rules without the class.
+
+## Definition row
+
+Use a definition row for the facts a page opens with: `_layouts/repo.html` prints language, stars and last push as one graduated set — label at 13px mono in dust, value at 15px mono in star — rather than a line of meta text where three facts carry the weight of the tagline above them.
+
+## Range control
+
+Use a range control when one list grows past a screen and the reader needs to jump: `/journal/` lists its topics with a count each. It is pagination without a second page — the site is static, so a range is an anchor into one document. An anchor has no disabled state, and a range with no entries is not rendered at all.
+
+There is no pager and no previous/next pair anywhere else. If the journal ever passes a few hundred entries, the cheapest honest change is a generated `/journal/page:N/` path that reuses the entry list and the same row; build it then, not now.
+
+## Notice
+
+Use a notice for something true the reader needs before the prose, that is not the argument: a 2px state edge on the raised ground. Three repository pages carry one, each summarising the caveat its own page ends with, so a reader who stops after the lede still knows.
+
+It replaced the callout, which was a box with nothing to say. Red is not available here — red is the 404 and a photograph that failed, and a caveat is neither.
 
 ## Nav
 
-The header is on every page: wordmark, four links, one line. It wraps rather than collapsing, so there is no menu button and no script, and Series moves to the footer below 640px rather than making a fifth link fit on a phone.
+The header is on every page: wordmark and six links, one row at every width from 360 up. It wraps rather than collapsing, so there is no menu button and no script; Series and Now showing move to the footer below 640px, which also keeps exactly one reachable copy of each at every width.
 
-The current page is amber, and hover is amber, so the marker is colour and never a new weight. Do not add a fifth link without removing one: four is what fits beside the wordmark.
+The current page is amber, and hover is amber, so the marker is colour and never a new weight. Do not add a link without removing one: four is what fits beside the wordmark at 360.
 
 ## Hero
 
@@ -50,11 +73,15 @@ Use the hero once, at the top of the home page: one photograph, the wordmark, tw
 
 The type over the image sits on a scrim and is measured against the brightest pixel behind it. The drift is the site's only motion at that scale, and it stops when the reader asks for reduced motion.
 
+## Skeleton
+
+Use the skeleton where a picture has not arrived: the frame, the raised panel and a label naming the file, behind the image rather than above it, so it is covered the moment the photograph paints and the label is all that is left if the file fails. No shimmer — the site does not animate to fill time.
+
 ## Prose
 
 Use prose for anything someone reads: an entry, a repository page, About, credits.
 
-Say what you mean with the right block. A **blockquote** is someone else's words. A **callout** is your own caveat or measurement sitting beside the argument. If it is neither of those, it is a paragraph. A **code block with a caption** is a figure whose content is code, and the caption is where the provenance goes. A **table** breaks out of the measure and scrolls sideways rather than squeezing.
+Say what you mean with the right block. A **blockquote** is someone else's words. A **notice** is your own caveat or measurement sitting beside the argument. If it is neither of those, it is a paragraph. A **table** breaks out of the measure and scrolls sideways rather than squeezing.
 
 Inside a column, `h2` is a mono label and `h3` is one rung below it. Anton starts at the section title, not at a heading inside a column: at 22px in a 544px measure the condensed face reads as a shout.
 
@@ -66,13 +93,13 @@ A figure is capped at 1000px inside prose and outside it, so nothing runs the fu
 
 ## Empty state
 
-Use the empty state when a collection has nothing in it: a title that names the absence, one line on what happens next, a link out.
+Use the empty state when a collection has nothing in it: a title that names the absence, one line on what happens next, a way out.
 
-Do not ship five empty headings, a spinner, or a zero-count table. Two places use it today: `/journal/` before entries exist and `/projects/` before the repository pages landed.
+Do not ship five empty headings, a spinner, or a zero-count table. `/journal/` ships this state today, because the site publishes no entries.
 
 ## Footer
 
-The footer is on every page: the subtitle, then the five ways out — RSS, GitHub, image credits, the design system, and how to say hello. It is 13px mono in dust, and its links are starlight.
+The footer is on every page: the subtitle, then the seven ways out — including Series and Now showing, which it carries because the header cannot at phone widths. It is 13px mono in dust with 4px of block padding on each link, and its links are starlight.
 
 ## Poster
 
@@ -88,22 +115,16 @@ Use the strip once, on the home page. It advances one poster per beat in CSS and
 
 Do not put a second strip anywhere: `/now-showing/` is the gallery, and it does not move.
 
-## Pagination: not built, and why
-
-There is no pager and no previous/next pair, because the site does not need one yet. `/journal/` renders every entry grouped by topic in one document, and an entry ends with one link back to the journal — entries are grouped by subject rather than ordered as a series, so "next" would be a different subject, not the next step in an argument.
-
-If the journal ever passes a few hundred entries, the cheapest honest change is a `paginate` block on a generated `/journal/page:N/` path that reuses the entry list and the same `text-link` row. Build it then, not now.
-
 ## Contrast
 
-Every colour on the site is measured, and a component author needs five of them. The rest of the pairs — the alert, the plum mark, the decal film, the poster plate — belong to one component each and are in `docs/design-system.md`, beside the reasoning for why they exist.
+Every colour on the site is measured, and a component author needs five of them. The rest of the pairs — the alert, the plum mark, the chip film, the release plate — are printed by `npm run contrast` and shown beside each swatch on `/style/`.
 
 | Job | Token | On the ground |
 | --- | --- | --- |
-| Body and headings | `--star` | 16.9:1 |
-| Secondary type | `--starlight` | 15.4:1 |
-| Meta, captions, disabled | `--dust` | 7.5:1 |
-| Chrome accent, links outside prose | `--accent-text` | 13.1:1 |
-| State and focus rings | `--state` | 12.9:1 |
+| Body and headings | `--star` | 16.93:1 |
+| Secondary type | `--starlight` | 15.44:1 |
+| Meta, captions, disabled | `--dust` | 7.51:1 |
+| Chrome accent, links outside prose | `--accent-text` | 13.07:1 |
+| State and focus rings | `--state` | 12.93:1 |
 
-Text clears 4.5:1 and a control edge 3:1; nothing on the site sits below either. `npm run contrast` prints every pair over all three identities and exits non-zero on a failure, so the numbers here cannot drift from the stylesheets without the build saying so. `/style/` prints the same numbers beside each swatch on the live site.
+Text clears 4.5:1 and a control edge 3:1; nothing on the site sits below either. `npm run contrast` exits non-zero on a failure, so the numbers here cannot drift from the stylesheets without the build saying so.

@@ -46,6 +46,12 @@ jobs:
       - name: Build the workbench
         working-directory: storybook
         run: npm run build-storybook
+      - name: Lint the stylesheets against the charter
+        working-directory: storybook
+        run: npm run slop
+      - name: Check states, targets and markup
+        working-directory: storybook
+        run: npm run states
       - name: Measure contrast
         working-directory: storybook
         run: npm run contrast

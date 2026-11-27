@@ -16,6 +16,14 @@ image: /assets/art/orbits.png
   <p class="empty-text">The first one is being written. <a href="{{ '/feed.xml' | relative_url }}">Follow by RSS</a> and it will arrive.</p>
 </div>
 {% else %}
+<nav class="range" aria-label="Journal by topic">
+  <span class="kicker">Topics</span>
+  <ul class="range-list">
+  {%- for topic in site.data.topics %}{% assign top = site.posts | where: "topic", topic.slug %}{% if top.size > 0 %}
+    <li><a class="range-link" href="#{{ topic.slug }}">{{ topic.name }} <span class="range-count">{{ top.size }}</span></a></li>
+  {%- endif %}{% endfor %}
+  </ul>
+</nav>
 {% for topic in site.data.topics %}{% assign posts = site.posts | where: "topic", topic.slug %}{% if posts.size > 0 %}
 <section class="journal-topic" id="{{ topic.slug }}">
   <h2>{{ topic.name }}</h2>

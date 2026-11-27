@@ -8,6 +8,9 @@ stars: 0
 pushed: 2025-12-16
 url: https://github.com/superposition/cairo_vault
 order: 19
+notice:
+  title: "An accounting exercise, not a vault"
+  text: "A deposit writes a number into a map and adds it to a total. There is no token address, no dispatcher and no transfer, so a caller's deposit is a claim it makes about itself. No tests, no pinned Scarb version, and the package is still called `hello_world`."
 ---
 
 ## What it is

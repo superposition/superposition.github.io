@@ -1,8 +1,15 @@
 @charset "UTF-8";
 /* Superposition design tokens.
-   Two families of colour live here. The ground, the cream and the four
-   content accents are sampled from the NASA imagery the site shows. The amber,
-   the cyan and the red are not sampled from anything on the site: they are the
+
+   This file is the only place a value may be written down. assets/notebook.css
+   names tokens and nothing else: no colour, no size, no shadow, no gradient and
+   no length of its own. `npm run slop` reads both files and fails the build on
+   a literal in the component stylesheet, on a var() this file does not declare,
+   and on a token nothing reads.
+
+   Two families of colour live here. The ground, the cream and the four content
+   accents are sampled from the NASA imagery the site shows. The amber, the cyan
+   and the red are not sampled from anything on the site: they are the
    instrument light of the genre the site speaks in (late-70s and early-80s
    space opera), so they carry the chrome and never the content.
 
@@ -34,10 +41,9 @@
      --alert       5.0 /  4.5 /  4.1   red edge; its text is --alert-text (7.5)
      --alert-text  7.5 /  6.7 /  6.1   the same red where it is text
      --nebula-text 6.7 /  6.0 /  5.5   prose links, sampled from Carina
-     --decal-text 10.5                 a decal chip on its own film
-     --decal film  1.6 / 1.5 / 1.0     the chip against its ground (1.0 = no chip, poster)
-     --plum        2.4 /  2.2 /  2.0   never text; fill only
-     --plum-mark   4.2 /  3.8 /  3.5   the plum mark, at edge contrast
+     --chip-text 16.9 on --chip-bg     an eyebrow chip on its own film
+     --film-text 16.9 on --film-bg     the release plate over a photograph
+     --plum-mark   4.2 /  3.8 /  3.5   the quotation mark, at edge contrast
 
    Instrument (data-lab="a"), ground #0a0a0b:
      --star       16.0 / 15.2 / 14.6
@@ -47,8 +53,7 @@
      --state      12.2 / 11.7 / 11.1   (#8fd3ff)
      --alert       4.7 /  4.6 /  4.3
      --alert-text  7.0 /  6.8 /  6.4
-     --decal-text 10.4
-     --decal film  1.5                 the chip against its ground
+     --chip-text 16.0 on the instrument's own film
      amber under the scanline overlay 11.5 (7% black on one row in three)
      cream under the scanline overlay 15.0
 
@@ -59,7 +64,7 @@
      --accent     12.5 / 12.2 / 11.5   (#8fd3ff, the one cold highlight)
      --state      16.0 / 15.6 / 14.7
      --alert       4.9 /  4.8 /  4.4
-     --decal-text  7.8                 a plain label, no chip, no film
+     --chip-text  7.8                  a plain label, no chip, no film
 
    The campaign posters draw only with the tokens above: their title is --cream
    on --void (14.5), the film line --amber (12.3), the genre --cyan (12.2) and
@@ -113,19 +118,21 @@
 
   /* Content: sampled from the imagery, so the writing keeps the photographs'
      own colour even when the chrome does not. */
-  --nebula: #5474a8;
   --nebula-text: #6f93c9;
-  --plum: #6b3f4d;
   --plum-mark: #9a5e72;
 
-  /* A decal: a hardware label is a chip. The film is a warm charcoal, not black:
-     on an absolute-black ground a black film has nothing to sit on, so the chip
-     carries its own surface and a hairline edge with it. 15.7:1 for the type on
-     the film, 1.55:1 for the film against the ground — a label, so decoration,
-     but visible as a chip at both widths. */
-  --decal-bg: rgba(58, 52, 44, .92);
-  --decal-text: #efe6d3;
-  --decal-edge: var(--line);
+  /* A chip: an eyebrow label is a piece of hardware, so it sits on its own
+     film. On an absolute-black ground a black film has nothing to sit on, so
+     the film is a warm charcoal with a hairline edge. Two trios, because they
+     are two jobs: --chip is a label on the page, and turns into a plain
+     tracked label in the poster identity, where nothing is a chip; --film is
+     the one label that sits on a photograph, so it keeps its own ground in
+     every identity. */
+  --chip-bg: rgba(58, 52, 44, .92);
+  --chip-text: #efe6d3;
+  --chip-edge: var(--line);
+  --film-bg: rgba(0, 0, 0, .88);
+  --film-text: #efe6d3;
 
   /* Two-layer bloom on anything emissive: a close glow and a wide one. It is
      what makes amber read as light rather than as paint. */
@@ -135,49 +142,82 @@
   --text-glow: 0 0 10px rgba(255, 194, 74, .32);
   --glow-soft: 0 0 18px rgba(255, 194, 74, .18);
 
-  /* The gauge: 3px bars on a 10px pitch, 1.5px tall, over a hairline track.
-     One cluster per section title, never a background. */
+  /* The gauge: 4px bars on a 12px pitch, one hairline tall, over a hairline
+     track. One cluster per section title, never a background. */
   --rail: var(--accent);
-  --rail-bar: 3px;
-  --rail-pitch: 10px;
-  --rail-cap: 1.5px;
+  --rail-bar: 4px;
+  --rail-pitch: 12px;
+  --gauge:
+    repeating-linear-gradient(90deg, var(--rail) 0 var(--rail-bar), transparent var(--rail-bar) var(--rail-pitch))
+      0 0 / 100% var(--hair) no-repeat,
+    linear-gradient(var(--line), var(--line)) 0 100% / 100% var(--hair) no-repeat;
 
   /* Grain and vignette: the photograph reads as film, not as stock. */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  --grain-size: 140px;
   --grain-opacity: .05;
   --vignette: radial-gradient(118% 92% at 50% 42%, transparent 46%, rgba(5, 4, 3, .42) 78%, rgba(5, 4, 3, .62) 100%);
-  /* Campaign posters. The values below are what a printed sheet needs on top
-     of the shared palette: a lamp behind the key art, the lit rule under it,
-     the cool half of the wash over it, the scrim it fades into, the metal its
-     frame is cut from, and the film under its one label. The scrim is the
-     ground's own channels, so a poster fades into whatever ground an identity
-     has set; everything else a poster draws with is a semantic token. */
-  --poster-lamp: rgba(255, 194, 74, .16);
-  --poster-edge: rgba(255, 194, 74, .38);
-  --poster-wash: rgba(143, 211, 255, .10);
-  --poster-scrim: rgba(var(--void-rgb), .96);
-  --poster-metal: rgba(230, 220, 200, .26);
-  /* The film under the release number. It is deliberately not --decal-bg: the
-     poster identity turns the page's decals into plain labels, and the one
-     label that sits on a photograph has to keep its own ground in every
-     identity. It stays a literal black rather than a ground channel so the
-     contrast predictor can composite it: --poster-plate-text 16.9:1 there,
-     16.8:1 in the two other identities. */
-  --poster-plate: rgba(0, 0, 0, .88);
-  --poster-plate-text: #efe6d3;
-
   --hero-scrim: linear-gradient(180deg,
       rgba(var(--void-rgb), .52) 0%,
       rgba(var(--void-rgb), .66) 45%,
       rgba(var(--void-rgb), .93) 80%,
       rgb(var(--void-rgb)) 100%);
 
+  /* The opening statement's frame: a mask that fades its own top and bottom
+     edge, and the plane it drifts on. The drift is --crawl-travel inside
+     --crawl-pad of padding, so no glyph ever enters the fade. */
+  --crawl-mask: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
+  --crawl-pad: 40px;
+  --crawl-travel: 26px;
+
+  /* Campaign posters. What a printed sheet needs on top of the shared palette:
+     a lamp behind the key art, the lit rule under it, the cool half of the wash
+     over it, the scrim it fades into, the metal its frame is cut from, and the
+     three printed surfaces a poster draws for itself. The scrim is the ground's
+     own channels, so a poster fades into whatever ground an identity has set. */
+  --poster-lamp: rgba(255, 194, 74, .16);
+  --poster-edge: rgba(255, 194, 74, .38);
+  --poster-wash: rgba(143, 211, 255, .10);
+  --poster-scrim: rgba(var(--void-rgb), .96);
+  --poster-metal: rgba(230, 220, 200, .26);
+  --poster-scan: repeating-linear-gradient(to bottom, transparent 0 2px, var(--poster-scrim) 2px 3px);
+  --poster-print:
+    var(--poster-scan),
+    radial-gradient(120% 90% at 50% 0%, var(--poster-wash), transparent 62%),
+    linear-gradient(to top, var(--poster-scrim) 0%, transparent 42%);
+  --poster-print-field:
+    var(--poster-scan),
+    radial-gradient(120% 90% at 50% 0%, var(--poster-wash), transparent 62%);
+  --poster-field:
+    repeating-linear-gradient(to right, var(--line) 0 1px, transparent 1px 12.5%),
+    repeating-linear-gradient(to bottom, var(--line) 0 1px, transparent 1px 12.5%),
+    radial-gradient(circle at 50% 46%, var(--poster-lamp) 0 16%, transparent 58%),
+    radial-gradient(circle at 50% 46%,
+      transparent 0 33%, var(--poster-edge) 33% calc(33% + 2px),
+      transparent calc(33% + 2px) 54%, var(--poster-wash) 54% calc(54% + 1px),
+      transparent calc(54% + 1px)),
+    var(--deep);
+  --poster-text-ground:
+    radial-gradient(90% 60% at 78% 4%, var(--poster-wash), transparent 60%),
+    radial-gradient(70% 46% at 12% 98%, var(--poster-lamp), transparent 62%),
+    var(--void);
+
   /* Typefaces: display self-hosted, mono self-hosted, text from the system. */
   --font-display: Anton, Impact, 'Arial Narrow', sans-serif;
   --font-text: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', 'Courier New', monospace;
 
-  /* Type scale. */
+  /* Type scale. This is the closed set: a size the site needs that is not here
+     becomes a new step in this file, with the reason and the measurement —
+     never a number in a component. --step-header is the only step whose
+     measurement was forced: below 420 the wordmark and four links need 373px
+     and a 360 viewport has 324, so the header takes 10.5px, not 11px (11 still
+     missed the row by 10px once a desktop scrollbar took its 15). */
+  --step-header: 10.5px;
+  /* The header's second step, for 420 to 700: the same four links at --step-1
+     need 373px and a 420 viewport has 369 once a desktop scrollbar takes its
+     15, so the header takes 12px there and 10.5px below 420. */
+  --step-0: 12px;
   --step-decal: 11px;
   --step-1: 13px;
   --step-2: 15px;
@@ -217,32 +257,75 @@
   --track-label: .10em;
   --track-display: -.01em;
   --track-hero: .04em;
+  /* The chip is the one label set in the display face under the instrument
+     identity, where it is cut from hardware rather than type: condensed, and
+     tracked less than a machine label so the letters stay letters. */
+  --track-chip: var(--track-label);
 
-  /* Space. */
-  --space-1: 6px;
+  /* Space. An 8px rhythm with one documented half step. Every gap and every
+     padding on the site is one of these; a component that needs a tighter pair
+     uses --space-half (4px) and says why in its story. --flow and the two
+     section roles name the gaps between blocks, so a paragraph break is one
+     number everywhere. */
+  --space-half: 4px;
+  --space-1: 8px;
   --space-2: 12px;
-  --space-3: 20px;
-  --space-4: 32px;
-  --space-5: clamp(40px, 5.4vw, 72px);
-  --space-6: clamp(56px, 8vw, 112px);
-
-  /* Rhythm roles. The steps above size the inside of a component; these three
-     name the gaps between them, so a break of one kind is one number. --flow
-     is resolved once against the body size, so a paragraph break is 23.75px
-     whatever the block beside it is set to. */
-  --flow: calc(var(--step-3) * 1.25);
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: clamp(48px, 6vw, 80px);
+  --flow: var(--space-4);
   --space-section: clamp(40px, 5.4vw, 72px);
   --space-open: clamp(56px, 8vw, 112px);
 
-  /* Edges. The site has no rounded corners and one hairline weight; a decal is
-     the single exception, because a hardware label is a physical chip. */
-  --radius: 0;
-  --radius-decal: 3px;
-  --border-hair: 1px solid var(--line);
+  /* Two densities, one scale. Comfortable is the reading density: prose, a
+     journal row, a card. Compact is the data density: the repository index and
+     any table with more than a dozen rows, where the reader is scanning columns
+     rather than reading sentences. A compact table is the same component with
+     --density-row and --density-cell set one step down; nothing else changes,
+     so the two densities cannot drift apart. */
+  --density-row: var(--space-2);
+  --density-cell: var(--space-3);
 
-  /* The HUD frame: a corner tick is this long and this thick. */
-  --hud-tick: 14px;
-  --hud-weight: 1px;
+  /* Edges. The site has no rounded corners and one hairline weight; a chip is
+     the single exception, because a hardware label is a physical thing. */
+  --radius: 0;
+  --radius-chip: 3px;
+  --hair: 1px;
+  --ring: 2px;
+  --rule-thick: 4px;
+  --border-hair: var(--hair) solid var(--line);
+
+  /* The small marks a component draws: a topic dot, a state tick, a switch. */
+  --dot: 8px;
+  --tick: 6px;
+  --switch: 10px;
+  --hud-tick: 16px;
+  --hud-weight: var(--hair);
+
+  /* Layout widths the components need, so a grid column is never a guess. */
+  --gutter: 24px;
+  --max-wide: 1200px;
+  --max-crawl: 34rem;
+  --figure-max: 1000px;
+  --col-name: 15ch;
+  --def-min: 11rem;
+  --col-who: 120px;
+  --card-min: 260px;
+  --still-min: 200px;
+  --swatch-min: 180px;
+  --showing-min: 320px;
+  --campaign-col: clamp(220px, 26vw, 360px);
+  --skip-offset: -100px;
+
+  /* Heights and one-off measures. A hero is measured against the screen it
+     opens on, so it is the one place a viewport unit is the honest answer. */
+  --hero-min: 88svh;
+  --hero-min-instrument: 82svh;
+  --hero-min-poster: 92svh;
+  --crawl-perspective: 760px;
+  --poster-figure: 42cqi;
+  --chip-height: 72px;
 
   /* Motion. Two families. The slow moves a page makes on its own: the opening
      statement's crawl over --dur-crawl, the hero photograph's drift over
@@ -260,11 +343,6 @@
   --dur-glide: 340ms;
   --ease-soft: ease-in-out;
   --ease-out: cubic-bezier(.2, .55, .25, 1);
-
-  /* Layout. */
-  --gutter: 24px;
-  --max-wide: 1200px;
-  --max-crawl: 34rem;
 }
 
 /* Instrument ------------------------------------------------------------ */
@@ -283,10 +361,8 @@ html[data-lab="a"] {
 
   --accent: var(--amber);
   --accent-text: var(--amber);
-  --plum: #5e4415;
-  --plum-mark: #b8842e;
-  --nebula: #b8842e;
   --nebula-text: var(--accent-peak);
+  --plum-mark: #b8842e;
 
   /* The glow is stronger here: this identity is a lit panel, not a page with
      a warm accent. */
@@ -302,6 +378,7 @@ html[data-lab="a"] {
   --track-label: .16em;
   --track-display: .02em;
   --track-hero: .02em;
+  --track-chip: .06em;
   --step-hero: clamp(34px, 7.6vw, 92px);
   --grain-opacity: .07;
   --hero-scrim: linear-gradient(180deg,
@@ -309,6 +386,8 @@ html[data-lab="a"] {
       rgba(10, 10, 11, .88) 40%,
       rgba(10, 10, 11, .96) 72%,
       var(--void) 100%);
+  --scanlines: repeating-linear-gradient(180deg, rgba(0, 0, 0, .07) 0 1px, rgba(0, 0, 0, 0) 1px 3px);
+  --hero-wash: .16;
 }
 
 /* Poster ---------------------------------------------------------------- */
@@ -328,9 +407,7 @@ html[data-lab="b"] {
   /* One cold highlight, and no glow: a poster is printed, not lit. */
   --accent: var(--cyan);
   --accent-text: var(--cyan);
-  --nebula: #7f95bf;
   --nebula-text: #d7e5ff;
-  --plum: #3f4a66;
   --plum-mark: #7f95bf;
   --state: #a9c9ff;
   --state-text: #d7e5ff;
@@ -341,13 +418,22 @@ html[data-lab="b"] {
   --text-glow: none;
   --grain-opacity: 0;
   --rail: var(--line);
-  --decal-bg: transparent;
-  --decal-text: #98a1b0;
+  --chip-bg: transparent;
+  --chip-text: #98a1b0;
   --hero-scrim: linear-gradient(180deg,
       rgba(5, 5, 8, .45) 0%,
       rgba(5, 5, 8, .18) 38%,
       rgba(5, 5, 8, .92) 82%,
       var(--void) 100%);
+  /* The stars keep their brightness at the frame's edges and give way where
+     the copy sits: a radial darkening centred on the copy, measured so the
+     brightest pixel behind a letter is a star at 10% of its own light. */
+  --hero-veil: radial-gradient(74% 48% at 50% 50%,
+      rgba(5, 5, 8, .92) 0%,
+      rgba(5, 5, 8, .74) 42%,
+      rgba(5, 5, 8, 0) 80%);
+  --hero-wash: .13;
+  --starfield: url('/assets/art/starfield.svg');
 
   --font-text: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
   --track-label: .20em;
@@ -358,7 +444,7 @@ html[data-lab="b"] {
 }
 
 @media (max-width: 700px) {
-  :root { --gutter: 18px; --track-label: .10em; --track-hero: .03em; }
+  :root { --gutter: 16px; --track-label: .10em; --track-hero: .03em; }
   html[data-lab="a"] { --track-label: .13em; }
   html[data-lab="b"] { --track-label: .15em; --track-hero: .04em; }
 }

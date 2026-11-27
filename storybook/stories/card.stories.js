@@ -1,10 +1,18 @@
+const card = (title, text, meta, image) => `<li><a class="card" href="#storybook-root">
+  ${image ? `<span class="card-media"><img src="${image}" alt="" width="600" height="375" loading="lazy"></span>` : ''}
+  <span class="card-title">${title}</span>
+  <span class="card-text">${text}</span>
+  <span class="card-meta">${meta}</span>
+</a></li>`;
+
 export default {
   title: 'Components/Card',
   parameters: {
+    usedOn: ['projects.md'],
     docs: {
       description: {
         component:
-          'One card, two uses: a repository with a thumbnail, and a journal entry without one. The hairline is the top edge; hover changes the title and nothing else.',
+          'One card for the twenty repository pages on /projects/: photograph, name, tagline, the two facts a card carries. The frame is the HUD box — one hairline and two amber corner ticks — and hover changes the title and the hairline only. No shadow, no lift: the corner tick already says the block is a block. Measured: 46.5px of content box before the type, title --star 16.93:1, tagline --starlight 15.44:1, meta --dust 7.51:1.',
       },
     },
   },
@@ -12,59 +20,37 @@ export default {
   argTypes: { note: { control: false }, body: { control: false } },
 };
 
-export const Repository = {
+export const WithPhotograph = {
   args: {
-    note: 'Repository card: thumbnail, title, tagline, meta. This is /projects/.',
-    body: [
-      '<li><a class="card" href="#storybook-root">',
-      '<span class="card-media"><img src="/assets/repos/mage/kernel-progression-1200.webp" alt="" width="600" height="375" loading="lazy"></span>',
-      '<span class="card-title">Mage</span>',
-      '<span class="card-text">GPU profiler TUI for Triton and CUDA kernels, with nsys and ncu integration</span>',
-      '<span class="card-meta">Python · 6 stars</span>',
-      '</a></li>',
-    ].join(''),
+    note: 'The shipped card: Mage, with its own kernel-progression plate. This is the grid on /projects/.',
+    body: card(
+      'Mage',
+      'GPU profiler TUI for Triton and CUDA kernels, with nsys and ncu integration',
+      'Python · 6 stars',
+      '/assets/repos/mage/kernel-progression-1200.webp',
+    ),
   },
 };
 
-export const RepositoryWithoutThumbnail = {
+export const WithoutPhotograph = {
   args: {
-    note: 'The same card with no image: the title moves up to the rule and the card still lines up in the grid.',
-    body: [
-      '<li><a class="card" href="#storybook-root">',
-      '<span class="card-title">1BRC in C++</span>',
-      '<span class="card-text">Six C++ parsers for the One Billion Row Challenge, one optimization per version</span>',
-      '<span class="card-meta">C++</span>',
-      '</a></li>',
-    ].join(''),
-  },
-};
-
-export const Entry = {
-  args: {
-    note: 'Entry card: kicker instead of a thumbnail, title, dek, topic badge. For a journal grid; the journal index today uses the entry list instead.',
-    body: [
-      '<li><a class="card entry-card" href="#storybook-root">',
-      '<span class="card-kicker">Matrices · 20 Nov 2026</span>',
-      '<span class="card-title">What a matrix does to a basis</span>',
-      '<span class="card-text">A change of basis is a matrix read as a statement about where the arrows go.</span>',
-      '<span class="card-foot"><span class="badge badge-accent">Matrices</span></span>',
-      '</a></li>',
-    ].join(''),
+    note: 'A repository with no figure of its own: the card keeps the same box and lets the type carry it. nanda-ts ships no image.',
+    body: card(
+      'nanda-ts',
+      'A Bun-native TypeScript SDK for A2A agents, agent identity and the NANDA registry',
+      'C · 0 stars',
+    ),
   },
 };
 
 export const Grid = {
   args: {
-    note: 'Cards in the grid: auto-fill at 260px, so the row count follows the width without a breakpoint.',
+    note: 'Four in the grid at 1200: 260px minimum, 24px gutters. Hover one and the title takes the accent while its hairline sweeps in.',
     body: [
-      ['Mage', 'GPU profiler TUI for Triton and CUDA kernels, with nsys and ncu integration', 'Python · 6 stars', '/assets/repos/mage/kernel-progression-1200.webp'],
-      ['Qualia', 'A local-first console for dataset review, with the prompt history kept', 'Python · 4 stars', '/assets/repos/qualia/console-brain-panel-1280.webp'],
-      ['Divulge', 'Explain a model’s decision in one screen, with the evidence beside it', 'TypeScript · 2 stars', '/assets/repos/divulge/first-screen-windows-1200.webp'],
-    ]
-      .map(
-        ([title, text, meta, image]) =>
-          `<li><a class="card" href="#storybook-root"><span class="card-media"><img src="${image}" alt="" width="600" height="375" loading="lazy"></span><span class="card-title">${title}</span><span class="card-text">${text}</span><span class="card-meta">${meta}</span></a></li>`,
-      )
-      .join(''),
+      card('Space Bullet Hell', 'A WebGPU hall of bullets, written twice: once in Zig, once in TypeScript', 'Zig · 3 stars', '/assets/repos/space-bullet-hell/guardian-data-ring-1200.webp'),
+      card('Qualia', 'A JEPA runtime whose promotion is gated on evidence, with crash-safe evidence logs', 'Rust · 4 stars'),
+      card('Marigraph', 'Tide tables as a graph problem: 73 stations, 41 years, one harmonic fit', 'JavaScript · 2 stars', '/assets/repos/marigraph/cli-1346.webp'),
+      card('Cairo Vault', 'A Starknet contract that keeps a per-caller deposit balance and a running total', 'Cairo · 0 stars'),
+    ].join(''),
   },
 };

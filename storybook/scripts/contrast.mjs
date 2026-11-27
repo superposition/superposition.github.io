@@ -3,7 +3,11 @@ import { readFileSync } from 'node:fs';
 /* Measures every colour pair the components ship, for each of the three
    identities in assets/tokens.css. Text must clear 4.5:1, a control edge 3:1;
    a divider is printed for the record and has no minimum.
-   Run: npm run contrast */
+   Run: npm run contrast
+
+   The pairs are the components' own list: one line per job a colour has, named
+   by the token that does it. Token names carry their -- so the slop check can
+   see that a token is read by something. */
 
 const file = process.argv[2] ?? new URL('../../assets/tokens.css', import.meta.url);
 const css = readFileSync(file, 'utf8')
@@ -26,7 +30,7 @@ const IDENTITIES = [
 ];
 
 const resolve = (tokens, name, depth = 0) => {
-  const v = tokens[name];
+  const v = tokens[name.replace(/^--/, '')];
   if (v == null) return null;
   const m = v.match(/^var\(--([a-z0-9-]+)\)$/);
   if (m && depth < 4) return resolve(tokens, m[1], depth + 1);
@@ -57,88 +61,92 @@ const ratio = (a, b) => {
 
 // [name, foreground token, background token, kind]
 const PAIRS = [
-  ['body type',            'star',        'void',         'text'],
-  ['secondary type',       'starlight',   'void',         'text'],
-  ['meta / caption',       'dust',        'void',         'text'],
-  ['chrome link',          'accent-text', 'void',         'text'],
-  ['chrome link on block', 'accent-text', 'surface',      'text'],
-  ['prose link',           'nebula-text', 'void',         'text'],
-  ['prose link on block',  'nebula-text', 'surface',      'text'],
-  ['state type',           'state-text',  'void',         'text'],
-  ['state type on block',  'state-text',  'surface',      'text'],
-  ['alert type',           'alert-text',  'void',         'text'],
-  ['alert type on block',  'alert-text',  'surface',      'text'],
-  ['alert edge',           'alert',       'void',         'edge'],
-  ['alert edge on block',  'alert',       'surface',      'edge'],
-  ['decal type',           'decal-text',  'decal-bg',     'text'],
-  // The film and its edge are a label's container, not a control, so they are
-  // printed for the record: a chip on an absolute-black ground must be visible
-  // as a chip, and 1.55:1 with a hairline is what a hardware label reads as.
-  ['decal film',           'decal-bg',    'void',         'divider'],
-  ['decal edge',           'decal-edge',  'void',         'divider'],
-  ['body type on block',   'star',        'surface',      'text'],
-  ['secondary on block',   'starlight',   'surface',      'text'],
-  ['meta on block',        'dust',        'surface',      'text'],
-  ['topic dot fill',       'plum-mark',   'void',         'edge'],
-  ['primary button type',  'void',        'accent',       'text'],
-  ['primary active type',  'void',        'accent',       'text'],
-  ['secondary type',       'star',        'void',         'text'],
-  ['secondary hover type','accent-text',  'void',         'text'],
-  ['ghost type',           'starlight',   'void',         'text'],
-  ['ghost hover type',     'star',        'surface',      'text'],
-  ['disabled type',        'dust',        'void',         'text'],
-  ['callout title',        'star',        'surface',      'text'],
-  ['callout body',         'starlight',   'surface',      'text'],
-  ['empty title',          'starlight',   'void',         'text'],
-  ['empty body',           'dust',        'void',         'text'],
-  ['badge type',           'dust',        'void',         'text'],
-  ['badge accent type',    'accent-text', 'void',         'text'],
-  ['badge state type',     'state-text',  'void',         'text'],
-  ['badge solid type',     'starlight',   'surface',      'text'],
-  ['focus ring',           'state',       'void',         'edge'],
-  ['focus ring in block',  'state',       'surface',      'edge'],
-  // The gauge rail groups a section the way a rule does; it is not a control
-  // edge, so in the poster identity, where it is a hairline, it has no floor.
-  ['gauge rail',           'rail',        'void',         'divider'],
-  ['HUD corner',           'accent',      'void',         'edge'],
-  ['secondary edge',       'dust',        'void',         'edge'],
-  ['secondary hover edge','accent-text',  'void',         'edge'],
-  ['primary hover edge',   'star',        'void',         'edge'],
-  ['ghost hover edge',     'dust',        'surface',      'edge'],
-  ['disabled edge',        'dust',        'void',         'edge'],
-  ['callout edge',         'state',       'surface',      'edge'],
-  ['callout edge on page', 'state',       'void',         'edge'],
-  ['blockquote edge',      'plum-mark',   'void',         'edge'],
-  ['badge edge',           'dust',        'void',         'edge'],
-  ['badge accent edge',    'accent-text', 'void',         'edge'],
-  ['badge state edge',     'state-text',  'void',         'edge'],
+  // Type
+  ['body type',            '--star',         '--void',        'text'],
+  ['body type on block',   '--star',         '--surface',     'text'],
+  ['secondary type',       '--starlight',    '--void',        'text'],
+  ['secondary on block',   '--starlight',    '--surface',     'text'],
+  ['meta / caption',       '--dust',         '--void',        'text'],
+  ['meta on block',        '--dust',         '--surface',     'text'],
+  ['chrome link',          '--accent-text',  '--void',        'text'],
+  ['chrome link on block', '--accent-text',  '--surface',     'text'],
+  ['chrome hover',         '--accent-peak',  '--void',        'text'],
+  ['prose link',           '--nebula-text',  '--void',        'text'],
+  ['prose link on block',  '--nebula-text',  '--surface',     'text'],
+  ['state type',           '--state-text',   '--void',        'text'],
+  ['state type on block',  '--state-text',   '--surface',     'text'],
+  ['alert type',           '--alert-text',   '--void',        'text'],
+  ['alert type on block',  '--alert-text',   '--surface',     'text'],
+
+  // Edges and dividers
+  ['alert edge',           '--alert',        '--void',        'edge'],
+  ['alert edge on block',  '--alert',        '--surface',     'edge'],
+  ['focus ring',           '--state',        '--void',        'edge'],
+  ['focus ring in block',  '--state',        '--surface',     'edge'],
+  ['HUD corner',           '--accent',       '--void',        'edge'],
+  ['quotation edge',       '--plum-mark',    '--void',        'edge'],
+  ['notice edge',          '--state',        '--surface',     'edge'],
+  ['hairline rule',        '--line',         '--void',        'divider'],
+  ['hairline in block',    '--line',         '--surface',     'divider'],
+  ['gauge rail',           '--rail',         '--void',        'divider'],
+
+  // The chip and the film: a label on the page, and a label over a photograph.
+  ['chip type',            '--chip-text',    '--chip-bg',     'text'],
+  ['chip film',            '--chip-bg',      '--void',        'divider'],
+  ['chip edge',            '--chip-edge',    '--void',        'divider'],
+  ['film type',            '--film-text',    '--film-bg',     'text'],
+
+  // Button: one fill, one action.
+  ['button type',          '--void',         '--accent',      'text'],
+  ['button hover type',    '--void',         '--accent-peak', 'text'],
+  ['button hover edge',    '--star',         '--void',        'edge'],
+  ['disabled type',        '--dust',         '--void',        'text'],
+  ['disabled edge',        '--dust',         '--void',        'edge'],
+
+  // Table, definition row, range, notice: the data components.
+  ['table head',           '--dust',         '--void',        'text'],
+  ['table cell',           '--starlight',    '--void',        'text'],
+  ['table cell link',      '--accent-text',  '--void',        'text'],
+  ['table note',           '--dust',         '--void',        'text'],
+  ['def label',            '--dust',         '--void',        'text'],
+  ['def value',            '--star',         '--void',        'text'],
+  ['range rest',           '--dust',         '--void',        'text'],
+  ['range hover',          '--star',         '--void',        'text'],
+  ['range current',        '--accent-text',  '--void',        'text'],
+  ['notice title',         '--star',         '--surface',     'text'],
+  ['notice text',          '--starlight',    '--surface',     'text'],
+  ['skeleton label',       '--dust',         '--deep',        'text'],
+
+  // States and blocks
+  ['empty title',          '--starlight',    '--void',        'text'],
+  ['empty body',           '--dust',         '--void',        'text'],
+  ['footer type',          '--dust',         '--void',        'text'],
+  ['footer link',          '--starlight',    '--void',        'text'],
+  ['audio note',           '--dust',         '--void',        'text'],
+  ['entry stamp',          '--dust',         '--void',        'text'],
+  ['entry state mark',     '--state',        '--void',        'edge'],
+  ['topic dot',            '--accent',       '--void',        'divider'],
+  ['card hover edge',      '--line',         '--void',        'divider'],
+
   // The series: the same five emitted values, measured where the cast uses them.
-  ['series signal',        'amber',       'void',         'text'],
-  ['series signal block',  'amber',       'surface',      'text'],
-  ['series second',        'cyan',        'void',         'text'],
-  ['series second block',  'cyan',        'surface',      'text'],
-  ['series body',          'cream',       'void',         'text'],
-  ['series body block',    'cream',       'surface',      'text'],
-  ['series alert type',    'alert-text',  'surface',      'text'],
-  ['series alert mark',    'alert',       'void',         'edge'],
-  ['series alert block',   'alert',       'surface',      'edge'],
-  ['series outline',       'void',        'cream',       'edge'],
-  // The campaign poster: every pair its type sets, on the void band, plus the
-  // decal's own film. The poster reads the semantic tokens, so each identity is
-  // measured here as it will render there.
-  ['poster title',         'star',        'void',         'text'],
-  ['poster film line',     'accent-text', 'void',         'text'],
-  ['poster genre',         'state-text',  'void',         'text'],
-  ['poster logline',       'starlight',   'void',         'text'],
-  ['poster credits',       'dust',        'void',         'text'],
-  ['poster slate link',    'accent-text', 'void',         'text'],
-  ['poster release film',  'poster-plate-text', 'poster-plate', 'text'],
-  ['poster focus ring',    'state',       'void',         'edge'],
-  ['poster lit edge',      'poster-edge', 'void',         'divider'],
-  ['poster frame',         'poster-metal','void',         'divider'],
-  ['hairline rule',        'line',        'void',         'divider'],
-  ['hairline in block',    'line',        'surface',      'divider'],
-  ['ghost hover fill',     'surface',     'void',         'divider'],
+  ['series signal',        '--amber',        '--void',        'text'],
+  ['series signal block',  '--amber',        '--surface',     'text'],
+  ['series second',        '--cyan',         '--void',        'text'],
+  ['series second block',  '--cyan',         '--surface',     'text'],
+  ['series body',          '--cream',        '--void',        'text'],
+  ['series body block',    '--cream',        '--surface',     'text'],
+  ['series outline',       '--void',         '--cream',       'edge'],
+
+  // The campaign poster: every pair its type sets, on the void band.
+  ['poster title',         '--star',         '--void',        'text'],
+  ['poster film line',     '--accent-text',  '--void',        'text'],
+  ['poster genre',         '--state-text',   '--void',        'text'],
+  ['poster logline',       '--starlight',    '--void',        'text'],
+  ['poster credits',       '--dust',         '--void',        'text'],
+  ['poster release film',  '--film-text',    '--film-bg',     'text'],
+  ['poster focus ring',    '--state',        '--void',        'edge'],
+  ['poster lit edge',      '--poster-edge',  '--void',        'divider'],
+  ['poster frame',         '--poster-metal', '--void',        'divider'],
 ];
 
 let failures = 0;
@@ -150,7 +158,7 @@ for (const [label, tokens] of IDENTITIES) {
     const bgRaw = resolve(tokens, bgToken);
     if (!fgRaw || !bgRaw) { console.log(`  MISSING TOKEN ${fgToken} / ${bgToken} (${name})`); failures++; local++; continue; }
     // A translucent background is composited onto the ground first.
-    const ground = over(resolve(tokens, 'void'), '#000000');
+    const ground = over(resolve(tokens, '--void'), '#000000');
     const bg = over(bgRaw, ground);
     if (!bg) { console.log(`  UNREADABLE ${fgToken} / ${bgToken} (${name})`); failures++; local++; continue; }
     const fg = /^rgba|^transparent/.test(fgRaw) ? over(fgRaw, bg) : fgRaw;

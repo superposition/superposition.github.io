@@ -1,10 +1,11 @@
 export default {
   title: 'Components/Empty state',
   parameters: {
+    usedOn: ['journal.html', 'projects.md'],
     docs: {
       description: {
         component:
-          'What a page says when there is nothing to show yet. A title that names the absence, a line on what happens next, and a link out — never five empty headings.',
+          'What a page says when there is nothing to show yet. A title that names the absence, a line on what happens next, and a way out — never five empty headings. /journal/ ships this state today, because the site publishes no entries; so does /projects/ if the repository pages ever fail to build. Measured: title --starlight 15.44:1, line --dust 7.51:1, one hairline frame with the two amber corner ticks.',
       },
     },
   },
@@ -38,7 +39,7 @@ export const WithAction = {
     body: `<div class="empty-state">
       <p class="empty-title">Nothing in this topic</p>
       <p class="empty-text">No entry has been filed under Kinematics.</p>
-      <p><a class="btn btn-secondary btn-sm" href="#storybook-root">Read every entry</a></p>
+      <p><a class="btn btn-primary" href="#storybook-root">Read every entry</a></p>
     </div>`,
   },
 };

@@ -10,6 +10,8 @@
     "test": "vitest run --project storybook",
     "test:watch": "vitest --project storybook",
     "a11y": "node scripts/a11y.mjs",
+    "states": "node scripts/states.mjs",
+    "slop": "node scripts/slop.mjs",
     "contrast": "node scripts/contrast.mjs"
   },
   "devDependencies": {

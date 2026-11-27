@@ -1,96 +1,42 @@
 import { expect, userEvent, waitFor } from 'storybook/test';
 
-const shell = (inner) => `<div class="wide">${inner}</div>`;
+const shell = (inner) => `<div class="wrap">${inner}</div>`;
 
 export default {
   title: 'Components/Button',
   parameters: {
+    usedOn: ['404.html'],
     docs: {
       description: {
         component:
-          'An action. For navigation between pages use a link; for an action that reads inside a sentence use the text variant.',
+          'The action. Exactly one per page, and only where there is something to do: /404.html carries the only one on the site, "Back to the front page". A link between pages is a link, not a button. One variant, because a second button beside the first means one of them is not the action. Measured: fill --accent carrying --void type at 13.07:1, hover --accent-peak at 15.37:1, focus ring --state at 12.93:1, disabled --dust at 7.51:1, box 39.6px tall — over the 24px target minimum with room.',
       },
     },
   },
-  render: (args) => shell(`<p class="kicker">${args.note}</p><div class="sg-row">${args.body}</div>`),
-  argTypes: {
-    note: { control: false },
-    body: { control: false },
-  },
+  render: (args) => shell(`<p class="kicker">${args.note}</p><p>${args.body}</p>`),
+  argTypes: { note: { control: false }, body: { control: false } },
 };
 
-export const Primary = {
+export const Default = {
   args: {
-    note: 'Primary: one per view. The amber fill, void type at 12.3:1, with the soft bloom; hover lifts to the peak and puts a cream edge on it.',
-    body: '<a class="btn btn-primary" href="#storybook-root">Read the journal</a>',
+    note: 'The one action. Hover it, tab to it, hold it down: these are the live states, not staged classes.',
+    body: '<a class="btn btn-primary" href="#storybook-root">Back to the front page</a>',
   },
-};
-
-export const Secondary = {
-  args: {
-    note: 'Secondary: the alternative when two actions sit together.',
-    body: '<a class="btn btn-secondary" href="#storybook-root">All repositories</a>',
-  },
-};
-
-export const Ghost = {
-  args: {
-    note: 'Ghost: rows and chrome, where a filled box would be too loud.',
-    body: '<a class="btn btn-ghost" href="#storybook-root">Skip</a>',
-  },
-};
-
-export const Text = {
-  args: {
-    note: 'Text: an action that reads as a link, for use inside a sentence or a line of prose.',
-    body: '<button class="btn btn-text" type="button">Copy the citation</button>',
-  },
-};
-
-export const Sizes = {
-  args: {
-    note: 'Three sizes. Small for dense rows, large for the one action on a page.',
-    body: [
-      '<a class="btn btn-primary btn-sm" href="#storybook-root">Small</a>',
-      '<a class="btn btn-primary" href="#storybook-root">Default</a>',
-      '<a class="btn btn-primary btn-lg" href="#storybook-root">Large</a>',
-    ].join(''),
-  },
-};
-
-export const Disabled = {
-  args: {
-    note: 'Disabled is dust type inside a dashed dust edge. It never drops below the text minimum.',
-    body: [
-      '<button class="btn btn-primary" type="button" disabled>Primary</button>',
-      '<button class="btn btn-secondary" type="button" disabled>Secondary</button>',
-      '<button class="btn btn-ghost" type="button" disabled>Ghost</button>',
-      '<a class="btn btn-primary" aria-disabled="true" role="button" tabindex="-1">Link button</a>',
-    ].join(''),
-  },
-};
-
-export const States = {
-  args: {
-    note: 'Hover it, tab to it, hold it down: the hover, focus-visible and active states are the live ones — no staged classes.',
-    body: '<a class="btn btn-primary" href="#storybook-root">Primary, all states</a><a class="btn btn-secondary" href="#storybook-root">Secondary, all states</a>',
-  },
-  // The states are declared as transitions on the element, so the only honest
-  // test is to point at it and to tab to it and read what the browser computed.
+  // The states are declared as rules on the element, so the honest test is to
+  // read what the browser computed, and to read the hover rule where it is
+  // written — a synthetic pointer does not set :hover in a real browser.
   play: async ({ canvasElement, step }) => {
     const button = canvasElement.querySelector('.btn-primary');
     const style = () => getComputedStyle(button);
 
-    await step('at rest the fill is amber and nothing else is drawn', async () => {
+    await step('at rest the fill is amber and nothing is drawn on it', async () => {
       await expect(style().backgroundColor).toBe('rgb(255, 194, 74)');
       await expect(style().boxShadow).toContain('255, 194, 74');
       await expect(style().outlineStyle).toBe('none');
+      await expect(button.getBoundingClientRect().height).toBeGreaterThanOrEqual(24);
     });
 
     await step('hover is declared: the fill lifts to the peak, the edge goes cream', async () => {
-      // A synthetic pointer does not set :hover in a real browser, and the real
-      // mouse is only reachable from the test runner, so the hover state is read
-      // where it is written: the rule this element's class matches.
       const hover = [...document.styleSheets]
         .flatMap((sheet) => [...sheet.cssRules])
         .find((rule) => rule.selectorText === '.btn-primary:hover');
@@ -105,7 +51,7 @@ export const States = {
       await expect(button.matches(':focus-visible')).toBe(true);
       await expect(style().outlineColor).toBe('rgb(143, 211, 255)');
       await expect(style().outlineWidth).toBe('2px');
-      await expect(style().outlineOffset).toBe('3px');
+      await expect(style().outlineOffset).toBe('4px');
       await waitFor(() => expect(style().boxShadow).toContain('143, 211, 255'));
     });
 
@@ -117,9 +63,25 @@ export const States = {
   },
 };
 
-export const Block = {
+export const InSentence = {
   args: {
-    note: 'Block: full width of its container, for a single action in a narrow column.',
-    body: '<a class="btn btn-primary btn-block" href="#storybook-root">Subscribe by RSS</a>',
+    note: 'A second, quieter way out of the same page. It is a command link, not a second button.',
+    body:
+      '<a class="btn btn-primary" href="#storybook-root">Back to the front page</a> ' +
+      '<a class="text-link" href="#storybook-root">Or read the journal</a>',
+  },
+};
+
+export const Disabled = {
+  args: {
+    note: 'Disabled is --dust type inside a dashed --dust edge: 7.51:1, so an unavailable action is still readable. No fill is left to mistake for an available one.',
+    body: '<button class="btn btn-primary" type="button" disabled>Back to the front page</button>',
+  },
+};
+
+export const AsAButton = {
+  args: {
+    note: 'The same component on a <button> element, for an action that does not navigate. A real button gets a real type attribute.',
+    body: '<button class="btn btn-primary" type="button">Copy the citation</button>',
   },
 };
