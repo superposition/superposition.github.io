@@ -82,6 +82,13 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 .site-header nav a:hover { color: var(--rust-text); }
 .site-header nav [aria-current] { color: var(--rust-text); }
 
+/* Series is a section for a large screen: below 640px it leaves the header so
+   the nav stays one row on a phone, and the footer carries the link instead.
+   Hidden this way it also leaves the tab order, which is why the footer has to
+   carry it — one reachable link at every width, never two. */
+.nav-series { display: none; }
+@media (min-width: 640px) { .nav-series { display: inline; } }
+
 /* Hero -------------------------------------------------------------------- */
 
 .hero {
@@ -636,7 +643,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 /* Narrow ----------------------------------------------------------------- */
 
 @media (max-width: 700px) {
-  .site-header { font-size: 12px; letter-spacing: .04em; }
+  .site-header { font-size: 12px; letter-spacing: .04em; column-gap: 12px; }
   .site-header nav { gap: 10px; }
   .hero { min-height: 92svh; }
   .hero h1 { font-size: clamp(46px, 15vw, 80px); }
