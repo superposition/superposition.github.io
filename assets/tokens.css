@@ -221,7 +221,15 @@
   --step-decal: 11px;
   --step-1: 13px;
   --step-2: 15px;
-  --step-3: 19px;
+  /* The reading step. The field's body sizes run 16–22px with a median of 18,
+     and the pages worth copying are the ones that pair the size with a wide
+     column rather than a narrow one: Nautilus 20px in 700px, Low-tech 20px in
+     660px, Aeon 22px in 704px. At 20px in the 39rem measure below a
+     paragraph of an entry-length page sets 69.2 characters per line at 1440,
+     median 70, by a Range walk over plain paragraphs, spaces counted, full
+     lines only. Only the reading step moves: --step-0/-1/-2 and --step-decal
+     are labels and data, measured separately. */
+  --step-3: 20px;
   --step-4: clamp(19px, 2vw, 22px);
   --step-5: clamp(28px, 4.4vw, 44px);
   --step-hero: clamp(48px, 10.4vw, 150px);
@@ -247,11 +255,27 @@
   --leading-body: 1.6;
   /* Rem, not ch: a ch measure resolves against the font of whatever element
      it lands on, so the same token gave 544px in prose, 696px inside an Anton
-     heading and 488px in mono. 34rem is the 544px the prose wants, and the
-     narrower one is narrower: at 38rem the lede was 608px against a 544px
-     column and overhung the text it introduces by 64px. */
-  --measure: 34rem;
-  --measure-narrow: 30rem;
+     heading and 488px in mono. 39rem is 624px, the reading column: at
+     --step-3 (20px) eleven plain paragraphs of an entry-length page measure
+     69.2 characters per line at 1440, median 70, by a Range walk that counts
+     the characters between one change of line top and the next. The field's
+     good pages sit at 66–79 (Quanta 68, Aeon 66, Nautilus 78) and its
+     failures at 88–95; the old 34rem/19px measured 63.6 on the same walk, the
+     narrowest column of the fifteen sites surveyed. The 38rem in the
+     instrument identity is that identity's measure at 16px, not this one. */
+  --measure: 39rem;
+  /* 31rem is 496px: at --step-4 (22px) the lede holds 49.3 characters per line
+     at 1440, the shortest measure on the site and still the size the field
+     sets a dek at. 30rem measured 47 — the survey's "30rem gives 50" was
+     arithmetic, and the walk does not agree with it. */
+  --measure-narrow: 31rem;
+  /* 52rem is 832px: the entry headline's own block, 133% of the reading
+     column — Ars runs 161%, Nautilus 146%, Quanta 136%. Measured at --step-5
+     (44px, Anton): a 71-character title sets in two lines with a 481px second
+     line, a 72-character one with 514px, and a 44-character title lands on one
+     line at 763px. At 45rem the 44-character title breaks with an 81px
+     orphan, which is what fixes the floor. */
+  --measure-head: 52rem;
 
   /* Tracking. Labels are the machine voice; display is the poster. */
   --track-label: .10em;
@@ -307,6 +331,10 @@
   --gutter: 24px;
   --max-wide: 1200px;
   --max-crawl: 34rem;
+  /* The widest a plate is allowed to get without going full-bleed: 1000px is
+     0.69 of a 1440 viewport, which is where Nautilus (0.71) and Low-tech
+     (0.72) keep their photographs. It is the same cap the .figure component
+     uses, and the entry page now reads it too. */
   --figure-max: 1000px;
   --col-name: 15ch;
   --def-min: 11rem;

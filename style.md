@@ -203,9 +203,10 @@ sitemap: false
     <div class="sg-example">
       <p class="kicker">Prose</p>
       <div class="prose">
-        <p>Body copy at 19px in the text face on the 34rem measure, with a <a href="#sg-parts">prose link in the nebula colour</a> and <code>inline code</code> on the surface.</p>
+        <p>Body copy at 20px in the text face on the 39rem measure, 69.2 characters per line at 1440, with a <a href="#sg-parts">prose link in the nebula colour</a> and <code>inline code</code> on the surface.</p>
+        <p class="eyebrow">The eyebrow</p>
         <h2>A section heading inside prose</h2>
-        <p>The section heading is the label voice, not the display face: Plex Mono 600 at 13px, upper case, tracked, in star on a hairline. Anton starts at 22px and is the name a page is called by.</p>
+        <p>The section heading is the display face at 22px in the writer's case, because the field's median first h2 inside an essay is 24px and 13px mono made six sections read as six footnotes. The mono keeps one job above it: an optional eyebrow, 13px Plex Mono 600, upper case and tracked, over the same hairline. A section that needs no category drops it.</p>
         <blockquote>A change of basis is not a change of the map: the arrows are the same arrows, and only the numbers you write them with are different.</blockquote>
         <h3>A third-level heading</h3>
         <p>Text under it, with a list and a figure.</p>
