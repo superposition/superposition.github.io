@@ -84,7 +84,82 @@ sitemap: false
     <div class="sg-example">
       <p class="kicker">Links, focus and meta</p>
       <p><a href="#sg-parts">A default link</a> · <a href="#sg-parts">another</a> · <span class="meta">meta text</span></p>
-      <p class="empty">An empty state, in dust.</p>
+    </div>
+
+    <div class="sg-example">
+      <p class="kicker">Buttons</p>
+      <div class="sg-stack">
+        <div class="sg-row">
+          <a class="btn btn-primary" href="#sg-parts">Primary</a>
+          <a class="btn btn-secondary" href="#sg-parts">Secondary</a>
+          <a class="btn btn-ghost" href="#sg-parts">Ghost</a>
+          <button class="btn btn-text" type="button">Text</button>
+        </div>
+        <div class="sg-row">
+          <a class="btn btn-primary btn-sm" href="#sg-parts">Small</a>
+          <a class="btn btn-primary" href="#sg-parts">Default</a>
+          <a class="btn btn-primary btn-lg" href="#sg-parts">Large</a>
+        </div>
+        <div class="sg-row">
+          <button class="btn btn-primary" type="button" disabled>Disabled</button>
+          <button class="btn btn-secondary" type="button" disabled>Disabled</button>
+          <button class="btn btn-ghost" type="button" disabled>Disabled</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sg-example">
+      <p class="kicker">Badges</p>
+      <div class="sg-row">
+        <span class="badge">Python</span>
+        <span class="badge badge-accent">Matrices</span>
+        <span class="badge badge-state">In progress</span>
+        <span class="badge badge-solid">6 stars</span>
+      </div>
+    </div>
+
+    <div class="sg-example">
+      <p class="kicker">Cards</p>
+      <ul class="repo-grid">
+        <li>
+          <a class="card" href="#sg-parts">
+            <span class="card-media"><img src="{{ '/assets/repos/mage/kernel-progression-1200.webp' | relative_url }}" alt="" width="600" height="375" loading="lazy"></span>
+            <span class="card-title">Mage</span>
+            <span class="card-text">GPU profiler TUI for Triton and CUDA kernels, with nsys and ncu integration.</span>
+            <span class="card-meta">Python · 6 stars</span>
+          </a>
+        </li>
+        <li>
+          <a class="card entry-card" href="#sg-parts">
+            <span class="card-kicker">Matrices · 20 Nov 2026</span>
+            <span class="card-title">What a matrix does to a basis</span>
+            <span class="card-text">One line of description, the same dek the entry list shows.</span>
+            <span class="card-foot"><span class="badge badge-accent">Matrices</span></span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="sg-example">
+      <p class="kicker">Callout and code block</p>
+      <div class="prose">
+        <div class="callout">
+          <span class="callout-title">Where this number comes from</span>
+          Contrast is measured from a screenshot with the text hidden, not read off the token file.
+        </div>
+        <figure class="code-block">
+          <pre><code>curl -sI https://superposition.github.io/ | head -1</code></pre>
+          <figcaption>A code block carries a caption the way a figure does.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="sg-example">
+      <p class="kicker">Empty state</p>
+      <div class="empty-state">
+        <p class="empty-title">No entries yet</p>
+        <p class="empty-text">The first one is being written. <a href="#sg-parts">Follow by RSS</a> and it will arrive.</p>
+      </div>
     </div>
   </section>
 </div>

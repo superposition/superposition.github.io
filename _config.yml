@@ -23,4 +23,4 @@ defaults:
     values: {layout: post, math: true}
   - scope: {path: "", type: repos}
     values: {layout: repo}
-exclude: [Gemfile, Gemfile.lock, README.md, vendor, scripts, node_modules]
+exclude: [Gemfile, Gemfile.lock, README.md, vendor, scripts, node_modules, storybook]

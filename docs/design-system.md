@@ -58,7 +58,28 @@ Motion is one thing: the hero photograph drifts from scale 1 to 1.06 over `--dur
 
 ## Components
 
-`notebook.css` builds these over the tokens: shell and gutters, nav, hero, headings, lede, prose (links, blockquote, code, table, figure and caption), topic row with a coloured dot, entry list, entry page, credits list, footer, focus states, and the 404. `/style/` shows each of them rendered live, which is the test that they are applied rather than described.
+`notebook.css` builds these over the tokens, one section per component:
+
+| Component | Classes | Where it ships |
+|---|---|---|
+| Shell | `wrap`, `wide`, `skip`, `visually-hidden` | every page |
+| Nav | `site-header`, `home-link` | every page |
+| Hero | `hero`, `hero-inner` | the home page |
+| Type | `lede`, `section-title`, `kicker`, `meta` | everywhere |
+| Link | `text-link`, prose links | chrome and prose |
+| Button | `btn`, `btn-primary`, `btn-secondary`, `btn-ghost`, `btn-text`, `btn-sm`, `btn-lg`, `btn-block` | `/style/`; ready for actions |
+| Badge | `badge`, `badge-accent`, `badge-state`, `badge-solid` | `/style/`; topics and states |
+| Topic row | `topic-list`, `dot`, `dot-rust` … `dot-dust` | home, `/topics/` |
+| Card | `card`, `card-media`, `card-kicker`, `card-title`, `card-text`, `card-meta`, `card-foot`, `repo-grid` | `/projects/` |
+| Entry list | `entry-list`, `entry`, `entry-date`, `entry-title`, `entry-dek` | home, `/journal/` |
+| Figure | `figure` + caption, `code-block` | prose and repository pages |
+| Prose | `prose`, `callout`, `callout-title` | entries, repository pages, About, credits |
+| Empty state | `empty-state`, `empty-title`, `empty-text` | `/journal/`, `/projects/` |
+| Footer | `site-footer` | every page |
+
+`/style/` shows every one of them rendered live, which is the test that they are applied rather than described. The Storybook workbench in `storybook/` imports the same two stylesheets and adds the variants and states a page does not happen to be showing; `storybook/scripts/contrast.mjs` measures all 38 colour pairs the components ship, and `/style/` prints the same numbers beside each swatch.
+
+**Never** add a component style to a Storybook-only file. A story that needs a new rule is a rule missing from `notebook.css`, and that is where it goes.
 
 ## Adding a page
 

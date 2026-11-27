@@ -11,7 +11,10 @@ image: /assets/art/orbits.png
   <h1>Journal</h1>
 </header>
 {% if site.posts.size == 0 %}
-<p class="empty">No entries yet. <a href="{{ '/feed.xml' | relative_url }}">Follow by RSS</a>.</p>
+<div class="empty-state">
+  <p class="empty-title">No entries yet</p>
+  <p class="empty-text">The first one is being written. <a href="{{ '/feed.xml' | relative_url }}">Follow by RSS</a> and it will arrive.</p>
+</div>
 {% else %}
 {% for topic in site.data.topics %}{% assign posts = site.posts | where: "topic", topic.slug %}{% if posts.size > 0 %}
 <section class="journal-topic" id="{{ topic.slug }}">

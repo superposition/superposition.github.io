@@ -1,0 +1,18 @@
+{
+  "name": "superposition-storybook",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Storybook workbench for the Superposition component library. Imports the site's own stylesheets.",
+  "scripts": {
+    "storybook": "storybook dev -p 6017 --ci",
+    "build-storybook": "storybook build",
+    "contrast": "node scripts/contrast.mjs"
+  },
+  "devDependencies": {
+    "@storybook/addon-docs": "^10.6.9",
+    "@storybook/html-vite": "10.6.9",
+    "storybook": "10.6.9",
+    "vite": "^8.4.0"
+  }
+}
