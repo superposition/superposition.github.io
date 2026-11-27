@@ -25,18 +25,18 @@
    number is printed by `npm run contrast` in storybook/, which reads this file
    and fails on anything under 4.5:1 for text or 3:1 for a control edge:
 
-   Shipped identity (default), ground #0b0a0d:
-     --star       15.9 / 15.1 / 13.9   headings
-     --starlight  14.5 / 13.8 / 12.7   body and secondary text
-     --dust        7.1 /  6.7 /  6.2   meta, captions, stamps
-     --accent     12.3 / 11.7 / 10.7   amber: chrome links, wordmark, ticks
-     --state      12.2 / 11.6 / 10.6   cyan: focus rings, state edges and type
-     --alert       4.7 /  4.5 /  4.1   red edge; its text is --alert-text (7.0)
-     --alert-text  7.0 /  6.7 /  6.1   the same red where it is text
-     --nebula-text 6.3 /  6.0 /  5.5   prose links, sampled from Carina
-     --decal-text 16.7                 a decal chip on its own film
-     --plum        2.3 /  2.2 /  2.0   never text; fill only
-     --plum-mark   4.0 /  3.8 /  3.5   the plum mark, at edge contrast
+   Shipped identity (default), ground #000000:
+     --star       16.9 / 15.1 / 13.9   headings
+     --starlight  15.4 / 13.8 / 12.7   body and secondary text
+     --dust        7.5 /  6.7 /  6.2   meta, captions, stamps
+     --accent     13.1 / 11.7 / 10.7   amber: chrome links, wordmark, ticks
+     --state      12.9 / 11.5 / 10.6   cyan: focus rings, state edges and type
+     --alert       5.0 /  4.5 /  4.1   red edge; its text is --alert-text (7.5)
+     --alert-text  7.5 /  6.7 /  6.1   the same red where it is text
+     --nebula-text 6.7 /  6.0 /  5.5   prose links, sampled from Carina
+     --decal-text 15.7                 a decal chip on its own film
+     --plum        2.4 /  2.2 /  2.0   never text; fill only
+     --plum-mark   4.2 /  3.8 /  3.5   the plum mark, at edge contrast
 
    Instrument (data-lab="a"), ground #0a0a0b:
      --star       16.0 / 15.2 / 14.6
@@ -70,10 +70,15 @@
 */
 
 :root {
-  /* The shipped identity. Ground: deep field and Sombrero shadow. */
-  --void: #0b0a0d;
+  /* The shipped identity. Ground: absolute black — the page adds no light of
+     its own, so a photograph on it can only add light. One step up is the Deep
+     Field's own shadow, which is where a block sits. */
+  --void: #000000;
+  --void-rgb: 0, 0, 0; /* the ground as channels, for scrims that must follow it */
+  --rim: radial-gradient(150% 60% at 50% -18%, rgba(255, 194, 74, .055) 0%, rgba(255, 194, 74, 0) 62%);
   --deep: #131118;
   --surface: #1c1a20;
+  --panel: linear-gradient(180deg, var(--deep) 0%, var(--void) 100%);
   --line: rgba(242, 230, 216, .14);
 
   /* Warm cream, never a clipped white: headings, then body, then meta. */
@@ -131,10 +136,10 @@
   --grain-opacity: .05;
   --vignette: radial-gradient(118% 92% at 50% 42%, transparent 46%, rgba(5, 4, 3, .42) 78%, rgba(5, 4, 3, .62) 100%);
   --hero-scrim: linear-gradient(180deg,
-      rgba(11, 10, 13, .52) 0%,
-      rgba(11, 10, 13, .66) 45%,
-      rgba(11, 10, 13, .93) 80%,
-      var(--void) 100%);
+      rgba(var(--void-rgb), .52) 0%,
+      rgba(var(--void-rgb), .66) 45%,
+      rgba(var(--void-rgb), .93) 80%,
+      rgb(var(--void-rgb)) 100%);
 
   /* Typefaces: display self-hosted, mono self-hosted, text from the system. */
   --font-display: Anton, Impact, 'Arial Narrow', sans-serif;
@@ -196,6 +201,8 @@
 
 html[data-lab="a"] {
   --void: #0a0a0b;
+  --void-rgb: 10, 10, 11;
+  --rim: none;
   --deep: #101012;
   --surface: #161618;
   --line: rgba(255, 194, 74, .20);
@@ -238,6 +245,8 @@ html[data-lab="a"] {
 
 html[data-lab="b"] {
   --void: #050508;
+  --void-rgb: 5, 5, 8;
+  --rim: none;
   --deep: #0a0a10;
   --surface: #12121a;
   --line: rgba(214, 229, 255, .16);

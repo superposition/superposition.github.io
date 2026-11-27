@@ -54,7 +54,9 @@ html {
 
 body {
   margin: 0;
-  background: var(--void);
+  background-color: var(--void);
+  background-image: var(--rim);
+  background-repeat: no-repeat;
   color: var(--star);
   font: var(--step-3)/var(--leading-body) var(--font-text);
   -webkit-font-smoothing: antialiased;
@@ -671,7 +673,7 @@ html[data-lab="a"] .repo-name { font-weight: 400; }
   background: var(--surface); padding: .14em .34em;
 }
 .prose pre, .code-block pre {
-  background: var(--surface); color: var(--star);
+  background: var(--panel); color: var(--star);
   padding: var(--space-3); overflow-x: auto;
   font: 13.5px/1.6 var(--font-mono);
 }
@@ -687,7 +689,7 @@ html[data-lab="a"] .repo-name { font-weight: 400; }
 .callout {
   border: var(--border-hair);
   border-left: 2px solid var(--state);
-  background: var(--surface);
+  background: var(--panel);
   padding: var(--space-2) var(--space-3);
   color: var(--starlight);
 }
