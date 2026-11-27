@@ -84,6 +84,12 @@ Tracking is three tokens: `--track-label` (.10em, .16em instrument, .20em poster
 
 `--space-1` … `--space-6` run 6px, 12px, 20px, 32px, `clamp(40px,5.4vw,72px)`, `clamp(56px,8vw,112px)`. Those size the inside of a component. Three named roles size the gaps between them, so a break of one kind is one number: `--flow` (`calc(var(--step-3) * 1.25)`, 23.75px) between blocks of prose, `--space-section` (`clamp(40px,5.4vw,72px)`) between the sections of a page, `--space-open` (`clamp(56px,8vw,112px)`) between the nav and the page's first line and again before the footer. `--radius` is 0 and `--border-hair` is the one hairline. The single exception is `--radius-decal` (3px), because a hardware label is a physical chip.
 
+### The decal chip
+
+A decal is the one label on the site that carries its own surface. The film is `--decal-bg` `rgba(58,52,44,.92)` — a warm charcoal, not black — and the chip carries a 1px `--decal-edge` (`--line`) hairline. On the absolute-black ground a black film measures 1.00:1 against the page, which is why the film is not black: the chip measures **1.59:1 against the ground** at 1440 and 420, the hairline **2.33:1**, and the type on the film **10.5:1**. On the hero the photograph behind the chip does that work instead and the film reads as it did before. The poster identity has no chip at all: its eyebrow is a plain tracked label in `--dust` at 7.8:1, because a poster has no hardware.
+
+The **topic dots are one amber dot**. They used to carry five sampled hues, which was the only place on the site where content encoded itself in colour — the topics have no fixed colour anywhere else and the photographs supply the site's colour. A dot is a bullet, so it is `--accent` and the name does the work.
+
 `--hud-tick` (14px) and `--hud-weight` (1px) size the corner ticks. `--rail-bar` (3px), `--rail-pitch` (10px) and `--rail-cap` (1.5px) size the gauge rail; `--rail` is its colour.
 
 Motion is one thing: the home page's opening statement drifts 26px up and back over `--dur-crawl` (52s, 64s in the poster identity, none in the instrument identity), inside a frame whose edges fade. `--dur-slow` (24s) is the hero photograph's drift, and only the instrument identity uses it. `.crawl .lede` stops on the page's own Hold switch — a checkbox, so it is CSS-only and is the pause mechanism WCAG 2.2.2 asks for — and `prefers-reduced-motion: reduce` removes the motion, the tilt and the fade together.
@@ -132,7 +138,7 @@ Both families stop, in the two places they are declared:
 | Link | `text-link`, prose links | chrome and prose |
 | Button | `btn`, `btn-primary`, `btn-secondary`, `btn-ghost`, `btn-text`, `btn-sm`, `btn-lg`, `btn-block` | `/style/`; ready for actions |
 | Badge | `badge`, `badge-accent`, `badge-state`, `badge-solid` | `/style/`; topics and states |
-| Topic row | `topic-list`, `dot`, `dot-accent` … `dot-dust` | home, `/topics/` |
+| Topic row | `topic-list`, `dot` | home, `/topics/` |
 | Card | `card`, `card-media`, `card-kicker`, `card-title`, `card-text`, `card-meta`, `card-foot`, `repo-grid` | `/projects/` |
 | Entry list | `entry-list`, `entry`, `entry-date`, `entry-title`, `entry-dek` | home, `/journal/` |
 | Figure | `figure` + caption, `code-block` | prose and repository pages |

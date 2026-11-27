@@ -71,6 +71,11 @@ const PAIRS = [
   ['alert edge',           'alert',       'void',         'edge'],
   ['alert edge on block',  'alert',       'surface',      'edge'],
   ['decal type',           'decal-text',  'decal-bg',     'text'],
+  // The film and its edge are a label's container, not a control, so they are
+  // printed for the record: a chip on an absolute-black ground must be visible
+  // as a chip, and 1.55:1 with a hairline is what a hardware label reads as.
+  ['decal film',           'decal-bg',    'void',         'divider'],
+  ['decal edge',           'decal-edge',  'void',         'divider'],
   ['body type on block',   'star',        'surface',      'text'],
   ['secondary on block',   'starlight',   'surface',      'text'],
   ['meta on block',        'dust',        'surface',      'text'],
