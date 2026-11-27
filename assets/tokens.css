@@ -59,6 +59,10 @@
      --alert       4.9 /  4.8 /  4.4
      --decal-text  7.8                 a plain label, no chip, no film
 
+   The campaign posters draw only with the tokens above: their title is --cream
+   on --void (14.5), the film line --amber (12.3), the genre --cyan (12.2) and
+   the credits --dust (7.1). Every one of those pairs is in `npm run contrast`.
+
    The four emitted colours are shared with the series cast, and measured the
    same way on every ground:
 
@@ -135,6 +139,17 @@
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
   --grain-opacity: .05;
   --vignette: radial-gradient(118% 92% at 50% 42%, transparent 46%, rgba(5, 4, 3, .42) 78%, rgba(5, 4, 3, .62) 100%);
+  /* Campaign posters. The five values below are the alphas a poster needs on
+     top of the shared palette: a lamp behind the key art, the lit rule under it,
+     the cool half of the wash over it, the scrim it fades into, and the metal
+     its frame is cut from. Everything else a poster draws with is a semantic
+     token, so the three identities re-light a poster without touching it. */
+  --poster-lamp: rgba(255, 194, 74, .16);
+  --poster-edge: rgba(255, 194, 74, .38);
+  --poster-wash: rgba(143, 211, 255, .10);
+  --poster-scrim: rgba(11, 10, 13, .96);
+  --poster-metal: rgba(230, 220, 200, .26);
+
   --hero-scrim: linear-gradient(180deg,
       rgba(var(--void-rgb), .52) 0%,
       rgba(var(--void-rgb), .66) 45%,
@@ -154,6 +169,23 @@
   --step-4: clamp(19px, 2vw, 22px);
   --step-5: clamp(28px, 4.4vw, 44px);
   --step-hero: clamp(48px, 10.4vw, 150px);
+
+  /* A poster is measured against its own width, not the window, so every size
+     below is a container query unit with a floor and a ceiling for the widths
+     the component actually ships at: 160px in the strip, 386px on /now-showing/,
+     420px on a repository page. */
+  --poster-title: clamp(26px, 13.6cqi, 78px);
+  --poster-title-long: clamp(20px, 10.4cqi, 60px);
+  --poster-film: clamp(10px, 4.2cqi, 21px);
+  --poster-genre: clamp(9px, 2.9cqi, 12px);
+  --poster-logline: clamp(11px, 3.9cqi, 17px);
+  --poster-cast: clamp(9.5px, 2.9cqi, 12.5px);
+  --poster-slate: clamp(9px, 2.7cqi, 11px);
+  --poster-pad: clamp(10px, 5cqi, 24px);
+  --poster-gap: clamp(5px, 1.8cqi, 11px);
+  --leading-poster: .92;
+  --strip-card: clamp(160px, 17vw, 232px);
+  --dur-card: 6s;
 
   --leading-tight: 1.1;
   --leading-body: 1.6;

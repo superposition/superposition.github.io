@@ -31,11 +31,15 @@ sitemap: false
       <li class="swatch"><div class="chip" style="background: var(--alert-text)"></div><div class="label"><b>--alert-text</b>#f4735f · 7.5:1</div></li>
       <li class="swatch"><div class="chip" style="background: var(--nebula-text)"></div><div class="label"><b>--nebula-text</b>#6f93c9 · 6.7:1 · prose links</div></li>
       <li class="swatch"><div class="chip" style="background: var(--plum)"></div><div class="label"><b>--plum</b>#6b3f4d · fill only</div></li>
+
       <li class="swatch"><div class="chip" style="background: var(--plum-mark)"></div><div class="label"><b>--plum-mark</b>#9a5e72 · 4.2:1 edge</div></li>
-      <li class="swatch"><div class="chip" style="background: var(--amber)"></div><div class="label"><b>--amber</b>#ffc24a · 13.1:1 · the signal</div></li>
-      <li class="swatch"><div class="chip" style="background: var(--cyan)"></div><div class="label"><b>--cyan</b>#8fd3ff · 12.9:1 · the second signal</div></li>
-      <li class="swatch"><div class="chip" style="background: var(--cream)"></div><div class="label"><b>--cream</b>#e6dcc8 · 15.4:1 · body type</div></li>
-      <li class="swatch"><div class="chip" style="background: var(--decal-bg)"></div><div class="label"><b>--decal-bg</b>rgba(0,0,0,.85) · decal film</div></li>    </ul>
+      <li class="swatch"><div class="chip" style="background: var(--decal-bg)"></div><div class="label"><b>--decal-bg</b>rgba(0,0,0,.85) · decal film</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--poster-lamp)"></div><div class="label"><b>--poster-lamp</b>· the lamp on dark metal</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--poster-edge)"></div><div class="label"><b>--poster-edge</b>· a lit edge under the art</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--poster-wash)"></div><div class="label"><b>--poster-wash</b>· the cool half of the wash</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--poster-scrim)"></div><div class="label"><b>--poster-scrim</b>· the dark key art fades into</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--poster-metal)"></div><div class="label"><b>--poster-metal</b>· the poster frame</div></li>
+    </ul>
   </section>
 
   <section class="sg-section" aria-labelledby="sg-type">
@@ -192,6 +196,19 @@ sitemap: false
       <div class="crawl">
         <p class="lede">The home page opening statement, on a plane that tips four degrees in the poster identity, drifting 26px over 52 to 64 seconds inside a frame whose edges fade. It stops on request and disappears under reduced motion.</p>
       </div>
+    </div>
+
+    <div class="sg-example">
+      <p class="kicker">Poster, three ways</p>
+      {%- assign mage = site.data.campaigns | where: "slug", "mage" | first -%}
+      {%- assign cairo = site.data.campaigns | where: "slug", "cairo_vault" | first -%}
+      {%- assign marigraph = site.data.campaigns | where: "slug", "marigraph" | first -%}
+      <div class="sg-row" style="align-items: flex-start">
+        <div style="width: 260px">{% include campaign/poster.html campaign=mage index=2 total=20 %}</div>
+        <div style="width: 260px">{% include campaign/poster.html campaign=cairo variant="field" index=19 total=20 %}</div>
+        <div style="width: 260px">{% include campaign/poster.html campaign=marigraph variant="text" index=12 total=20 %}</div>
+      </div>
+      <p class="meta">With a still, with the plotted field a repository without figures gets, and with no art at all. A poster reads the semantic tokens, so the three identities re-light it: under <code>data-lab="b"</code> the film line goes cold with --accent and the lamp is a printed wash rather than a glow. The strip that runs them is on the home page; the whole programme is at <a class="text-link" href="{{ '/now-showing/' | relative_url }}">/now-showing/</a>.</p>
     </div>
 
     <div class="sg-example">

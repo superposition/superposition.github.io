@@ -1,0 +1,291 @@
+# Superposition Pictures: one campaign per repository page, in programme order.
+#
+# `slug` is the join: it must match a document in the `repos` collection, which
+# is what the poster links to and what its cast is credited against. Nothing
+# here is a capability claim the repository does not make on its own page.
+#
+#   title    the library's own name, set as the film title (uppercase on the
+#            poster, so write it here the way a reader would say it)
+#   film     the film-style subtitle, the line under the title
+#   genre    one or two words, dry
+#   runtime  the trailer card's figure: how long the film runs, invented
+#   logline  twenty words or fewer, read off what the library actually does
+#            (`node scripts/check-campaigns.mjs` counts them and fails over 20)
+#   cast     the parts in the film, in billing order. These are roles, not
+#            characters: when _data/cast.yml lands, an entry whose `library`
+#            matches this slug and whose `role` matches one of these takes the
+#            credit and brings a portrait with it. Until then the role is the
+#            credit, which is how a one-sheet reads when the cast is unannounced.
+#   stills   one to three images that already exist on the site: the repository's
+#            own figures, or the NASA imagery the site already licenses. The
+#            first is the poster's key art.
+#
+- slug: bend-ml-lab
+  title: bend-ml-lab
+  film: The same loop, three runtimes
+  genre: Documentary
+  runtime: 1h 06m
+  logline: "Einsum, training epochs and weight diagnostics in Bend 2, measured against C and NumPy twins."
+  cast: [the einsum, the twin, the epoch]
+  stills:
+    - src: /assets/art/galaxy/andromeda-960.webp
+      alt: "A panoramic field of stars in Andromeda."
+      credit: NASA/JPL-Caltech
+
+- slug: mage
+  title: Mage
+  film: Inside the kernel, or around it
+  genre: Technical thriller
+  runtime: 1h 32m
+  logline: "A terminal GPU profiler that makes the clock visible: inside the kernel, or around the call."
+  cast: [the profiler, the kernel, the wall clock]
+  stills:
+    - src: /assets/repos/mage/kernel-progression-1200.webp
+      alt: "Two step charts of GPU kernel time in microseconds, each stage labelled with the change that produced it."
+      credit: From the repository
+    - src: /assets/repos/mage/comparison-views-1200.webp
+      alt: "Bar charts of GPU kernel time, and of time around the call, per operation, for PyTorch, Triton and Rust."
+      credit: From the repository
+    - src: /assets/repos/mage/matmul-layouts-1200.webp
+      alt: "Two schematics of the same matmul, one threaded by the compiler and one by the kernel author."
+      credit: From the repository
+
+- slug: qualia
+  title: Qualia
+  film: Twenty crates, one agent
+  genre: Science fiction
+  runtime: 2h 04m
+  logline: "Shared-memory arenas, crash-safe evidence logs, and a JEPA runtime whose promotion is gated on evidence."
+  cast: [the arena, the evidence log, the jepa runtime]
+  stills:
+    - src: /assets/repos/qualia/console-brain-panel-800.webp
+      alt: "The Qualia console's Brain panel: a point cloud of the fly connectome with the current tick's firing neurons lit."
+      credit: From the repository
+    - src: /assets/repos/qualia/dataset-gate-800.webp
+      alt: "A bar chart of two recorded sessions through the dataset's transition gates, with the promotion floor drawn far above them."
+      credit: From the repository
+    - src: /assets/repos/qualia/prior-path-800.webp
+      alt: "A flow diagram from a connectome dataset through the committed graph to the belief layer the console reads."
+      credit: From the repository
+
+- slug: divulge
+  title: DIVULGE
+  film: A model in the loop
+  genre: Investigation
+  runtime: 1h 47m
+  logline: "A native workbench that investigates a binary with a model in the loop, and the evidence beside it."
+  cast: [the binary, the model, the evidence graph]
+  stills:
+    - src: /assets/repos/divulge/first-screen-windows-1200.webp
+      alt: "The DIVULGE window on Windows: an investigation tree, an evidence graph, and a Harness Insight panel."
+      credit: From the repository
+    - src: /assets/repos/divulge/synthetic-explanation-800.webp
+      alt: "Harness Insight showing a recorded explanation with its question, action, evidence, limitation and next probe."
+      credit: From the repository
+    - src: /assets/repos/divulge/v15-code-large-1200.webp
+      alt: "The Code view's instruction inspector: the bytes, the source and image coordinates, and a candidate destination."
+      credit: From the repository
+
+- slug: "91"
+  title: NAIWAN 91
+  film: Three standards, one groovebox
+  genre: Musical
+  runtime: 1h 44m
+  logline: "Firmware that comps three jazz standards on one FM groovebox, drums and bass following the changes."
+  cast: [the chord circle, the comping bass, the drum machine]
+  stills:
+    - src: /assets/repos/91/hero-752.webp
+      alt: "Three instrument screens side by side: the home screen's chord circle, the master bus, and a kaleidoscope visualizer."
+      credit: From the repository
+    - src: /assets/repos/91/pages-752.webp
+      alt: "Six instrument pages in a grid: the FX page, the flex bank, the performance screen, the mixer, Synth Jam, and the sampler."
+      credit: From the repository
+
+- slug: quantum-superposition
+  title: Quantum Superposition
+  film: Two states at once
+  genre: Documentary
+  runtime: 0h 44m
+  logline: "Eight quantum models in one viewport, with sliders for balance and phase, and a basis select."
+  cast: [the basis, the phase, the measurement]
+  stills:
+    - src: /assets/repos/quantum-superposition/bloch-600.webp
+      alt: "A dark sphere with three labelled measurement axes and a copper line pointing from its centre to the prepared state."
+      credit: From the repository
+    - src: /assets/repos/quantum-superposition/wave-600.webp
+      alt: "A luminous field of points forming two interfering wave patterns on a dark ground."
+      credit: From the repository
+
+- slug: coatcheck
+  title: Coatcheck
+  film: One test per story
+  genre: Procedural
+  runtime: 0h 58m
+  logline: "Points at a Topcoat workbench and writes one Playwright test per story, then runs them."
+  cast: [the manifest, the story, the axe result]
+  stills:
+    - src: /assets/art/galaxy/barred-1920.webp
+      alt: "A barred spiral galaxy: two bright arms sweeping out from a straight bar of stars."
+      credit: NASA/GSFC
+
+- slug: topcoat-blocks
+  title: Topcoat Blocks
+  film: Copy to own
+  genre: Anthology
+  runtime: 0h 37m
+  logline: "UI blocks copied into your application as its own source, with no dependency added."
+  cast: [the block, the registry, the copied source]
+  stills:
+    - src: /assets/repos/topcoat-blocks/sign-in-desktop-640.webp
+      alt: "The sign-in form on a light page at desktop width: a card holding an email field, a password field and a submit button."
+      credit: From the repository
+    - src: /assets/repos/topcoat-blocks/sign-in-mobile-393.webp
+      alt: "The same sign-in card on a narrow mobile viewport, fields and button stacked to the width of the screen."
+      credit: From the repository
+
+- slug: coldfront
+  title: Cold Front
+  film: Eyes only, 71°10′N
+  genre: Espionage
+  runtime: 1h 21m
+  logline: "A dark landing page for a fictional Arctic intercept: satellite cover, a one-time cipher, a courier."
+  cast: [the dossier, the cipher, the courier]
+  stills:
+    - src: /assets/repos/coldfront/landing.webp
+      alt: "The Cold Front landing page: an oversized headline beside a live-intelligence rail showing satellite cover at 04 percent."
+      credit: From the repository
+
+- slug: cannoli-hell
+  title: Cannoli Hell
+  film: Four caves, one capsule
+  genre: Action
+  runtime: 0h 52m
+  logline: "A blue capsule, four caves, and cannolis that walk over, light a fuse, and explode."
+  cast: [the capsule, the fuse, the punch-back]
+  stills:
+    - src: /assets/repos/cannoli-hell/arena.webp
+      alt: "The Cannoli Hell arena mid-run, with the HP counter in the top-left corner and the walled floor stretching away."
+      credit: From the repository
+
+- slug: kotoba-line
+  title: Kotoba Line
+  film: Kana over ssh
+  genre: Adventure
+  runtime: 0h 49m
+  logline: "A Japanese reading drill over SSH: one word, its kana, and the form skill tree."
+  cast: [the drill, the kana, the skill tree]
+  stills:
+    - src: /assets/repos/kotoba-line/drill-1200.webp
+      alt: "The Kotoba Line drill: a vocabulary panel showing one word with its kana, and the form skill tree beside it."
+      credit: From the repository
+
+- slug: scenelab
+  title: SceneLab
+  film: Arrangement by JSON
+  genre: Musical
+  runtime: 1h 15m
+  logline: "Ableton arrangements addressed as JSON, with writes behind a dry run and a confirmation gate."
+  cast: [the template, the planner, the confirmation gate]
+  stills:
+    - src: /assets/art/galaxy/sombrero-1200.webp
+      alt: "The Sombrero Galaxy seen edge-on, a bright core inside a dark dust lane."
+      credit: NASA/JPL-Caltech
+
+- slug: ml-kem-ml-dsa-lab
+  title: ML-KEM / ML-DSA Lab
+  film: From first principles
+  genre: Primer
+  runtime: 1h 56m
+  logline: "The NIST lattice standards derived from first principles in C++20 and Rust, with the derivation notes."
+  cast: [the lattice, the keygen, the test vector]
+  stills:
+    - src: /assets/art/galaxy/barred-1600.webp
+      alt: "A barred spiral galaxy: two bright arms sweeping out from a straight bar of stars."
+      credit: NASA/GSFC
+
+- slug: marigraph
+  title: Marigraph
+  film: The shape of the risk
+  genre: Thriller
+  runtime: 1h 09m
+  logline: "A volatility surface drawn in block characters, with the SVI fit and the arbitrage check beside it."
+  cast: [the surface, the SVI fit, the arbitrage check]
+  stills:
+    - src: /assets/art/galaxy/carina-1920.webp
+      alt: "The Cosmic Cliffs of the Carina Nebula: clouds of rust and blue gas rising against black space."
+      credit: NASA, ESA, CSA, STScI
+
+- slug: 1brc-cpp
+  title: 1BRC in C++
+  film: Six cuts of one program
+  genre: Procedural
+  runtime: 1h 12m
+  logline: "One billion rows through six C++ parsers, one optimisation per cut, and a common header between them."
+  cast: [the naive pass, the wide sweep, the shared header]
+  stills:
+    - src: /assets/art/galaxy/barred-1920.webp
+      alt: "A barred spiral galaxy: two bright arms sweeping out from a straight bar of stars."
+      credit: NASA/GSFC
+
+- slug: space-bullet-hell
+  title: Guardian of the Spread
+  film: Five sectors, no build step
+  genre: Space opera
+  runtime: 1h 29m
+  logline: "A pixel-art space bullet hell in a 640×360 buffer that needs WebGPU and fetches nothing."
+  cast: [the guardian, the spread, the sector]
+  stills:
+    - src: /assets/repos/space-bullet-hell/guardian-warlord-1200.webp
+      alt: "A dark starfield with the HUD in the corners, the player's jetpack flame lit, and enemy bullets across the middle."
+      credit: From the repository
+    - src: /assets/repos/space-bullet-hell/guardian-data-ring-1200.webp
+      alt: "The first sector in play: a dark starfield, the player at the left edge, and obstacles scattered across the screen."
+      credit: From the repository
+
+- slug: zig-wasm-webgpu-hallway-shooter
+  title: Hallway Shooter
+  film: Three hundred and twenty units
+  genre: Action
+  runtime: 0h 33m
+  logline: "One corridor streaming toward you, its simulation Zig compiled to WebAssembly, drawn with WebGPU."
+  cast: [the corridor, the worker, the instanced draw]
+  stills:
+    - src: /assets/art/galaxy/carina-1600.webp
+      alt: "The Cosmic Cliffs of the Carina Nebula: clouds of rust and blue gas rising against black space."
+      credit: NASA, ESA, CSA, STScI
+
+- slug: macos-metal-vslam
+  title: macOS Metal vSLAM
+  film: Four views of one moment
+  genre: Field study
+  runtime: 1h 18m
+  logline: "A webcam window that tracks motion as points and draws the sparse map it recovers."
+  cast: [the feature point, the sparse map, the 4×4]
+  stills:
+    - src: /assets/art/galaxy/andromeda-1280.webp
+      alt: "A panoramic field of stars in Andromeda."
+      credit: NASA/JPL-Caltech
+
+- slug: cairo_vault
+  title: Cairo Vault
+  film: A deposit, and the total
+  genre: Chamber piece
+  runtime: 0h 41m
+  logline: "A Starknet contract of about a hundred lines: one deposit per caller, and the running total."
+  cast: [the caller, the balance, the running total]
+  stills:
+    - src: /assets/art/galaxy/sombrero-1200.webp
+      alt: "The Sombrero Galaxy seen edge-on, a bright core inside a dark dust lane."
+      credit: NASA/JPL-Caltech
+
+- slug: nanda-ts
+  title: nanda-ts
+  film: The registry and its cache
+  genre: Espionage
+  runtime: 1h 23m
+  logline: "A Bun SDK for A2A agents: an agent card, a registry handle, and DID identity to check."
+  cast: [the agent card, the registry, the cache]
+  stills:
+    - src: /assets/art/galaxy/andromeda-960.webp
+      alt: "A panoramic field of stars in Andromeda."
+      credit: NASA/JPL-Caltech
