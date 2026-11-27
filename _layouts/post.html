@@ -2,7 +2,7 @@
 layout: default
 ---
 {% assign topic = site.data.topics | where: "slug", page.topic | first %}
-<article class="entry-page">
+<article class="entry-page wrap">
   <header class="entry-head">
     <p class="eyebrow">{{ topic.name | default: "Journal" }} / {{ page.date | date: "%d %B %Y" }}</p>
     <h1>{{ page.title }}</h1>
