@@ -4,7 +4,7 @@ layout: default
 {% assign topic = site.data.topics | where: "slug", page.topic | first %}
 <article class="entry-page wrap">
   <header class="entry-head">
-    <p class="kicker">{{ topic.name | default: "Journal" }} / {{ page.date | date: "%d %B %Y" }}</p>
+    <p><span class="decal">{{ topic.name | default: "Journal" }}</span> <span class="kicker"><time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: "%Y-%m-%d" }}</time></span></p>
     <h1>{{ page.title }}</h1>
     {% if page.description %}<p class="lede">{{ page.description }}</p>{% endif %}
   </header>

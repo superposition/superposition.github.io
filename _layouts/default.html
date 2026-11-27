@@ -1,5 +1,10 @@
 <!doctype html>
-<html lang="en">
+{%- comment -%}
+    The shipped identity is c, the hybrid. data-lab="a" is the instrument and
+    data-lab="b" the poster; every rule for the other two is scoped in
+    assets/notebook.css, so this attribute is the whole switch.
+  {%- endcomment -%}
+<html lang="en" data-lab="c">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,6 +37,7 @@
   {% include jsonld.html %}
   <link rel="icon" type="image/svg+xml" href="{{ '/assets/mark/primitive.svg' | relative_url }}">
   <link rel="preload" href="{{ '/assets/fonts/anton-regular.ttf' | relative_url }}" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="{{ '/assets/fonts/ibm-plex-mono-regular.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="{{ '/assets/tokens.css' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/notebook.css' | relative_url }}?v=4">
   {% if page.math %}

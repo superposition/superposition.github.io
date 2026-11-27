@@ -35,7 +35,7 @@ export const Desktop = {
 
 export const CurrentPage = {
   args: {
-    note: 'The current page is rust; hover is rust too, so the marker is colour and never a new weight.',
+    note: 'The current page is amber with the text bloom; hover is amber too, so the marker is colour and never a new weight.',
     body: nav,
   },
 };

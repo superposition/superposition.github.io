@@ -4,7 +4,7 @@ layout: default
 {% assign repo_slug = page.slug | append: "" | default: page.repo | split: "/" | last %}
 <article class="repo-page wide">
   <header class="repo-head">
-    <p class="kicker">Repository{% if page.language %} / {{ page.language }}{% endif %}</p>
+    <p><span class="decal">Repository</span>{% if page.language %} <span class="kicker">{{ page.language }}</span>{% endif %}</p>
     <h1>{{ page.title | default: repo_slug }}</h1>
     {% if page.tagline %}<p class="lede">{{ page.tagline }}</p>{% endif %}
     <p class="meta">

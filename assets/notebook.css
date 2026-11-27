@@ -2,7 +2,9 @@
 /* Superposition components. Every value comes from assets/tokens.css.
    One section per component, in the order a page uses them. The same file is
    what the /style/ page renders and what the Storybook workbench imports, so a
-   story and a page cannot drift apart. */
+   story and a page cannot drift apart. The last two sections are the two
+   identities that are not shipped: they are scoped under html[data-lab], so
+   the default page never pays for them. */
 
 @font-face {
   font-family: Anton;
@@ -10,6 +12,36 @@
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+}
+/* IBM Plex Mono, self-hosted and subset to Latin. OFL 1.1, see
+   assets/fonts/OFL-IBMPlexMono.txt. Three weights: the machine voice of the
+   site is 400, labels that need to hold an edge are 500, bold rows are 600. */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/assets/fonts/ibm-plex-mono-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0020-00FF, U+2013-2014, U+2018-201D, U+2020-2022, U+2032-2033,
+    U+2039-203A, U+2190-2195, U+2212, U+2248, U+2260, U+2264-2265, U+25A0-25CF, U+2713;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/assets/fonts/ibm-plex-mono-medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0020-00FF, U+2013-2014, U+2018-201D, U+2020-2022, U+2032-2033,
+    U+2039-203A, U+2190-2195, U+2212, U+2248, U+2260, U+2264-2265, U+25A0-25CF, U+2713;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/assets/fonts/ibm-plex-mono-semibold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0020-00FF, U+2013-2014, U+2018-201D, U+2020-2022, U+2032-2033,
+    U+2039-203A, U+2190-2195, U+2212, U+2248, U+2260, U+2264-2265, U+25A0-25CF, U+2713;
 }
 
 * { box-sizing: border-box; }
@@ -28,16 +60,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-::selection { background: var(--rust); color: var(--void); }
+::selection { background: var(--accent); color: var(--void); }
 
 a {
-  color: var(--rust-text);
+  color: var(--accent-text);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
 }
 a:hover { text-decoration-thickness: 2px; }
-a:focus-visible { outline: 2px solid var(--teal); outline-offset: 4px; }
+a:focus-visible { outline: 2px solid var(--state); outline-offset: 4px; box-shadow: var(--glow-state); }
 img, svg { display: block; max-width: 100%; height: auto; }
 h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 
@@ -69,18 +101,18 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 /* Nav --------------------------------------------------------------------- */
 
 .site-header {
-  position: relative; z-index: 2;
+  position: relative; z-index: 3;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
   gap: var(--space-1) var(--space-3);
   padding-block: var(--space-3) var(--space-2);
   font: var(--step-1)/1.4 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .06em;
+  text-transform: uppercase; letter-spacing: var(--track-label);
 }
-.home-link { color: var(--star); text-decoration: none; font-weight: bold; }
+.home-link { color: var(--star); text-decoration: none; font-weight: 600; }
 .site-header nav { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.site-header nav a { color: var(--star); text-decoration: none; }
-.site-header nav a:hover { color: var(--rust-text); }
-.site-header nav [aria-current] { color: var(--rust-text); }
+.site-header nav a { color: var(--starlight); text-decoration: none; }
+.site-header nav a:hover { color: var(--accent-text); }
+.site-header nav [aria-current] { color: var(--accent-text); text-shadow: var(--text-glow); }
 
 /* Series is a section for a large screen: below 640px it leaves the header so
    the nav stays one row on a phone, and the footer carries the link instead.
@@ -100,33 +132,87 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
   background: var(--void) url('/assets/art/galaxy/carina-1600.webp') center / cover no-repeat;
 }
 .hero img {
-  position: absolute; inset: 0; z-index: -2;
+  position: absolute; inset: 0; z-index: -3;
   width: 100%; height: 100%; max-width: none;
   object-fit: cover; object-position: 50% 40%;
-  animation: hero-drift var(--dur-slow) var(--ease-soft) infinite alternate;
+}
+/* Grain over the photograph and a vignette pulling the corners down, so the
+   picture reads as film rather than as a stock frame. Two layers because the
+   grain has its own opacity and the vignette must keep its own. */
+.hero::before {
+  content: "";
+  position: absolute; inset: 0; z-index: -1;
+  background-image: var(--grain);
+  background-size: 140px 140px;
+  background-repeat: repeat;
+  opacity: var(--grain-opacity);
+  pointer-events: none;
 }
 .hero::after {
   content: "";
   position: absolute; inset: 0; z-index: -1;
-  background:
-    linear-gradient(180deg,
-      rgba(11, 10, 13, .55) 0%,
-      rgba(11, 10, 13, .70) 45%,
-      rgba(11, 10, 13, .94) 80%,
-      var(--void) 100%);
+  background: var(--vignette), var(--hero-scrim);
 }
 .hero-inner { padding-block: var(--space-5) var(--space-4); }
 .hero h1 {
   font: var(--step-hero)/.92 var(--font-display);
-  letter-spacing: -.02em;
+  text-transform: uppercase;
+  letter-spacing: var(--track-hero);
   color: var(--star);
+  text-shadow: var(--text-glow);
 }
 .hero .lede { color: var(--starlight); }
+
+/* The star field is a poster-only layer: display:none elsewhere, so its
+   background image is never fetched on a page that does not show it. */
+.starfield { display: none; }
 
 @keyframes hero-drift {
   from { transform: scale(1); }
   to { transform: scale(1.06); }
 }
+
+/* Crawl ------------------------------------------------------------------- */
+
+/* The opening statement, set as if it were leaving the frame: a plane that
+   tips a few degrees, drifting 26px up and back over --dur-crawl, inside a box
+   whose own edges fade. The drift stays inside the padding (34px of it against
+   26px of travel), so no glyph ever enters the fade or the clip: the words stay
+   at full contrast at both ends of the move. The reader stops it with the Hold
+   switch, which is the pause control WCAG 2.2.2 asks for, and
+   prefers-reduced-motion removes the motion, the tilt and the fade together. */
+.crawl {
+  position: relative;
+  padding-block: 34px;
+  overflow: hidden;
+  mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
+}
+.crawl .lede {
+  max-width: var(--max-crawl);
+  animation: crawl-drift var(--dur-crawl) linear infinite alternate;
+}
+@keyframes crawl-drift {
+  from { transform: perspective(760px) rotateX(var(--crawl-tilt, 0deg)) translateY(0); }
+  to   { transform: perspective(760px) rotateX(var(--crawl-tilt, 0deg)) translateY(-26px); }
+}
+/* The pause control: a drawn box, not a glyph, so its state is a fill. */
+.crawl-switch:checked ~ .crawl .lede { animation-play-state: paused; }
+.crawl-hold {
+  margin-top: var(--space-2);
+  font: var(--step-1)/1.6 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+}
+.crawl-hold label { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; }
+.crawl-hold label::before {
+  content: ""; flex: none;
+  width: 9px; height: 9px;
+  border: 1px solid var(--dust);
+}
+.crawl-switch:checked ~ .crawl-hold label::before { background: var(--state); border-color: var(--state); }
+.crawl-switch:focus-visible ~ .crawl-hold label { outline: 2px solid var(--state); outline-offset: 4px; color: var(--star); }
+.crawl-hold label:hover::before { border-color: var(--star); }
 
 /* Type -------------------------------------------------------------------- */
 
@@ -137,29 +223,105 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
   color: var(--starlight);
 }
 
-h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: -.01em; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: var(--track-display); }
+
+/* The poster voice: condensed caps for the names a page is called by, and the
+   same face at a step smaller for a section. A repository page's h1 and an
+   entry's h1 keep the case the project or the writer gave them. */
+.page-heading h1, .section-title, .journal-topic h2 { text-transform: uppercase; }
 
 .section-title {
-  font: var(--step-1)/1.6 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .08em;
-  color: var(--dust);
-  padding-top: var(--space-2);
-  border-top: var(--border-hair);
+  position: relative;
+  font: var(--step-4)/1.2 var(--font-display);
+  color: var(--star);
+  padding-top: calc(var(--space-2) + 7px);
+  margin-bottom: var(--space-2);
+}
+/* The gauge cluster: 3px bars on a 10px pitch over a hairline track. One per
+   section title, which is one per section — never a page background. */
+.section-title::before {
+  content: "";
+  position: absolute; inset-inline: 0; inset-block-start: 0; height: 4px;
+  background:
+    repeating-linear-gradient(90deg, var(--rail) 0 var(--rail-bar), transparent var(--rail-bar) var(--rail-pitch))
+      0 0 / 100% var(--rail-cap) no-repeat,
+    linear-gradient(var(--line), var(--line)) 0 100% / 100% 1px no-repeat;
 }
 
 /* Small text -------------------------------------------------------------- */
 
 .kicker {
   font: var(--step-1)/1.6 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .06em;
+  text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
+}
+
+/* A decal: the eyebrow as a physical chip, near-white on near-black with the
+   one 3px radius on the site. It names what a page or an entry is; the plain
+   kicker above it stays a label. */
+.decal {
+  display: inline-block;
+  padding: 3px 7px 4px;
+  border-radius: var(--radius-decal);
+  background: var(--decal-bg);
+  color: var(--decal-text);
+  font: 600 var(--step-decal)/1.4 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
 }
 
 .meta {
   font: var(--step-1)/1.7 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .06em;
+  text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
+
+/* HUD frame --------------------------------------------------------------- */
+
+/* A readout, not a border: one hairline box and two corner ticks on the blocks
+   that carry a figure, a repository or a state. The tick is --accent, measured
+   at 12.3:1 on the ground here, so the corner always clears the 3:1 control
+   edge minimum whatever the photograph behind it does. */
+.figure, .card, .callout, .audio, .empty-state { position: relative; }
+.figure::before, .card::before, .callout::before, .audio::before, .empty-state::before,
+.figure::after, .card::after, .callout::after, .audio::after, .empty-state::after {
+  content: "";
+  position: absolute;
+  width: var(--hud-tick); height: var(--hud-tick);
+  pointer-events: none;
+  filter: drop-shadow(var(--glow-soft));
+}
+.figure::before, .card::before, .callout::before, .audio::before, .empty-state::before {
+  inset-block-start: 0; inset-inline-start: 0;
+  border-block-start: var(--hud-weight) solid var(--accent);
+  border-inline-start: var(--hud-weight) solid var(--accent);
+}
+.figure::after, .card::after, .callout::after, .audio::after, .empty-state::after {
+  inset-block-end: 0; inset-inline-end: 0;
+  border-block-end: var(--hud-weight) solid var(--accent);
+  border-inline-end: var(--hud-weight) solid var(--accent);
+}
+
+/* Alert ------------------------------------------------------------------- */
+
+/* The one red thing on the site: a page that does not exist. Red is 4.7:1 on
+   the ground and 4.1:1 on a raised block, so it is type on the ground or an
+   edge — never small type inside a block without the lifted --alert-text. */
+.alert {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 3px 8px 4px;
+  border: 1px solid var(--alert);
+  border-radius: var(--radius-decal);
+  color: var(--alert-text);
+  font: 600 var(--step-1)/1.5 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  box-shadow: var(--glow-alert);
+}
+
+/* Warning stripe ---------------------------------------------------------- */
+
+/* One band, on the home page only, marking the edge of the opening. It is the
+   single hazard stripe on the site: it never repeats, and it is decorative. */
+.hazard { display: none; }
 
 /* Link ------------------------------------------------------------------- */
 
@@ -169,14 +331,14 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 
 /* Button ----------------------------------------------------------------- */
 
-/* Measured: the primary fill is --rust-text, which carries --void type at
-   5.55:1; hover and active keep that fill and put a --star edge on it
-   (16.9:1 against the void ground), and active adds a 1px press. Secondary
-   and ghost-hover edges are --dust (6.6:1 on void), the secondary hover edge
-   --rust-text (5.6:1), and the --teal focus ring is 4.3:1 on void, over the
-   3:1 edge minimum. A ghost button has no boundary by design, so its
-   --starlight type (11.4:1) is the whole affordance. Disabled is --dust type
-   (6.6:1) inside a dashed --dust edge, which is why it never drops below the
+/* Measured: the primary fill is --accent, which carries --void type at
+   12.3:1; hover lifts to --accent-peak and puts a --star edge on it (15.9:1
+   against the ground), and active adds a 1px press. Secondary and ghost-hover
+   edges are --dust (7.1:1 on void), the secondary hover edge --accent-text
+   (12.3:1), and the --state focus ring is 12.2:1 on void, far over the 3:1
+   edge minimum. A ghost button has no boundary by design, so its --starlight
+   type (14.5:1) is the whole affordance. Disabled is --dust type (7.1:1)
+   inside a dashed --dust edge, which is why it never drops below the
    text minimum. */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -187,21 +349,21 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   background: none;
   color: var(--star);
   font: var(--step-1)/1.2 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .08em;
+  text-transform: uppercase; letter-spacing: var(--track-label);
   text-decoration: none;
   cursor: pointer;
   appearance: none;
 }
 .btn:hover { text-decoration: none; }
-.btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+.btn:focus-visible { outline: 2px solid var(--state); outline-offset: 3px; box-shadow: var(--glow-state); }
 
-.btn-primary { background: var(--rust-text); border-color: var(--rust-text); color: var(--void); }
-.btn-primary:hover { border-color: var(--star); }
-.btn-primary:active { border-color: var(--star); transform: translateY(1px); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--void); box-shadow: var(--glow-soft); }
+.btn-primary:hover { background: var(--accent-peak); border-color: var(--star); }
+.btn-primary:active { background: var(--accent); border-color: var(--star); transform: translateY(1px); }
 
 .btn-secondary { border-color: var(--dust); color: var(--star); }
-.btn-secondary:hover { border-color: var(--rust-text); color: var(--rust-text); }
-.btn-secondary:active { border-color: var(--rust-text); color: var(--rust-text); background: var(--surface); }
+.btn-secondary:hover { border-color: var(--accent-text); color: var(--accent-text); box-shadow: var(--glow-soft); }
+.btn-secondary:active { border-color: var(--accent-text); color: var(--accent-text); background: var(--surface); }
 
 .btn-ghost { color: var(--starlight); }
 .btn-ghost:hover { background: var(--surface); border-color: var(--dust); color: var(--star); }
@@ -213,12 +375,12 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   border: 0;
   border-bottom: 1px solid currentColor;
   border-radius: 0;
-  color: var(--rust-text);
+  color: var(--accent-text);
   text-transform: none; letter-spacing: 0;
 }
 .btn-text:hover { border-bottom-width: 2px; color: var(--star); }
 
-.btn-sm { padding: 8px 12px; font-size: 12px; letter-spacing: .07em; }
+.btn-sm { padding: 8px 12px; font-size: 12px; letter-spacing: var(--track-label); }
 .btn-lg { padding: 15px 26px; font-size: var(--step-2); }
 .btn-block { display: flex; width: 100%; }
 
@@ -241,13 +403,13 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   border: 1px solid currentColor;
   border-radius: var(--radius);
   font: var(--step-1)/1.5 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .07em;
+  text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
   text-decoration: none;
   white-space: nowrap;
 }
-.badge-accent { color: var(--rust-text); }
-.badge-state { color: var(--teal-text); }
+.badge-accent { color: var(--accent-text); }
+.badge-state { color: var(--state-text); }
 .badge-solid { background: var(--surface); border-color: transparent; color: var(--starlight); }
 
 /* Topic row -------------------------------------------------------------- */
@@ -259,25 +421,25 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   font: var(--step-3)/1.6 var(--font-mono);
 }
 .topic-list a { color: var(--star); text-decoration: none; }
-.topic-list a:hover { color: var(--rust-text); text-decoration: underline; }
+.topic-list a:hover { color: var(--accent-text); text-decoration: underline; }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
 .topic-list .dot { margin-right: 9px; }
 .topic-list li { display: flex; align-items: center; }
-.dot-rust { background: var(--rust); }
+.dot-accent { background: var(--accent); }
 .dot-nebula { background: var(--nebula); }
-.dot-teal { background: var(--teal); }
+.dot-state { background: var(--state); }
 .dot-plum { background: var(--plum-mark); }
 .dot-dust { background: var(--dust); }
 
 /* Card ------------------------------------------------------------------- */
 
 /* One card for both things the site cards: a repository, with a thumbnail,
-   and a journal entry, which has no image. The hairline is the top edge; the
+   and a journal entry, which has no image. The frame is the HUD box; the
    title is the only thing that changes on hover. */
 .card {
   display: block;
-  border-top: var(--border-hair);
-  padding-top: var(--space-2);
+  border: var(--border-hair);
+  padding: 10px;
   color: var(--star);
   text-decoration: none;
 }
@@ -287,7 +449,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   display: block;
   margin-bottom: 4px;
   font: var(--step-1)/1.6 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .06em;
+  text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
 .card-title {
@@ -308,11 +470,12 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   display: block;
   margin-top: 6px;
   font: var(--step-1)/1.6 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .06em;
+  text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
 .card-foot { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-top: var(--space-2); }
-.card:hover .card-title, .card:focus-visible .card-title { color: var(--rust-text); }
+.card:hover .card-title, .card:focus-visible .card-title { color: var(--accent-text); }
+.card:hover, .card:focus-visible { box-shadow: var(--glow-soft); }
 
 .entry-card .card-title { font-size: var(--step-4); }
 
@@ -323,22 +486,74 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 }
 
 .repos-home { margin-top: var(--space-5); }
-.repo-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; font: var(--step-2)/1.9 var(--font-mono); }
-.repo-list a { text-decoration: none; color: var(--star); }
-.repo-list a:hover { color: var(--rust-text); }
+.repo-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; }
+/* The name is an identifier, so it stays mono; the tagline is writing, so it is
+   in the text face at the reading measure. A page of nothing but mono gives the
+   eye nowhere to rest — this list is the home page's prose. */
+.repo-row {
+  display: grid;
+  grid-template-columns: 15ch minmax(0, 1fr);
+  gap: 0 var(--space-3);
+  align-items: baseline;
+  padding-block: 7px;
+  text-decoration: none;
+  border-top: 1px solid transparent;
+}
+.repo-name {
+  font: 500 var(--step-1)/1.6 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--accent-text);
+  overflow-wrap: anywhere;
+}
+.repo-note {
+  font: var(--step-2)/1.55 var(--font-text);
+  color: var(--starlight);
+}
+.repo-row:hover .repo-note { color: var(--star); }
+.repo-row:hover { border-top-color: var(--line); }
+html[data-lab="a"] .repo-name { font-weight: 400; }
 
 /* Entry list ------------------------------------------------------------- */
 
+/* A log line: the stamp in its own column, the state mark, then the title and
+   what it is about. The stamp is machine data, so it is mono and tabular; the
+   mark is drawn with a background rather than a glyph so it is never read out. */
 .entry-list { list-style: none; margin: 0; padding: 0; }
 .entry-list li + li { margin-top: var(--space-1); }
 .entry {
-  display: block; text-decoration: none;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: var(--space-3);
+  align-items: baseline;
+  text-decoration: none;
   font: var(--step-2)/1.7 var(--font-mono);
+  padding-block: 2px;
 }
-.entry-date { color: var(--dust); margin-right: 12px; }
-.entry-title { color: var(--rust-text); font-weight: bold; }
+.entry-date {
+  color: var(--dust);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.entry-date::before {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  margin-right: 9px;
+  background: var(--state);
+  box-shadow: var(--glow-state);
+}
+/* The stamp is data and stays mono. The title and the line about it are
+   writing, so they are in the text face — at weight 400, because the text face
+   has one weight and anything heavier would be synthesised. The instrument
+   identity sets all three in mono, where the row is a log record. */
+.entry-title {
+  font-family: var(--font-text);
+  font-size: var(--step-3);
+  font-weight: 400;
+  color: var(--accent-text);
+}
+.entry-dek { font-family: var(--font-text); color: var(--starlight); grid-column: 2; }
 .entry:hover .entry-title { text-decoration: underline; }
-.entry-dek { color: var(--starlight); }
 
 /* Figure ----------------------------------------------------------------- */
 
@@ -346,7 +561,12 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
    reserves the right box before the file lands. They must never set the drawn
    height: width 100% with height auto is the rule that keeps a picture
    undistorted whatever its ratio. */
-.figure { margin-block: var(--space-4); max-width: min(100%, 1000px); }
+.figure {
+  margin-block: var(--space-4);
+  max-width: min(100%, 1000px);
+  border: var(--border-hair);
+  padding: 10px;
+}
 .figure img { width: 100%; }
 .figure figcaption,
 .code-block figcaption,
@@ -355,6 +575,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   padding-top: var(--space-1);
   border-top: var(--border-hair);
   font: var(--step-1)/1.6 var(--font-mono);
+  letter-spacing: .04em;
   color: var(--dust);
 }
 
@@ -369,6 +590,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 .plate figcaption {
   margin-top: var(--space-1);
   font: 11px/1.6 var(--font-mono);
+  letter-spacing: .04em;
   color: var(--dust);
 }
 
@@ -380,8 +602,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 
 .journal-topic { margin-top: var(--space-5); scroll-margin-top: 16px; }
 .journal-topic h2 {
-  font: var(--step-1)/1.6 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .08em;
+  font: var(--step-2)/1.3 var(--font-display);
   color: var(--star);
   padding-top: var(--space-2);
   border-top: var(--border-hair);
@@ -392,9 +613,8 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 
 .empty-state {
   margin-top: var(--space-2);
-  padding-block: var(--space-3);
-  border-top: var(--border-hair);
-  border-bottom: var(--border-hair);
+  padding: var(--space-3);
+  border: var(--border-hair);
   max-width: var(--measure);
 }
 .empty-title {
@@ -418,7 +638,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   margin-top: var(--space-5); padding-top: var(--space-2);
   border-top: var(--border-hair);
   font: var(--step-1)/1.7 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .06em;
+  text-transform: uppercase; letter-spacing: var(--track-label);
 }
 .entry-foot .text-link + .text-link { margin-left: var(--space-3); }
 
@@ -428,8 +648,8 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 .prose > * + * { margin-top: 1.1em; }
 .prose h2 { font-size: var(--step-4); line-height: 1.25; margin-top: 2em; }
 .prose h3 {
-  font: bold var(--step-1)/1.5 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .08em;
+  font: 600 var(--step-1)/1.5 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--starlight);
   margin-top: 2em;
 }
@@ -458,14 +678,15 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 .prose pre code, .code-block pre code { background: none; padding: 0; font-size: inherit; }
 .prose table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; font-size: var(--step-2); }
 .prose th, .prose td { border-bottom: var(--border-hair); padding: 8px 14px 8px 0; text-align: left; }
-.prose th { font: var(--step-1)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: .07em; color: var(--dust); }
+.prose th { font: var(--step-1)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); color: var(--dust); }
 .prose figure { margin-block: 1.8em 1.9em; }
 .prose figure img { width: 100%; }
 
-/* A callout is prose that is neither the argument nor a quotation: one teal
-   edge (3.8:1 on --surface), the raised block, secondary type. */
+/* A callout is prose that is neither the argument nor a quotation: one state
+   edge (12.2:1 on --void), the raised block, secondary type. */
 .callout {
-  border-left: 2px solid var(--teal);
+  border: var(--border-hair);
+  border-left: 2px solid var(--state);
   background: var(--surface);
   padding: var(--space-2) var(--space-3);
   color: var(--starlight);
@@ -473,8 +694,8 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 .callout-title {
   display: block;
   margin-bottom: 4px;
-  font: bold var(--step-1)/1.5 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .07em;
+  font: 600 var(--step-1)/1.5 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--star);
 }
 
@@ -491,7 +712,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 /* Audio ------------------------------------------------------------------ */
 
 .audio { margin-bottom: var(--space-4); border: var(--border-hair); padding: var(--space-2) var(--space-3); }
-.audio-title { font: bold var(--step-1)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: .06em; }
+.audio-title { font: 600 var(--step-1)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); }
 .audio-note { margin-top: 4px; font: var(--step-1)/1.6 var(--font-mono); color: var(--dust); }
 .audio audio { width: 100%; margin-top: var(--space-2); }
 .audio-embed { position: relative; margin-top: var(--space-2); padding-top: 56.25%; background: var(--surface); }
@@ -501,7 +722,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 
 .credit-list { list-style: none; margin: 0; padding: 0; }
 .credit-list li { padding-block: var(--space-2); border-top: var(--border-hair); }
-.credit-title { display: block; font-weight: bold; color: var(--star); }
+.credit-title { display: block; font-weight: 600; color: var(--star); }
 .credit-meta { display: block; font: var(--step-1)/1.7 var(--font-mono); color: var(--dust); overflow-wrap: anywhere; }
 .credit-meta a { color: var(--dust); }
 
@@ -512,12 +733,12 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   padding-block: var(--space-3) var(--space-4);
   border-top: var(--border-hair);
   font: var(--step-1)/1.8 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .06em;
+  text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
 .site-footer p + p { margin-top: var(--space-1); }
 .site-footer a { color: var(--starlight); text-decoration: none; }
-.site-footer a:hover { color: var(--rust-text); text-decoration: underline; }
+.site-footer a:hover { color: var(--accent-text); text-decoration: underline; }
 
 /* Repository pages ------------------------------------------------------- */
 
@@ -526,7 +747,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .repo-head h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
 .repo-head .lede { margin-top: var(--space-2); }
 .repo-head .meta { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: var(--space-2); }
-.repo-links { margin-top: var(--space-3); font: var(--step-1)/1.7 var(--font-mono); text-transform: uppercase; letter-spacing: .06em; }
+.repo-links { margin-top: var(--space-3); font: var(--step-1)/1.7 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); }
 .repo-links .text-link + .text-link { margin-left: var(--space-3); }
 .repo-body { padding-top: var(--space-3); }
 .repo-body > :not(figure) { max-width: var(--measure); }
@@ -549,6 +770,9 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .scale-row > span:last-child { max-width: 100%; overflow-wrap: anywhere; }
 .scale-row .name { min-width: 96px; font: var(--step-1)/1.6 var(--font-mono); color: var(--dust); }
 .sg-example { padding-block: var(--space-3) var(--space-4); border-top: var(--border-hair); }
+.sg-table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; font-size: var(--step-2); margin-top: var(--space-3); }
+.sg-table th, .sg-table td { border-bottom: var(--border-hair); padding: 8px 14px 8px 0; text-align: left; vertical-align: top; }
+.sg-table th { font: var(--step-1)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); color: var(--dust); }
 .sg-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .sg-stack > * + * { margin-top: var(--space-2); }
 
@@ -640,17 +864,249 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .series-note { margin-top: var(--space-6); padding-top: var(--space-2); border-top: var(--border-hair); }
 .series-note .prose { margin-top: var(--space-3); max-width: var(--measure); }
 
+/* Identity A — instrument ------------------------------------------------ */
+
+/* Alien's screens, not Alien's assets: amber phosphor on carbon, one accent
+   doing every job, mono for anything the machine says, a scanline so fine it
+   only changes the ground, gauge rails on every section, and one hazard stripe
+   on the home page. Everything emissive carries the two-layer bloom. */
+html[data-lab="a"] .hero {
+  background-image: none;
+  min-height: 82svh;
+}
+html[data-lab="a"] .hero img {
+  opacity: .16;
+  filter: saturate(.45) contrast(1.08);
+  animation: hero-drift var(--dur-slow) var(--ease-soft) infinite alternate;
+}
+html[data-lab="a"] .hero h1 {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--accent);
+  text-shadow: var(--text-glow);
+}
+/* The readout frame around the hero copy: two ticks, no box. */
+html[data-lab="a"] .hero-inner { position: relative; padding-block: var(--space-5); }
+html[data-lab="a"] .hero-inner::before,
+html[data-lab="a"] .hero-inner::after {
+  content: "";
+  position: absolute;
+  width: 24px; height: 24px;
+  border: 1px solid var(--accent);
+  box-shadow: var(--glow-accent);
+  pointer-events: none;
+}
+html[data-lab="a"] .hero-inner::before { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+html[data-lab="a"] .hero-inner::after { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+
+html[data-lab="a"] .home-link {
+  padding: 2px 8px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-decal);
+  color: var(--accent);
+  font-weight: 500;
+  box-shadow: var(--glow-accent);
+}
+html[data-lab="a"] .site-header { border-bottom: var(--border-hair); }
+html[data-lab="a"] ::selection { background: var(--accent); color: var(--void); }
+
+/* Hardware decals rather than labels: condensed, tracked, near-white on film. */
+html[data-lab="a"] .decal {
+  font: 400 12px/1.35 var(--font-display);
+  letter-spacing: .06em;
+  padding: 2px 7px 4px;
+}
+
+/* No crawl here: a panel shows a readout, and text does not drift. */
+html[data-lab="a"] .crawl {
+  padding-block: var(--space-3) 0;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+html[data-lab="a"] .crawl .lede { animation: none; }
+html[data-lab="a"] .crawl-hold,
+html[data-lab="a"] .crawl-switch { display: none; }
+
+/* Section names are machine labels here, not poster lines. */
+html[data-lab="a"] .section-title {
+  font: var(--step-1)/1.6 var(--font-mono);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  color: var(--accent);
+  text-shadow: var(--text-glow);
+}
+html[data-lab="a"] .journal-topic h2 {
+  font: var(--step-1)/1.6 var(--font-mono);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  color: var(--accent);
+}
+html[data-lab="a"] .page-heading h1,
+html[data-lab="a"] .entry-head h1 {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: var(--text-glow);
+}
+/* A repository's own name keeps the case its project gave it. */
+html[data-lab="a"] .repo-head h1 {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: var(--accent);
+  text-shadow: var(--text-glow);
+}
+html[data-lab="a"] .prose h2,
+html[data-lab="a"] .sg-section > h2 {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--accent);
+}
+
+html[data-lab="a"] .topic-list { letter-spacing: .02em; }
+html[data-lab="a"] .topic-list .dot { border-radius: 0; width: 7px; height: 7px; box-shadow: var(--glow-accent); }
+
+/* Log entries: a gauge rule down the side of the list, the stamp and its state
+   mark in the first column, the title in the second. */
+html[data-lab="a"] .entry-list { border-left: 1px solid var(--accent); padding-left: var(--space-2); box-shadow: -1px 0 12px rgba(255, 194, 74, .10); }
+html[data-lab="a"] .entry-date { color: var(--accent-warm); }
+html[data-lab="a"] .entry-date::before { background: var(--accent); box-shadow: var(--glow-accent); }
+html[data-lab="a"] .entry-title { font-family: var(--font-mono); font-size: inherit; font-weight: 500; color: var(--accent); }
+html[data-lab="a"] .entry-dek { font-family: var(--font-mono); }
+
+html[data-lab="a"] .empty-state { border-color: var(--accent); }
+html[data-lab="a"] .empty-title { color: var(--accent); }
+html[data-lab="a"] .figure, html[data-lab="a"] .card,
+html[data-lab="a"] .callout, html[data-lab="a"] .audio,
+html[data-lab="a"] .empty-state { border-color: var(--accent); }
+
+/* One hazard stripe, on the home page, under the opening. */
+html[data-lab="a"] .hazard {
+  display: block;
+  height: 9px;
+  margin-bottom: var(--space-5);
+  background: repeating-linear-gradient(-45deg,
+    var(--accent) 0 7px, var(--void) 7px 15px);
+}
+
+/* The CRT. A 1px line every 3px at 7% black: on the ground it reads as a
+   phosphor grid, over type it costs 0.8 of a point of contrast (amber 12.3 to
+   11.5, measured), and it is fixed, so it never scrolls against the text. */
+html[data-lab="a"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: repeating-linear-gradient(180deg,
+    rgba(0, 0, 0, .07) 0 1px, rgba(0, 0, 0, 0) 1px 3px);
+}
+
+/* Identity B — poster --------------------------------------------------- */
+
+/* A star field over a faint nebula, the masthead as a poster title, one cold
+   highlight, and the opening statement on a crawl plane. No glow anywhere: a
+   poster is printed. Nothing but the crawl moves. */
+html[data-lab="b"] .hero {
+  min-height: 92svh;
+  align-items: center;
+  text-align: center;
+  background-image: none;
+}
+/* The stars keep their brightness at the frame's edges and give way where the
+   copy sits: a radial darkening centred on the copy, measured so the brightest
+   pixel behind a letter is a star at 10% of its own light. */
+html[data-lab="b"] .hero::after {
+  background:
+    radial-gradient(74% 48% at 50% 50%,
+      rgba(5, 5, 8, .92) 0%,
+      rgba(5, 5, 8, .74) 42%,
+      rgba(5, 5, 8, 0) 80%),
+    var(--vignette),
+    var(--hero-scrim);
+}
+html[data-lab="b"] .hero img {
+  opacity: .13;
+  filter: saturate(.35) brightness(1.05);
+  animation: none;
+  object-position: 50% 35%;
+}
+html[data-lab="b"] .starfield {
+  display: block;
+  position: absolute; inset: 0; z-index: -2;
+  background: url('/assets/art/starfield.svg') repeat;
+  background-size: 1200px 800px;
+  opacity: .85;
+  pointer-events: none;
+}
+html[data-lab="b"] .hero-inner {
+  padding-block: var(--space-6);
+  display: flex; flex-direction: column; align-items: center;
+}
+html[data-lab="b"] .hero h1 { line-height: 1; }
+html[data-lab="b"] .hero .lede {
+  margin-inline: auto;
+  color: var(--starlight);
+  letter-spacing: .035em;
+  text-align: center;
+}
+html[data-lab="b"] .crawl { --crawl-tilt: 4deg; width: 100%; padding-block: 40px; }
+html[data-lab="b"] .crawl-hold { margin-inline: auto; }
+html[data-lab="b"] .topic-list { justify-content: center; }
+html[data-lab="b"] .topic-list .dot { width: 5px; height: 5px; background: var(--nebula); }
+
+html[data-lab="b"] .site-header { border-bottom: var(--border-hair); }
+html[data-lab="b"] .home-link { letter-spacing: .22em; font-weight: 600; }
+html[data-lab="b"] ::selection { background: var(--accent); color: var(--void); }
+/* No decals on a poster: the eyebrow is a plain tracked label. */
+html[data-lab="b"] .decal {
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  font: 500 12px/1.6 var(--font-mono);
+}
+html[data-lab="b"] .section-title { font-size: var(--step-5); letter-spacing: .03em; }
+html[data-lab="b"] .journal-topic h2 { font-size: var(--step-4); letter-spacing: .03em; }
+html[data-lab="b"] .page-heading h1 { letter-spacing: .02em; }
+html[data-lab="b"] .entry-date::before { border-radius: 50%; }
+html[data-lab="b"] .empty-title { color: var(--star); }
+
 /* Narrow ----------------------------------------------------------------- */
 
 @media (max-width: 700px) {
-  .site-header { font-size: 12px; letter-spacing: .04em; column-gap: 12px; }
+  /* The identity table stacks rather than scrolling sideways: a doc table a
+     phone has to drag is a table nobody reads. */
+  .sg-table thead { display: none; }
+  .sg-table tr { display: block; padding-block: var(--space-2); border-bottom: var(--border-hair); }
+  .sg-table td { display: block; border: 0; padding: 0 0 3px; }
+  .sg-table td::before {
+    content: attr(data-label) " ";
+    font: var(--step-1)/1.6 var(--font-mono);
+    text-transform: uppercase; letter-spacing: var(--track-label);
+    color: var(--dust);
+  }
+  .sg-table td:first-child::before { content: none; }
+  .sg-table td:first-child { font: 500 var(--step-1)/1.6 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); color: var(--accent-text); }
+  .site-header { font-size: 12px; letter-spacing: var(--track-label); column-gap: 12px; }
   .site-header nav { gap: 10px; }
   .site-header nav a { padding-block: 5px; }
   .hero { min-height: 92svh; }
-  .hero h1 { font-size: clamp(46px, 15vw, 80px); }
+  .hero h1 { font-size: clamp(40px, 12.4vw, 76px); }
   .topic-list { font-size: var(--step-2); }
   .plates { grid-template-columns: 1fr; }
   .plate img { aspect-ratio: 3 / 2; }
+  .entry { grid-template-columns: 1fr; column-gap: 0; }
+  .repo-row { grid-template-columns: 1fr; gap: 2px; padding-block: 9px; }
+  .repo-name { font-size: 12px; }
+  .entry-date { font-size: var(--step-1); }
+  .entry-dek { grid-column: 1; }
+  .crawl { padding-block: 26px; }
+  html[data-lab="b"] .crawl { padding-block: 30px; }
   .cast { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3) var(--space-2); }
   .cast.cast-single { grid-template-columns: minmax(0, 1fr); }
   .cast-name { font-size: var(--step-3); }
@@ -673,4 +1129,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .hero img { animation: none; }
+  .crawl .lede { animation: none; transform: none; }
+  .crawl { mask-image: none; -webkit-mask-image: none; }
+  .crawl-hold, .crawl-switch { display: none; }
 }

@@ -1,81 +1,167 @@
 @charset "UTF-8";
 /* Superposition design tokens.
-   Every colour below was sampled from the NASA imagery on this site; the
-   source image is named beside each. Every value here is the single source
-   the other stylesheets read — do not hard-code a colour anywhere else.
+   Two families of colour live here. The ground, the cream and the four
+   content accents are sampled from the NASA imagery the site shows. The amber,
+   the cyan and the red are not sampled from anything on the site: they are the
+   instrument light of the genre the site speaks in (late-70s and early-80s
+   space opera), so they carry the chrome and never the content.
 
-   Measured contrast (WCAG, foreground on --void / --deep / --surface):
-     --star        16.9 / 16.1 / 14.8   body and headings
-     --starlight   11.4 / 10.8 / 9.96   secondary text
-     --dust         6.6 /  6.2 /  5.7   meta, captions
-     --rust         4.6 /  4.3 /  4.0   accent, large text and edges only
-     --rust-text    5.6 /  5.3 /  4.8   the same accent where it is small text
-     --nebula       4.2 /  4.0 /  3.7   secondary accent, edges only
-     --nebula-text  6.3 /  6.0 /  5.5   prose links
-     --teal         4.3 /  4.1 /  3.8   focus rings and state, edges only
-     --teal-text    5.9 /  5.6 /  5.1   state where it is text
-     --plum         2.3 /  2.2 /  2.0   never text; fill only
-     --plum-mark    3.4 /  3.2 /  3.0   the plum mark on dark, at edge contrast
+   Three identities live in this file (GALA-75). The shipped one is the default
+   in :root; the others are the same semantic layer over a different ground,
+   switched by data-lab on <html>:
 
-   The Network series colours, measured the same way:
-     --amber       12.3 / 11.7 / 10.7   the series signal; type and light
-     --cyan        12.2 / 11.5 / 10.6   the series second signal; type and light
-     --cream       14.5 / 13.8 / 12.7   the series body; type
-     --alert        4.7 /  4.5 /  4.1   alerts: marks and edges only, never type
-     --alert-text   7.0 /  6.7 /  6.1   the same alert where it is small type
+     (default, data-lab="c")  photograph first: NASA hero, poster type, amber
+                              chrome, cyan state, grain and vignette
+     data-lab="a"             instrument: amber phosphor on carbon, mono
+                              everywhere, scanlines, gauge rails, log entries
+     data-lab="b"             poster: star field, tracked caps, one cyan
+                              highlight, the opening statement as a crawl
+
+   Components read the semantic tokens only (--void, --star, --accent-text,
+   --state …), so an identity is this file plus the scoped rules at the end of
+   notebook.css. Nothing outside this file names a colour.
+
+   Measured contrast (WCAG, foreground on --void / --deep / --surface). Every
+   number is printed by `npm run contrast` in storybook/, which reads this file
+   and fails on anything under 4.5:1 for text or 3:1 for a control edge:
+
+   Shipped identity (default), ground #0b0a0d:
+     --star       15.9 / 15.1 / 13.9   headings
+     --starlight  14.5 / 13.8 / 12.7   body and secondary text
+     --dust        7.1 /  6.7 /  6.2   meta, captions, stamps
+     --accent     12.3 / 11.7 / 10.7   amber: chrome links, wordmark, ticks
+     --state      12.2 / 11.6 / 10.6   cyan: focus rings, state edges and type
+     --alert       4.7 /  4.5 /  4.1   red edge; its text is --alert-text (7.0)
+     --alert-text  7.0 /  6.7 /  6.1   the same red where it is text
+     --nebula-text 6.3 /  6.0 /  5.5   prose links, sampled from Carina
+     --decal-text 16.7                 a decal chip on its own film
+     --plum        2.3 /  2.2 /  2.0   never text; fill only
+     --plum-mark   4.0 /  3.8 /  3.5   the plum mark, at edge contrast
+
+   Instrument (data-lab="a"), ground #0a0a0b:
+     --star       16.0 / 15.2 / 14.6
+     --starlight  14.6 / 14.0 / 13.4
+     --dust        7.2 /  6.9 /  6.5
+     --accent     12.3 / 11.8 / 11.3   (#ffc24a)
+     --state      12.2 / 11.7 / 11.1   (#8fd3ff)
+     --alert       4.7 /  4.6 /  4.3
+     --alert-text  7.0 /  6.8 /  6.4
+     --decal-text 16.7
+     amber under the scanline overlay 11.5 (7% black on one row in three)
+     cream under the scanline overlay 15.0
+
+   Poster (data-lab="b"), ground #050508:
+     --star       18.5 / 17.9 / 16.9
+     --starlight  12.9 / 12.5 / 11.8
+     --dust        7.8 /  7.6 /  7.2
+     --accent     12.5 / 12.2 / 11.5   (#8fd3ff, the one cold highlight)
+     --state      16.0 / 15.6 / 14.7
+     --alert       4.9 /  4.8 /  4.4
+     --decal-text  7.8                 a plain label, no chip, no film
+
+   The four emitted colours are shared with the series cast, and measured the
+   same way on every ground:
+
+     --amber      12.3 / 11.7 / 10.7   the signal; type and light
+     --cyan       12.2 / 11.5 / 10.6   the second signal; state and light
+     --cream      14.5 / 13.8 / 12.7   body type
+     --alert       4.7 /  4.5 /  4.1   alerts: marks and edges only, never type
+     --alert-text  7.0 /  6.7 /  6.1   the same alert where it is small type
 */
 
 :root {
-  /* Ground: deep field and Sombrero shadow. */
+  /* The shipped identity. Ground: deep field and Sombrero shadow. */
   --void: #0b0a0d;
   --deep: #131118;
   --surface: #1c1a20;
   --line: rgba(242, 230, 216, .14);
 
-  /* Type: Andromeda and Whirlpool starlight. */
-  --star: #f7ecdd;
-  --starlight: #cfc3b6;
-  --dust: #a79085;
+  /* Warm cream, never a clipped white: headings, then body, then meta. */
+  --star: #efe6d3;
+  --starlight: var(--cream);
+  --dust: #a99884;
 
-  /* Accents: Carina rust and nebula blue, Sombrero teal, Carina plum-brown. */
-  --rust: #b8623f;
-  --nebula: #5474a8;
-  --teal: #2d7f96;
-  --plum: #6b3f4d;
-
-  /* The same accents lifted until small text clears 4.5:1 on --surface. */
-  --rust-text: #c9704a;
-  --nebula-text: #6f93c9;
-  --teal-text: #3f97ad;
-  --plum-mark: #9a5e72;
-
-  /* The Network: the colours the series cast emits. Warmth here is light on
-     dark metal, not paint, so these run brighter than the sampled palette and
-     are used for light, marks and the cast's own type. --alert is edges only;
-     --alert-text is the lift that carries it as small type. */
+  /* Chrome: the instrument light, shared with the series cast. Warmth here is
+     light on dark metal, not paint, so these run brighter than the sampled
+     palette. Amber is the accent, cyan is state, red is a sprinkle — one alert
+     on the whole site, under 1% of any page. */
   --amber: #ffc24a;
   --cyan: #8fd3ff;
   --cream: #e6dcc8;
   --alert: #e2402f;
   --alert-text: #f4735f;
 
-  /* Typefaces: display self-hosted, text and mono from the system. */
+  /* The semantic layer, aliased onto them: a component names its job, never
+     its colour. */
+  --accent: var(--amber);
+  --accent-text: var(--amber);
+  --accent-peak: #ffd966;
+  --accent-warm: #e98e5b;
+  --state: var(--cyan);
+  --state-text: #a9dcff;
+
+  /* Content: sampled from the imagery, so the writing keeps the photographs'
+     own colour even when the chrome does not. */
+  --nebula: #5474a8;
+  --nebula-text: #6f93c9;
+  --plum: #6b3f4d;
+  --plum-mark: #9a5e72;
+
+  /* A decal: a hardware label is a chip, near-white on film. */
+  --decal-bg: rgba(0, 0, 0, .85);
+  --decal-text: #efe6d3;
+
+  /* Two-layer bloom on anything emissive: a close glow and a wide one. It is
+     what makes amber read as light rather than as paint. */
+  --glow-accent: 0 0 2px rgba(255, 194, 74, .55), 0 0 20px rgba(255, 194, 74, .30);
+  --glow-state: 0 0 2px rgba(143, 211, 255, .55), 0 0 18px rgba(143, 211, 255, .28);
+  --glow-alert: 0 0 2px rgba(226, 64, 47, .55), 0 0 16px rgba(226, 64, 47, .22);
+  --text-glow: 0 0 10px rgba(255, 194, 74, .32);
+  --glow-soft: 0 0 18px rgba(255, 194, 74, .18);
+
+  /* The gauge: 3px bars on a 10px pitch, 1.5px tall, over a hairline track.
+     One cluster per section title, never a background. */
+  --rail: var(--accent);
+  --rail-bar: 3px;
+  --rail-pitch: 10px;
+  --rail-cap: 1.5px;
+
+  /* Grain and vignette: the photograph reads as film, not as stock. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  --grain-opacity: .05;
+  --vignette: radial-gradient(118% 92% at 50% 42%, transparent 46%, rgba(5, 4, 3, .42) 78%, rgba(5, 4, 3, .62) 100%);
+  --hero-scrim: linear-gradient(180deg,
+      rgba(11, 10, 13, .52) 0%,
+      rgba(11, 10, 13, .66) 45%,
+      rgba(11, 10, 13, .93) 80%,
+      var(--void) 100%);
+
+  /* Typefaces: display self-hosted, mono self-hosted, text from the system. */
   --font-display: Anton, Impact, 'Arial Narrow', sans-serif;
   --font-text: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
-  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Courier New', monospace;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', 'Courier New', monospace;
 
   /* Type scale. */
+  --step-decal: 11px;
   --step-1: 13px;
   --step-2: 15px;
   --step-3: 17px;
   --step-4: clamp(19px, 2vw, 22px);
   --step-5: clamp(28px, 4.4vw, 44px);
-  --step-hero: clamp(54px, 12vw, 168px);
+  --step-hero: clamp(48px, 10.4vw, 150px);
 
   --leading-tight: 1.1;
   --leading-body: 1.7;
-  --measure: 64ch;
-  --measure-narrow: 46ch;
+  /* Rem, not ch: a ch measure resolves against the font of whatever element
+     it lands on, so the same token gave 544px in prose, 696px inside an Anton
+     heading and 488px in mono. 34rem is the 544px the prose wants. */
+  --measure: 34rem;
+  --measure-narrow: 38rem;
+
+  /* Tracking. Labels are the machine voice; display is the poster. */
+  --track-label: .10em;
+  --track-display: -.01em;
+  --track-hero: .04em;
 
   /* Space. */
   --space-1: 6px;
@@ -85,19 +171,115 @@
   --space-5: clamp(40px, 5.4vw, 72px);
   --space-6: clamp(56px, 8vw, 112px);
 
-  /* Edges. The site has no rounded corners and one hairline weight. */
+  /* Edges. The site has no rounded corners and one hairline weight; a decal is
+     the single exception, because a hardware label is a physical chip. */
   --radius: 0;
+  --radius-decal: 3px;
   --border-hair: 1px solid var(--line);
 
-  /* Motion. One slow move, on the hero photograph only. */
+  /* The HUD frame: a corner tick is this long and this thick. */
+  --hud-tick: 14px;
+  --hud-weight: 1px;
+
+  /* Motion. One slow move, on the home page only. */
   --dur-slow: 24s;
+  --dur-crawl: 52s;
   --ease-soft: ease-in-out;
 
   /* Layout. */
   --gutter: 24px;
   --max-wide: 1200px;
+  --max-crawl: 34rem;
+}
+
+/* Instrument ------------------------------------------------------------ */
+
+html[data-lab="a"] {
+  --void: #0a0a0b;
+  --deep: #101012;
+  --surface: #161618;
+  --line: rgba(255, 194, 74, .20);
+
+  --star: #efe6d3;
+  --starlight: var(--cream);
+  --dust: #a89a7e;
+
+  --accent: var(--amber);
+  --accent-text: var(--amber);
+  --plum: #5e4415;
+  --plum-mark: #b8842e;
+  --nebula: #b8842e;
+  --nebula-text: var(--accent-peak);
+
+  /* The glow is stronger here: this identity is a lit panel, not a page with
+     a warm accent. */
+  --glow-accent: 0 0 2px rgba(255, 194, 74, .6), 0 0 22px rgba(255, 194, 74, .38);
+  --glow-soft: 0 0 24px rgba(255, 194, 74, .22);
+  --text-glow: 0 0 2px rgba(255, 194, 74, .55), 0 0 18px rgba(255, 194, 74, .38);
+
+  /* Everything a machine says is mono, at a measure that stays readable. */
+  --font-text: 'IBM Plex Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', monospace;
+  --step-3: 16px;
+  --leading-body: 1.75;
+  --measure: 38rem;
+  --track-label: .16em;
+  --track-display: .02em;
+  --track-hero: .02em;
+  --step-hero: clamp(34px, 7.6vw, 92px);
+  --grain-opacity: .07;
+  --hero-scrim: linear-gradient(180deg,
+      rgba(10, 10, 11, .80) 0%,
+      rgba(10, 10, 11, .88) 40%,
+      rgba(10, 10, 11, .96) 72%,
+      var(--void) 100%);
+}
+
+/* Poster ---------------------------------------------------------------- */
+
+html[data-lab="b"] {
+  --void: #050508;
+  --deep: #0a0a10;
+  --surface: #12121a;
+  --line: rgba(214, 229, 255, .16);
+
+  --star: #f2f4f8;
+  --starlight: #c7cedb;
+  --dust: #98a1b0;
+
+  /* One cold highlight, and no glow: a poster is printed, not lit. */
+  --accent: var(--cyan);
+  --accent-text: var(--cyan);
+  --nebula: #7f95bf;
+  --nebula-text: #d7e5ff;
+  --plum: #3f4a66;
+  --plum-mark: #7f95bf;
+  --state: #a9c9ff;
+  --state-text: #d7e5ff;
+  --glow-accent: none;
+  --glow-state: none;
+  --glow-alert: none;
+  --glow-soft: none;
+  --text-glow: none;
+  --grain-opacity: 0;
+  --rail: var(--line);
+  --decal-bg: transparent;
+  --decal-text: #98a1b0;
+  --hero-scrim: linear-gradient(180deg,
+      rgba(5, 5, 8, .45) 0%,
+      rgba(5, 5, 8, .18) 38%,
+      rgba(5, 5, 8, .92) 82%,
+      var(--void) 100%);
+
+  --font-text: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
+  --track-label: .20em;
+  --track-display: .06em;
+  --track-hero: .06em;
+  --step-hero: clamp(30px, 9.6vw, 138px);
+  --dur-crawl: 64s;
 }
 
 @media (max-width: 700px) {
-  :root { --gutter: 18px; }
+  :root { --gutter: 18px; --track-label: .10em; --track-hero: .03em; }
+  html[data-lab="a"] { --track-label: .13em; }
+  html[data-lab="b"] { --track-label: .15em; --track-hero: .04em; }
 }

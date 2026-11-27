@@ -20,7 +20,7 @@ image: /assets/art/orbits.png
 <section class="journal-topic" id="{{ topic.slug }}">
   <h2>{{ topic.name }}</h2>
   <ul class="entry-list">
-    {% for post in posts %}<li><a class="entry" href="{{ post.url | relative_url }}"><span class="entry-date">{{ post.date | date: "%d %b %Y" }}</span><span class="entry-title">{{ post.title }}</span>{% if post.description %}<span class="entry-dek"> — {{ post.description }}</span>{% endif %}</a></li>{% endfor %}
+    {% for post in posts %}<li><a class="entry" href="{{ post.url | relative_url }}"><span class="entry-date"><time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: "%Y-%m-%d" }}</time></span><span class="entry-title">{{ post.title }}</span>{% if post.description %}<span class="entry-dek">{{ post.description }}</span>{% endif %}</a></li>{% endfor %}
   </ul>
 </section>
 {% endif %}{% endfor %}

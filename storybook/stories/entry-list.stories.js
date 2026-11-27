@@ -20,7 +20,7 @@ export default {
 
 export const Default = {
   args: {
-    note: 'The list: date in dust, title in rust, dek in starlight.',
+    note: 'The list: an ISO stamp in dust, a state mark, the title in amber, the dek in starlight.',
     body: `<ul class="entry-list">${entries
       .map(([date, title, dek]) => `<li><a class="entry" href="#storybook-root"><span class="entry-date">${date}</span><span class="entry-title">${title}</span><span class="entry-dek"> — ${dek}</span></a></li>`)
       .join('')}</ul>`,
