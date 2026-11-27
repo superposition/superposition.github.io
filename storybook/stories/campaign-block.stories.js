@@ -12,7 +12,7 @@ const film = {
 const poster = `<article class="poster poster--still">
   <a class="poster-link" href="#storybook-root">
     <span class="poster-art">
-      <img src="/assets/repos/mage/kernel-progression-1200.webp" alt="" loading="lazy" decoding="async">
+      <img src="/assets/repos/mage/kernel-progression-1200.webp" alt="" width="1200" height="750" loading="lazy" decoding="async">
       <span class="poster-no">02 of 20</span>
     </span>
     <span class="poster-body">
@@ -35,6 +35,7 @@ const stills = `<p class="kicker campaign-stills-label">Stills</p>
 export default {
   title: 'Components/Campaign block',
   parameters: {
+    usedOn: ['_repos/mage.md', '_includes/campaign/block.html'],
     docs: {
       description: {
         component:

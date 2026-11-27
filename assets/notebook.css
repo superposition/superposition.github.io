@@ -1,10 +1,23 @@
 @charset "UTF-8";
-/* Superposition components. Every value comes from assets/tokens.css.
-   One section per component, in the order a page uses them. The same file is
-   what the /style/ page renders and what the Storybook workbench imports, so a
-   story and a page cannot drift apart. The last two sections are the two
-   identities that are not shipped: they are scoped under html[data-lab], so
-   the default page never pays for them. */
+/* Superposition components.
+
+   Every value in this file is a token from assets/tokens.css. There is no
+   colour, no size, no shadow, no gradient and no length written here: the token
+   file owns the values, this file owns the composition. `npm run slop` fails the
+   build on a literal in either direction — a number in a component, or a token
+   nothing reads.
+
+   One section per component, in the order a page uses them. This is the same
+   file the /style/ page renders and the Storybook workbench imports, so a story
+   and a page cannot drift apart.
+
+   Two rules this file keeps and the checks enforce. Every interactive
+   component declares rest, hover, focus-visible and active, and disabled where
+   it can be unavailable; every component that shows data declares loading,
+   empty and error. `npm run a11y` fails the build when a state is missing from
+   a component that needs it, when a control target is under 24px, when a page
+   ships an image with no alt, or when an animation has no reduced-motion
+   answer. */
 
 @font-face {
   font-family: Anton;
@@ -48,7 +61,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 24px;
+  scroll-padding-top: var(--space-4);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -64,16 +77,20 @@ body {
 
 ::selection { background: var(--accent); color: var(--void); }
 
+/* The bare link. Rest is this, and every component below either inherits it or
+   says what it does differently — there is no second underline convention. */
 a {
   color: var(--accent-text);
   text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 4px;
+  text-decoration-thickness: var(--hair);
+  text-underline-offset: var(--space-half);
   transition: color var(--dur-state) var(--ease-out),
               text-decoration-thickness var(--dur-state) var(--ease-out);
 }
-a:hover { text-decoration-thickness: 2px; }
-a:focus-visible { outline: 2px solid var(--state); outline-offset: 4px; box-shadow: var(--glow-state); }
+a:hover { text-decoration-thickness: var(--ring); }
+a:active { color: var(--accent-peak); }
+a:focus-visible { outline: var(--ring) solid var(--state); outline-offset: var(--space-half); box-shadow: var(--glow-state); }
+
 img, svg { display: block; max-width: 100%; height: auto; }
 h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 
@@ -91,63 +108,91 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 }
 
 .visually-hidden {
-  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  position: absolute; width: var(--hair); height: var(--hair); padding: 0; margin: calc(-1 * var(--hair));
   overflow: hidden; clip-path: inset(50%); white-space: nowrap;
 }
 
 .skip {
-  position: fixed; left: 20px; top: -100px; z-index: 20;
-  background: var(--star); color: var(--void); padding: 12px;
-  font: var(--step-2)/1.4 var(--font-mono);
+  position: fixed; left: var(--space-3); top: var(--skip-offset); z-index: 20;
+  background: var(--star); color: var(--void); padding: var(--space-2);
+  font: var(--step-2)/var(--leading-body) var(--font-mono);
 }
-.skip:focus { top: 12px; }
+.skip:focus { top: var(--space-2); }
 
 /* Nav --------------------------------------------------------------------- */
 
+/* One row at every width the site supports. The link padding is what makes a
+   phone target 24px: 10.5px type at 1.6 is 16.8, plus 2 × --space-half is
+   24.8px, which is the smallest target on the site and still over the floor. */
 .site-header {
   position: relative; z-index: 3;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-  gap: var(--space-1) var(--space-3);
+  gap: var(--space-1) var(--space-4);
   padding-block: var(--space-3) var(--space-2);
-  font: var(--step-1)/1.4 var(--font-mono);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
 }
 .home-link { color: var(--star); text-decoration: none; font-weight: 600; }
 .site-header nav { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .site-header nav a { color: var(--starlight); text-decoration: none; }
+.home-link, .site-header nav a { padding-block: var(--space-half); }
 .site-header nav a:hover { color: var(--accent-text); }
+.site-header nav a:active { color: var(--accent-peak); }
 .site-header nav [aria-current] { color: var(--accent-text); text-shadow: var(--text-glow); }
+.home-link:hover { color: var(--starlight); }
+.home-link:active { color: var(--starlight); }
 
-/* Series is a section for a large screen: below 640px it leaves the header so
-   the nav stays one row on a phone, and the footer carries the link instead.
-   Hidden this way it also leaves the tab order, which is why the footer has to
-   carry it — one reachable link at every width, never two. */
+/* Series and Now showing are sections for a large screen: below 640px they
+   leave the header so the nav stays one row on a phone, and the footer carries
+   them instead. Hidden this way they also leave the tab order, which is why the
+   footer has to carry them — one reachable link at every width, never two. */
 .nav-series, .nav-showing { display: none; }
 @media (min-width: 640px) { .nav-series, .nav-showing { display: inline; } }
+
+/* The command sweep: the shared hover, focus and current-page signal for chrome
+   links and for the rows that behave like them, written once here rather than
+   per component. A hairline in currentColor scales out of the left edge; it is
+   a transform on a pseudo-element, so it composites instead of repainting the
+   text above it, and it carries whatever colour the component is set in. */
+:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .entry, .range-link) {
+  position: relative; --sweep: 0;
+}
+:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .entry, .range-link)::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 calc(-1 * var(--hair)) 0;
+  height: var(--hair);
+  background: currentColor;
+  transform: scaleX(var(--sweep));
+  transform-origin: 0 50%;
+  transition: transform var(--dur-sweep) var(--ease-out);
+  pointer-events: none;
+}
+:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .entry, .range-link):is(:hover, :focus-visible),
+.site-header nav [aria-current],
+.card:hover .card-title,
+.card:focus-visible .card-title { --sweep: 1; }
 
 /* Hero -------------------------------------------------------------------- */
 
 .hero {
   position: relative; isolation: isolate;
-  min-height: 88svh;
+  min-height: var(--hero-min);
   display: flex; align-items: flex-end;
   overflow: clip;
-  margin-bottom: var(--space-5);
-  background: var(--void) url('/assets/art/galaxy/carina-1600.webp') center / cover no-repeat;
+  margin-bottom: var(--space-section);
+  background: var(--void);
 }
 .hero img {
   position: absolute; inset: 0; z-index: -3;
   width: 100%; height: 100%; max-width: none;
   object-fit: cover; object-position: 50% 40%;
 }
-/* Grain over the photograph and a vignette pulling the corners down, so the
-   picture reads as film rather than as a stock frame. Two layers because the
-   grain has its own opacity and the vignette must keep its own. */
 .hero::before {
   content: "";
   position: absolute; inset: 0; z-index: -1;
   background-image: var(--grain);
-  background-size: 140px 140px;
+  background-size: var(--grain-size) var(--grain-size);
   background-repeat: repeat;
   opacity: var(--grain-opacity);
   pointer-events: none;
@@ -157,7 +202,7 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
   position: absolute; inset: 0; z-index: -1;
   background: var(--vignette), var(--hero-scrim);
 }
-.hero-inner { padding-block: var(--space-5) var(--space-4); }
+.hero-inner { padding-block: var(--space-section) var(--space-5); }
 .hero h1 {
   font: var(--step-hero)/.92 var(--font-display);
   text-transform: uppercase;
@@ -176,47 +221,76 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
   to { transform: scale(1.06); }
 }
 
+/* Skeleton ---------------------------------------------------------------- */
+
+/* What a page shows where a picture has not arrived. A frame, the raised
+   panel, and a label naming what is coming — no shimmer, because the site does
+   not animate to fill time. It sits behind the photograph (z-index -4, the
+   image is -3), so the frame is visible while the file is in flight and is
+   covered the moment it paints; if the file fails, the label is what remains.
+   Under data-lab="a" the photograph is deliberately a faint wash over a lit
+   panel, so a second panel behind it would read as content: the identity turns
+   the skeleton off. */
+.skeleton {
+  display: block;
+  background: var(--panel);
+  border: var(--border-hair);
+}
+.skeleton-hero {
+  position: absolute; inset: 0; z-index: -4;
+  border: 0;
+}
+.skeleton-label {
+  position: absolute;
+  inset-block-end: var(--space-4);
+  inset-inline-start: var(--space-4);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+}
+
 /* Crawl ------------------------------------------------------------------- */
 
 /* The opening statement, set as if it were leaving the frame: a plane that
-   tips a few degrees, drifting 26px up and back over --dur-crawl, inside a box
-   whose own edges fade. The drift stays inside the padding (34px of it against
-   26px of travel), so no glyph ever enters the fade or the clip: the words stay
-   at full contrast at both ends of the move. The reader stops it with the Hold
-   switch, which is the pause control WCAG 2.2.2 asks for, and
-   prefers-reduced-motion removes the motion, the tilt and the fade together. */
+   tips a few degrees, drifting --crawl-travel up and back over --dur-crawl,
+   inside a box whose own edges fade. The drift stays inside --crawl-pad of
+   padding, so no glyph ever enters the fade or the clip: the words stay at full
+   contrast at both ends of the move. The reader stops it with the Hold switch,
+   which is the pause control WCAG 2.2.2 asks for, and prefers-reduced-motion
+   removes the motion, the tilt and the fade together. */
 .crawl {
   position: relative;
-  padding-block: 34px;
+  padding-block: var(--crawl-pad);
   overflow: hidden;
-  mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
+  mask-image: var(--crawl-mask);
+  -webkit-mask-image: var(--crawl-mask);
 }
 .crawl .lede {
   max-width: var(--max-crawl);
   animation: crawl-drift var(--dur-crawl) linear infinite alternate;
 }
 @keyframes crawl-drift {
-  from { transform: perspective(760px) rotateX(var(--crawl-tilt, 0deg)) translateY(0); }
-  to   { transform: perspective(760px) rotateX(var(--crawl-tilt, 0deg)) translateY(-26px); }
+  from { transform: perspective(var(--crawl-perspective)) rotateX(var(--crawl-tilt, 0deg)) translateY(0); }
+  to   { transform: perspective(var(--crawl-perspective)) rotateX(var(--crawl-tilt, 0deg)) translateY(calc(-1 * var(--crawl-travel))); }
 }
 /* The pause control: a drawn box, not a glyph, so its state is a fill. */
 .crawl-switch:checked ~ .crawl .lede { animation-play-state: paused; }
 .crawl-hold {
   margin-top: var(--space-2);
-  font: var(--step-1)/1.6 var(--font-mono);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
-.crawl-hold label { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; }
+.crawl-hold label { display: inline-flex; align-items: center; gap: var(--space-1); padding-block: var(--space-half); cursor: pointer; }
 .crawl-hold label::before {
   content: ""; flex: none;
-  width: 9px; height: 9px;
-  border: 1px solid var(--dust);
+  width: var(--switch); height: var(--switch);
+  border: var(--hair) solid var(--dust);
 }
 .crawl-switch:checked ~ .crawl-hold label::before { background: var(--state); border-color: var(--state); }
-.crawl-switch:focus-visible ~ .crawl-hold label { outline: 2px solid var(--state); outline-offset: 4px; color: var(--star); }
+.crawl-switch:focus-visible ~ .crawl-hold label { outline: var(--ring) solid var(--state); outline-offset: var(--space-half); color: var(--star); }
 .crawl-hold label:hover::before { border-color: var(--star); }
+.crawl-hold label:active::before { background: var(--dust); }
 
 /* Type -------------------------------------------------------------------- */
 
@@ -238,39 +312,37 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   position: relative;
   font: var(--step-4)/1.2 var(--font-display);
   color: var(--star);
-  padding-top: calc(var(--space-2) + 7px);
+  padding-top: calc(var(--space-2) + var(--space-1));
   margin-bottom: var(--space-2);
 }
-/* The gauge cluster: 3px bars on a 10px pitch over a hairline track. One per
-   section title, which is one per section — never a page background. */
+/* The gauge cluster: --rail-bar bars on a --rail-pitch pitch over a hairline
+   track. One per section title, which is one per section — never a page
+   background. */
 .section-title::before {
   content: "";
-  position: absolute; inset-inline: 0; inset-block-start: 0; height: 4px;
-  background:
-    repeating-linear-gradient(90deg, var(--rail) 0 var(--rail-bar), transparent var(--rail-bar) var(--rail-pitch))
-      0 0 / 100% var(--rail-cap) no-repeat,
-    linear-gradient(var(--line), var(--line)) 0 100% / 100% 1px no-repeat;
+  position: absolute; inset-inline: 0; inset-block-start: 0; height: var(--rule-thick);
+  background: var(--gauge);
 }
 
 /* Small text -------------------------------------------------------------- */
 
 .kicker {
-  font: var(--step-1)/1.6 var(--font-mono);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
 
-/* A decal: the eyebrow as a physical chip, near-white on near-black with the
+/* A chip: the eyebrow as a physical label, near-white on its own film with the
    one 3px radius on the site. It names what a page or an entry is; the plain
    kicker above it stays a label. */
 .decal {
   display: inline-block;
-  padding: 3px 7px 4px;
-  border: 1px solid var(--decal-edge);
-  border-radius: var(--radius-decal);
-  background: var(--poster-plate);
-  color: var(--poster-plate-text);
-  font: 600 var(--step-decal)/1.4 var(--font-mono);
+  padding: 0 var(--space-1);
+  border: var(--hair) solid var(--chip-edge);
+  border-radius: var(--radius-chip);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font: 600 var(--step-decal)/var(--leading-body) var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
 }
 
@@ -283,24 +355,24 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 /* HUD frame --------------------------------------------------------------- */
 
 /* A readout, not a border: one hairline box and two corner ticks on the blocks
-   that carry a figure, a repository or a state. The tick is --accent, measured
-   at 12.3:1 on the ground here, so the corner always clears the 3:1 control
+   that carry a figure, a photograph or a state. The tick is --accent, measured
+   at 13.1:1 on the ground here, so the corner always clears the 3:1 control
    edge minimum whatever the photograph behind it does. */
-.figure, .card, .callout, .audio, .empty-state { position: relative; }
-.figure::before, .card::before, .callout::before, .audio::before, .empty-state::before,
-.figure::after, .card::after, .callout::after, .audio::after, .empty-state::after {
+.figure, .card, .audio, .empty-state, .notice { position: relative; }
+.figure::before, .card::before, .audio::before, .empty-state::before,
+.figure::after, .card::after, .audio::after, .empty-state::after {
   content: "";
   position: absolute;
   width: var(--hud-tick); height: var(--hud-tick);
   pointer-events: none;
   filter: drop-shadow(var(--glow-soft));
 }
-.figure::before, .card::before, .callout::before, .audio::before, .empty-state::before {
+.figure::before, .card::before, .audio::before, .empty-state::before {
   inset-block-start: 0; inset-inline-start: 0;
   border-block-start: var(--hud-weight) solid var(--accent);
   border-inline-start: var(--hud-weight) solid var(--accent);
 }
-.figure::after, .card::after, .callout::after, .audio::after, .empty-state::after {
+.figure::after, .card::after, .audio::after, .empty-state::after {
   inset-block-end: 0; inset-inline-end: 0;
   border-block-end: var(--hud-weight) solid var(--accent);
   border-inline-end: var(--hud-weight) solid var(--accent);
@@ -308,98 +380,53 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 
 /* Alert ------------------------------------------------------------------- */
 
-/* The one red thing on the site: a page that does not exist. Red is 4.7:1 on
-   the ground and 4.1:1 on a raised block, so it is type on the ground or an
-   edge — never small type inside a block without the lifted --alert-text. */
+/* The one red thing on the site: a page that does not exist, and the word on a
+   photograph that failed to load. Red is 5.0:1 on the ground and 4.1:1 on a
+   raised block, so its type is --alert-text (7.5:1) and the red itself is the
+   edge. */
 .alert {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 3px 8px 4px;
-  border: 1px solid var(--alert);
-  border-radius: var(--radius-decal);
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  padding: 0 var(--space-1);
+  border: var(--hair) solid var(--alert);
+  border-radius: var(--radius-chip);
   color: var(--alert-text);
-  font: 600 var(--step-1)/1.5 var(--font-mono);
+  font: 600 var(--step-1)/var(--leading-body) var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
   box-shadow: var(--glow-alert);
 }
 
-/* Warning stripe ---------------------------------------------------------- */
+/* Link -------------------------------------------------------------------- */
 
-/* One band, on the home page only, marking the edge of the opening. It is the
-   single hazard stripe on the site: it never repeats, and it is decorative. */
-.hazard { display: none; }
-
-/* Link ------------------------------------------------------------------- */
-
-/* A chrome link: reads as text, carries an underline at rest. */
+/* A chrome link: reads as text, carries an underline at rest. Its states are
+   the bare link's, with the underline as a border so it can thicken without
+   reflowing the line. */
 .text-link {
+  display: inline-block;
   text-decoration: none;
-  border-bottom: 1px solid currentColor;
-  padding-bottom: 2px;
+  border-bottom: var(--hair) solid currentColor;
+  padding-block: var(--space-half);
   transition: color var(--dur-state) var(--ease-out),
               border-bottom-width var(--dur-state) var(--ease-out);
 }
-.text-link:hover { text-decoration: none; border-bottom-width: 2px; }
-
-/* A command link: the shared hover, focus and current-page signal for chrome
-   links and for the rows that behave like them, written once here rather than
-   per component. A 1px hairline in currentColor scales out of the left edge; it
-   is a transform on a pseudo-element, so it composites instead of repainting
-   the text above it, and it carries whatever colour the link is set in — amber
-   in the shipped identity, cyan where an identity makes state the accent. */
-.home-link,
-.site-header nav a,
-.topic-list a,
-.card-title,
-.repo-row,
-.entry { position: relative; --sweep: 0; }
-
-.home-link::after,
-.site-header nav a::after,
-.topic-list a::after,
-.card-title::after,
-.repo-row::after,
-.entry::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 -1px 0;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(var(--sweep));
-  transform-origin: 0 50%;
-  transition: transform var(--dur-sweep) var(--ease-out);
-  pointer-events: none;
-}
-
-.home-link:hover,
-.home-link:focus-visible,
-.site-header nav a:hover,
-.site-header nav a:focus-visible,
-.site-header nav [aria-current],
-.topic-list a:hover,
-.topic-list a:focus-visible,
-.card:hover .card-title,
-.card:focus-visible .card-title,
-.repo-row:hover,
-.repo-row:focus-visible,
-.entry:hover,
-.entry:focus-visible { --sweep: 1; }
+.text-link:hover { text-decoration: none; border-bottom-width: var(--ring); }
+.text-link:active { color: var(--accent-peak); border-bottom-width: var(--ring); }
 
 /* Button ----------------------------------------------------------------- */
 
-/* Measured: the primary fill is --accent, which carries --void type at
-   12.3:1; hover lifts to --accent-peak and puts a --star edge on it (15.9:1
-   against the ground), and active adds a 1px press. Secondary and ghost-hover
-   edges are --dust (7.1:1 on void), the secondary hover edge --accent-text
-   (12.3:1), and the --state focus ring is 12.2:1 on void, far over the 3:1
-   edge minimum. A ghost button has no boundary by design, so its --starlight
-   type (14.5:1) is the whole affordance. Disabled is --dust type (7.1:1)
-   inside a dashed --dust edge, which is why it never drops below the
-   text minimum. */
+/* One button, one job: the page's action. Measured: the fill is --accent,
+   which carries --void type at 13.1:1; hover lifts to --accent-peak and puts a
+   --star edge on it (16.9:1 against the ground), active presses one hairline
+   down, and the --state focus ring is 12.9:1 on void, far over the 3:1 edge
+   minimum. Disabled is --dust type (7.5:1) inside a dashed --dust edge, so it
+   never drops below the text floor. The padding is --space-2 by --space-4:
+   a 40px target, which clears the 24px minimum with room.
+   There is one variant because the site has one action per page — a second
+   button beside the first means one of them is not the action. */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   gap: var(--space-1);
-  padding: 11px 18px;
-  border: 1px solid transparent;
+  padding: var(--space-2) var(--space-4);
+  border: var(--hair) solid transparent;
   border-radius: var(--radius);
   background: none;
   color: var(--star);
@@ -412,109 +439,63 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
               border-color var(--dur-state) var(--ease-out),
               background-color var(--dur-state) var(--ease-out),
               box-shadow var(--dur-state) var(--ease-out),
-              border-bottom-width var(--dur-state) var(--ease-out);
+              transform var(--dur-state) var(--ease-out);
 }
 .btn:hover { text-decoration: none; }
-.btn:focus-visible { outline: 2px solid var(--state); outline-offset: 3px; box-shadow: var(--glow-state); }
+.btn:active { text-decoration: none; }
+.btn:focus-visible { outline: var(--ring) solid var(--state); outline-offset: var(--space-half); box-shadow: var(--glow-state); }
 
 .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--void); box-shadow: var(--glow-soft); }
 .btn-primary:hover { background: var(--accent-peak); border-color: var(--star); }
-.btn-primary:active { background: var(--accent); border-color: var(--star); transform: translateY(1px); }
-
-.btn-secondary { border-color: var(--dust); color: var(--star); }
-.btn-secondary:hover { border-color: var(--accent-text); color: var(--accent-text); box-shadow: var(--glow-soft); }
-.btn-secondary:active { border-color: var(--accent-text); color: var(--accent-text); background: var(--surface); }
-
-.btn-ghost { color: var(--starlight); }
-.btn-ghost:hover { background: var(--surface); border-color: var(--dust); color: var(--star); }
-.btn-ghost:active { background: var(--surface); border-color: var(--dust); color: var(--star); }
-
-/* A button that reads as a link, for actions inside a sentence or a row. */
-.btn-text {
-  padding: 0 0 2px;
-  border: 0;
-  border-bottom: 1px solid currentColor;
-  border-radius: 0;
-  color: var(--accent-text);
-  text-transform: none; letter-spacing: 0;
-}
-.btn-text:hover { border-bottom-width: 2px; color: var(--star); }
-
-.btn-sm { padding: 8px 12px; font-size: 12px; letter-spacing: var(--track-label); }
-.btn-lg { padding: 15px 26px; font-size: var(--step-2); }
-.btn-block { display: flex; width: 100%; }
+.btn-primary:active { background: var(--accent); border-color: var(--star); transform: translateY(var(--hair)); }
 
 .btn[disabled], .btn[aria-disabled="true"] {
   background: none;
-  border: 1px dashed var(--dust);
+  border: var(--hair) dashed var(--dust);
   color: var(--dust);
+  box-shadow: none;
   cursor: not-allowed;
+  transform: none;
 }
 .btn[disabled]:hover, .btn[aria-disabled="true"]:hover { background: none; border-color: var(--dust); color: var(--dust); }
 
-/* Badge ------------------------------------------------------------------ */
-
-/* The edge is currentColor, so a badge's border carries exactly the contrast
-   its own type was measured at and can never fall below the 3:1 edge minimum
-   while the type holds 4.5:1. */
-.badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 2px 7px;
-  border: 1px solid currentColor;
-  border-radius: var(--radius);
-  font: var(--step-1)/1.5 var(--font-mono);
-  text-transform: uppercase; letter-spacing: var(--track-label);
-  color: var(--dust);
-  text-decoration: none;
-  white-space: nowrap;
-}
-.badge-accent { color: var(--accent-text); }
-.badge-state { color: var(--state-text); }
-.badge-solid { background: var(--surface); border-color: transparent; color: var(--starlight); }
-
-/* Topic row -------------------------------------------------------------- */
+/* Topic row --------------------------------------------------------------- */
 
 .topic-list {
   list-style: none; display: flex; flex-wrap: wrap;
   gap: var(--space-1) var(--space-3);
   padding: 0;
-  font: var(--step-2)/1.6 var(--font-mono);
+  font: var(--step-2)/var(--leading-body) var(--font-mono);
 }
 .topic-list a { color: var(--star); text-decoration: none; }
-/* A dot is a bullet, so it is one amber dot and the name does the work. */
+.topic-list a:active { color: var(--accent-peak); }
+/* A dot is a bullet, so it is one amber dot and the name does the work. One
+   dot, one colour: the five topics have no fixed colour anywhere else, and the
+   photographs supply the site's colour. */
 .dot {
-  width: 8px; height: 8px; border-radius: 50%;
+  width: var(--dot); height: var(--dot); border-radius: 50%;
   display: inline-block; flex: none;
   background: var(--accent);
 }
-.topic-list .dot { margin-right: 9px; }
+.topic-list .dot { margin-right: var(--space-1); }
 .topic-list li { display: flex; align-items: center; }
-/* One dot, one colour. The five topic dots used to carry five hues, which was
-   the only place on the site where content encoded itself in colour: the topics
-   have no fixed colour anywhere else, and the photographs supply the site's
-   colour. */
 
-/* Card ------------------------------------------------------------------- */
+/* Card -------------------------------------------------------------------- */
 
-/* One card for both things the site cards: a repository, with a thumbnail,
-   and a journal entry, which has no image. The frame is the HUD box; the
-   title is the only thing that changes on hover. */
+/* One card for both things the site cards: a repository, with a photograph,
+   and a journal entry, which has none. The frame is the HUD box and the title
+   is the only thing that changes on hover — no lift, no shadow, no scale on the
+   frame. */
 .card {
   display: block;
   border: var(--border-hair);
-  padding: 10px;
+  padding: var(--space-2);
   color: var(--star);
   text-decoration: none;
+  transition: border-color var(--dur-state) var(--ease-out);
 }
 .card-media { display: block; margin-bottom: var(--space-1); }
 .card-media img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; transition: transform var(--dur-glide) var(--ease-out); }
-.card-kicker {
-  display: block;
-  margin-bottom: 4px;
-  font: var(--step-1)/1.6 var(--font-mono);
-  text-transform: uppercase; letter-spacing: var(--track-label);
-  color: var(--dust);
-}
 .card-title {
   display: block;
   font-family: var(--font-display);
@@ -525,46 +506,47 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 }
 .card-text {
   display: block;
-  margin-top: 6px;
+  margin-top: var(--space-1);
   font-size: var(--step-2);
   line-height: 1.5;
   color: var(--starlight);
 }
 .card-meta {
   display: block;
-  margin-top: 6px;
-  font: var(--step-1)/1.6 var(--font-mono);
+  margin-top: var(--space-1);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
-.card-foot { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-top: var(--space-2); }
 .card:hover .card-title, .card:focus-visible .card-title { color: var(--accent-text); }
-.card:hover, .card:focus-visible { box-shadow: var(--glow-soft); }
-
-.entry-card .card-title { font-size: var(--step-4); }
+.card:hover, .card:focus-visible { border-color: var(--line); }
+.card:active .card-title { color: var(--accent-peak); }
+.card:hover .card-media img, .card:focus-visible .card-media img { transform: scale(1.02); }
 
 .repo-grid {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: var(--space-4) var(--space-3);
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card-min), 1fr));
+  gap: var(--space-5) var(--space-4);
 }
 
+/* Repository rows -------------------------------------------------------- */
+
+/* The home page's list: the name is an identifier, so it stays mono; the
+   tagline is writing, so it is in the text face. A page of nothing but mono
+   gives the eye nowhere to rest — this list is the home page's prose. */
 .repos-home, .recent { margin-top: var(--space-section); }
 .repo-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; }
-/* The name is an identifier, so it stays mono; the tagline is writing, so it is
-   in the text face at the reading measure. A page of nothing but mono gives the
-   eye nowhere to rest — this list is the home page's prose. */
 .repo-row {
   display: grid;
-  grid-template-columns: 15ch minmax(0, 1fr);
+  grid-template-columns: var(--col-name) minmax(0, 1fr);
   gap: 0 var(--space-3);
   align-items: baseline;
-  padding-block: 7px;
+  padding-block: var(--space-1);
   text-decoration: none;
-  border-top: 1px solid transparent;
+  border-top: var(--hair) solid transparent;
 }
 .repo-name {
-  font: 500 var(--step-1)/1.6 var(--font-mono);
+  font: 500 var(--step-1)/var(--leading-body) var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--accent-text);
   overflow-wrap: anywhere;
@@ -575,13 +557,16 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 }
 .repo-row:hover .repo-note { color: var(--star); }
 .repo-row:hover { border-top-color: var(--line); }
+.repo-row:active .repo-name { color: var(--accent-peak); }
 html[data-lab="a"] .repo-name { font-weight: 400; }
 
-/* Entry list ------------------------------------------------------------- */
+/* Entry list -------------------------------------------------------------- */
 
-/* A log line: the stamp in its own column, the state mark, then the title and
-   what it is about. The stamp is machine data, so it is mono and tabular; the
-   mark is drawn with a background rather than a glyph so it is never read out. */
+/* A log line: the stamp in its own column, the state mark, then the title.
+   The stamp is machine data, so it is mono and tabular; the mark is drawn with
+   a background rather than a glyph so it is never read out; the title and the
+   line about it are writing, so they are in the text face at weight 400 —
+   the text face has one weight and anything heavier would be synthesised. */
 .entry-list { list-style: none; margin: 0; padding: 0; }
 .entry-list li + li { margin-top: var(--space-1); }
 .entry {
@@ -591,7 +576,7 @@ html[data-lab="a"] .repo-name { font-weight: 400; }
   align-items: baseline;
   text-decoration: none;
   font: var(--step-2)/1.7 var(--font-mono);
-  padding-block: 2px;
+  padding-block: var(--space-half);
   color: var(--accent-text);
 }
 .entry-date {
@@ -602,15 +587,11 @@ html[data-lab="a"] .repo-name { font-weight: 400; }
 .entry-date::before {
   content: "";
   display: inline-block;
-  width: 6px; height: 6px;
-  margin-right: 9px;
+  width: var(--tick); height: var(--tick);
+  margin-right: var(--space-1);
   background: var(--state);
   box-shadow: var(--glow-state);
 }
-/* The stamp is data and stays mono. The title and the line about it are
-   writing, so they are in the text face — at weight 400, because the text face
-   has one weight and anything heavier would be synthesised. The instrument
-   identity sets all three in mono, where the row is a log record. */
 .entry-title {
   font-family: var(--font-text);
   font-size: var(--step-3);
@@ -618,62 +599,165 @@ html[data-lab="a"] .repo-name { font-weight: 400; }
   color: var(--accent-text);
 }
 .entry-dek { font-family: var(--font-text); color: var(--starlight); grid-column: 2; }
+.entry:hover .entry-title { color: var(--star); }
+.entry:hover .entry-dek { color: var(--star); }
+.entry:active .entry-title { color: var(--accent-peak); }
+/* The instrument identity sets all three in mono, where the row is a log
+   record rather than a line of writing. */
+html[data-lab="a"] .entry-title { font-family: var(--font-mono); font-size: inherit; font-weight: 500; color: var(--accent); }
+html[data-lab="a"] .entry-dek { font-family: var(--font-mono); }
 
-/* Figure ----------------------------------------------------------------- */
+/* Table ------------------------------------------------------------------- */
 
-/* The width and height of an <img> are its file's real ones, so the browser
-   reserves the right box before the file lands. They must never set the drawn
-   height: width 100% with height auto is the rule that keeps a picture
-   undistorted whatever its ratio. */
-.figure {
-  margin-block: var(--space-4);
-  max-width: min(100%, 1000px);
-  border: var(--border-hair);
-  padding: 10px;
+/* The data density. One table for every column of facts on the site: the
+   repository index, a design-system identity, a prose table. Reading density is
+   the default; --compact sets --density-row and --density-cell one step down
+   and nothing else changes, so the two densities cannot drift apart. Numbers
+   are tabular and right-aligned, so a column of counts is a column. */
+.table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font: var(--step-2)/1.5 var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
-.figure img { width: 100%; }
-.figure figcaption,
-.code-block figcaption,
-.prose figcaption {
-  margin-top: var(--space-1);
+.table caption {
+  text-align: left;
+  padding-bottom: var(--space-2);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+}
+.table th, .table td {
+  border-bottom: var(--border-hair);
+  padding: var(--density-row) var(--density-cell) var(--density-row) 0;
+  text-align: left;
+  vertical-align: baseline;
+}
+.table th {
+  font: var(--step-1)/1.5 var(--font-mono);
+  font-weight: 500;
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+  white-space: nowrap;
+}
+.table td { color: var(--starlight); }
+/* The link is the cell: a block that fills it, so the target is the whole
+   column of the row rather than the few words in it. */
+.table td a {
+  display: block;
+  color: var(--accent-text);
+  text-decoration: none;
+  padding-block: var(--space-half);
+  margin-block: calc(-1 * var(--space-half));
+}
+.table td a:hover { text-decoration: underline; text-decoration-thickness: var(--hair); text-underline-offset: var(--space-half); }
+.table td a:active { color: var(--accent-peak); }
+.table .num { text-align: right; padding-right: var(--space-2); white-space: nowrap; }
+.table .nowrap { white-space: nowrap; }
+.table-note {
+  display: block;
+  margin-top: var(--space-half);
+  font: var(--step-1)/1.5 var(--font-text);
+  color: var(--dust);
+  max-width: var(--measure-narrow);
+}
+.table--compact { --density-row: var(--space-1); --density-cell: var(--space-2); }
+.table--compact th { font-size: var(--step-decal); }
+
+/* Definition rows --------------------------------------------------------- */
+
+/* A label and its value, for the facts a repository page opens with: the
+   language, the stars, the last push. A --step-1 mono label over a --step-2
+   mono value on a hairline, so a set of three reads as a graduated scale
+   rather than three sentences. This is the compact density: the value is the
+   only thing at reading weight. */
+.def {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--def-min), 1fr));
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+.def-row {
+  display: flex; flex-direction: column; gap: var(--space-half);
+  border-top: var(--border-hair);
   padding-top: var(--space-1);
-  border-top: var(--border-hair);
-  font: var(--step-1)/1.6 var(--font-mono);
-  letter-spacing: .04em;
+}
+.def-row dt {
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
-
-/* Plates ---------------------------------------------------------------- */
-
-.plates {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-3);
-  margin-top: var(--space-5);
-}
-.plate img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
-.plate figcaption {
-  margin-top: var(--space-1);
-  font: 11px/1.6 var(--font-mono);
-  letter-spacing: .04em;
-  color: var(--dust);
-}
-
-/* Page heading and journal ----------------------------------------------- */
-
-.page-heading { padding-block: var(--space-open) var(--space-2); }
-.page-heading h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
-.page-heading .lede { margin-top: var(--space-3); }
-
-.journal-topic { margin-top: var(--space-section); scroll-margin-top: 16px; }
-.journal-topic h2 {
-  font: var(--step-2)/1.3 var(--font-display);
+.def-row dd {
+  margin: 0;
+  font: 500 var(--step-2)/1.4 var(--font-mono);
   color: var(--star);
-  padding-top: var(--space-2);
-  border-top: var(--border-hair);
-  margin-bottom: var(--space-1);
+  font-variant-numeric: tabular-nums;
 }
 
-/* Empty state ------------------------------------------------------------ */
+/* Range control ----------------------------------------------------------- */
+
+/* A row of ranges over one long list, with how many items are in each: the
+   journal's topics, and anything else that grows past a screen. It is
+   pagination without a second page — the site is static, so the whole list is
+   one document and a range is an anchor into it. An anchor has no disabled
+   state; a range with no entries is not rendered at all. */
+.range {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  margin-top: var(--space-3);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+}
+.range-list { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); list-style: none; margin: 0; padding: 0; }
+.range-link {
+  display: inline-flex; align-items: baseline; gap: var(--space-1);
+  color: var(--dust);
+  text-decoration: none;
+  padding-block: var(--space-half);
+}
+.range-count { color: var(--accent-text); font-variant-numeric: tabular-nums; }
+.range-link:hover { color: var(--star); }
+.range-link:active { color: var(--accent-peak); }
+.range-link[aria-current] { color: var(--accent-text); }
+.range-link[aria-current]::before {
+  content: "";
+  width: var(--tick); height: var(--tick);
+  background: var(--accent);
+  box-shadow: var(--glow-accent);
+  align-self: center;
+}
+
+/* Notice ------------------------------------------------------------------ */
+
+/* One inline notice: something the reader needs before the prose, that is not
+   the argument. A --state edge, the raised panel, a label and a line. It
+   replaced the old callout because a callout was a box with nothing to say;
+   this one names the thing that is true and who measured it. Alert red is not
+   available here — red is the 404 and a photograph that failed, and a caveat is
+   neither. */
+.notice {
+  border: var(--border-hair);
+  border-left: var(--ring) solid var(--state);
+  background: var(--panel);
+  padding: var(--space-2) var(--space-3);
+  max-width: var(--measure);
+  margin-block: var(--space-4);
+}
+.notice-title {
+  font: 600 var(--step-1)/var(--leading-body) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--star);
+}
+.notice-text {
+  margin-top: var(--space-half);
+  font-size: var(--step-2);
+  line-height: var(--leading-body);
+  color: var(--starlight);
+}
+
+/* Empty state ------------------------------------------------------------- */
 
 .empty-state {
   margin-top: var(--space-2);
@@ -686,27 +770,78 @@ html[data-lab="a"] .repo-name { font-weight: 400; }
   color: var(--starlight);
 }
 .empty-text {
-  margin-top: 4px;
+  margin-top: var(--space-half);
   font-size: var(--step-2);
   color: var(--dust);
 }
 .empty-text a { color: var(--dust); }
+.empty-text a:hover { color: var(--star); }
 
-/* Entry page ------------------------------------------------------------- */
+/* Figure ------------------------------------------------------------------ */
 
-.entry-page { padding-bottom: var(--space-5); }
+/* The width and height of an <img> are its file's real ones, so the browser
+   reserves the right box before the file lands. They must never set the drawn
+   height: width 100% with height auto is the rule that keeps a picture
+   undistorted whatever its ratio. */
+.figure {
+  margin-block: var(--space-5);
+  max-width: min(100%, var(--figure-max));
+  border: var(--border-hair);
+  padding: var(--space-2);
+}
+.figure img { width: 100%; }
+.figure figcaption, .prose figcaption {
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+  border-top: var(--border-hair);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  letter-spacing: var(--track-label);
+  color: var(--dust);
+}
+
+.plates {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-section);
+}
+.plate img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+.plate figcaption {
+  margin-top: var(--space-1);
+  font: var(--step-decal)/var(--leading-body) var(--font-mono);
+  letter-spacing: var(--track-label);
+  color: var(--dust);
+}
+
+/* Page heading ------------------------------------------------------------ */
+
+.page-heading { padding-block: var(--space-open) var(--space-2); }
+.page-heading h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
+.page-heading .lede { margin-top: var(--space-3); }
+
+.journal-topic { margin-top: var(--space-section); scroll-margin-top: var(--space-3); }
+.journal-topic h2 {
+  font: var(--step-2)/1.3 var(--font-display);
+  color: var(--star);
+  padding-top: var(--space-2);
+  border-top: var(--border-hair);
+  margin-bottom: var(--space-1);
+}
+
+/* Entry page -------------------------------------------------------------- */
+
+.entry-page { padding-bottom: var(--space-section); }
 .entry-head { padding-block: var(--space-open) var(--space-2); }
 .entry-head h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
 .entry-head .lede { margin-top: var(--space-2); }
 .entry-foot {
-  margin-top: var(--space-5); padding-top: var(--space-2);
+  margin-top: var(--space-section); padding-top: var(--space-2);
   border-top: var(--border-hair);
   font: var(--step-1)/1.7 var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
 }
 .entry-foot .text-link + .text-link { margin-left: var(--space-3); }
 
-/* Prose ------------------------------------------------------------------ */
+/* Prose ------------------------------------------------------------------- */
 
 .prose { font-size: var(--step-3); line-height: var(--leading-body); }
 .prose > * + * { margin-top: var(--flow); }
@@ -721,106 +856,90 @@ html[data-lab="a"] .repo-name { font-weight: 400; }
   font: 600 var(--step-1)/1.5 var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--starlight);
-  margin-top: 2em;
+  margin-top: var(--space-5);
 }
-.prose h2 + *, .prose h3 + * { margin-top: .5em; }
-.prose ul, .prose ol { padding-left: 1.4em; }
-.prose li + li { margin-top: .35em; }
+.prose h2 + *, .prose h3 + * { margin-top: var(--space-2); }
+.prose ul, .prose ol { padding-left: var(--space-4); }
+.prose li + li { margin-top: var(--space-1); }
 .prose blockquote {
-  border-left: 2px solid var(--plum-mark);
-  padding: 2px 0 2px var(--space-3);
+  border-left: var(--ring) solid var(--plum-mark);
+  padding: 0 0 0 var(--space-3);
   color: var(--starlight);
 }
-.prose hr { border: 0; border-top: var(--border-hair); margin-block: 2.2em; }
-.prose a { color: var(--nebula-text); text-decoration-thickness: 1px; }
-.prose a:hover { text-decoration-thickness: 2px; }
-.prose code, .code-block code {
+.prose hr { border: 0; border-top: var(--border-hair); margin-block: var(--space-6); }
+/* A prose link is a citation, not a control: the button and the command link
+   keep the colours their own component set, which is why .btn is excluded
+   rather than the whole rule being scoped to :not(.btn). */
+.prose a:not(.btn):not(.text-link) { color: var(--nebula-text); text-decoration-thickness: var(--hair); }
+.prose a:not(.btn):not(.text-link):hover { text-decoration-thickness: var(--ring); color: var(--starlight); }
+.prose a:not(.btn):not(.text-link):active { color: var(--state-text); }
+.prose code, .table code {
   font-family: var(--font-mono); font-size: .88em;
 }
 .prose code {
-  background: var(--surface); padding: .14em .34em;
+  background: var(--surface); padding: 0 var(--space-half);
   /* A C++ identifier is one unbreakable token and longer than a phone column:
      at 19px `std::thread::hardware_concurrency()` measures 362px in a 339px
      column and pushed the page 5px wide at 375. Break it rather than scroll it. */
   overflow-wrap: anywhere;
 }
-.prose pre, .code-block pre {
+.prose pre {
   background: var(--panel); color: var(--star);
   padding: var(--space-3); overflow-x: auto;
-  font: 13.5px/1.6 var(--font-mono);
+  font: var(--step-2)/1.6 var(--font-mono);
 }
-.prose pre code, .code-block pre code { background: none; padding: 0; font-size: inherit; }
-.prose table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; font-size: var(--step-2); }
-.prose th, .prose td { border-bottom: var(--border-hair); padding: 8px 14px 8px 0; text-align: left; }
-.prose th { font: var(--step-1)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); color: var(--dust); }
-.prose figure { margin-block: 1.8em 1.9em; }
+.prose pre code { background: none; padding: 0; font-size: inherit; }
+.prose table { margin-top: var(--space-3); }
+.prose figure { margin-block: var(--space-5); }
 .prose figure img { width: 100%; }
-
-/* A callout is prose that is neither the argument nor a quotation: one state
-   edge (12.2:1 on --void), the raised block, secondary type. */
-.callout {
-  border: var(--border-hair);
-  border-left: 2px solid var(--state);
-  background: var(--panel);
-  padding: var(--space-2) var(--space-3);
-  color: var(--starlight);
-}
-.callout-title {
-  display: block;
-  margin-bottom: 4px;
-  font: 600 var(--step-1)/1.5 var(--font-mono);
-  text-transform: uppercase; letter-spacing: var(--track-label);
-  color: var(--star);
-}
-
-/* A code block carries a caption the way a figure does. */
-.code-block { margin-block: 1.8em; max-width: var(--measure); }
-.code-block pre { margin: 0; }
-
 /* Captions in the repository pages are raw HTML, so their inline code is bare. */
 .prose figcaption code { background: none; padding: 0; font-size: .95em; color: var(--starlight); }
 
+/* Third-party: MathJax owns its own box, and its stylesheet loads after this
+   one, so display maths needs a rule that outranks it. */
 mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
-mjx-container[display="true"] { margin: 1.2em 0 !important; }
+mjx-container[display="true"] { margin-block: var(--space-3) !important; }
 
-/* Audio ------------------------------------------------------------------ */
+/* Audio ------------------------------------------------------------------- */
 
-.audio { margin-bottom: var(--space-4); border: var(--border-hair); padding: var(--space-2) var(--space-3); }
+.audio { margin-bottom: var(--space-5); border: var(--border-hair); padding: var(--space-2) var(--space-3); }
 .audio-title { font: 600 var(--step-1)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); }
-.audio-note { margin-top: 4px; font: var(--step-1)/1.6 var(--font-mono); color: var(--dust); }
+.audio-note { margin-top: var(--space-half); font: var(--step-1)/var(--leading-body) var(--font-mono); color: var(--dust); }
 .audio audio { width: 100%; margin-top: var(--space-2); }
 .audio-embed { position: relative; margin-top: var(--space-2); padding-top: 56.25%; background: var(--surface); }
 .audio-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 
-/* Credits ---------------------------------------------------------------- */
+/* Credits ----------------------------------------------------------------- */
 
 .credit-list { list-style: none; margin: 0; padding: 0; }
 .credit-list li { padding-block: var(--space-2); border-top: var(--border-hair); }
 .credit-title { display: block; font-weight: 600; color: var(--star); }
 .credit-meta { display: block; font: var(--step-1)/1.7 var(--font-mono); color: var(--dust); overflow-wrap: anywhere; }
 .credit-meta a { color: var(--dust); }
+.credit-meta a:hover { color: var(--star); }
 
-/* Footer ----------------------------------------------------------------- */
+/* Footer ------------------------------------------------------------------ */
 
 .site-footer {
   margin-top: var(--space-open);
-  padding-block: var(--space-3) var(--space-4);
+  padding-block: var(--space-3) var(--space-5);
   border-top: var(--border-hair);
   font: var(--step-1)/1.8 var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
 .site-footer p + p { margin-top: var(--space-1); }
-.site-footer a { color: var(--starlight); text-decoration: none; }
+.site-footer a { display: inline-block; padding-block: var(--space-half); color: var(--starlight); text-decoration: none; }
 .site-footer a:hover { color: var(--accent-text); text-decoration: underline; }
+.site-footer a:active { color: var(--accent-peak); }
 
-/* Repository pages ------------------------------------------------------- */
+/* Repository pages -------------------------------------------------------- */
 
-.repo-page { padding-bottom: var(--space-5); }
+.repo-page { padding-bottom: var(--space-section); }
 .repo-head { padding-block: var(--space-open) var(--space-2); }
 .repo-head h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
 .repo-head .lede { margin-top: var(--space-2); }
-.repo-head .meta { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: var(--space-2); }
+.repo-head .def { margin-top: var(--space-3); }
 .repo-links { margin-top: var(--space-3); font: var(--step-1)/1.7 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); }
 .repo-links .text-link + .text-link { margin-left: var(--space-3); }
 .repo-body { padding-top: var(--space-3); }
@@ -828,51 +947,45 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 
 .repo-index { margin-top: var(--space-section); }
 .repo-count { margin-top: var(--space-1); font: var(--step-1)/1.7 var(--font-mono); color: var(--dust); }
-.repo-line { margin-top: var(--space-2); font-size: var(--step-2); line-height: 1.6; }
-.repo-line small { color: var(--dust); font-family: var(--font-mono); font-size: var(--step-1); }
 
-/* Styleguide ------------------------------------------------------------- */
+/* Styleguide -------------------------------------------------------------- */
 
 .sg-section { margin-top: var(--space-section); }
 .sg-section > h2 { font-size: var(--step-4); margin-bottom: var(--space-3); }
-.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--space-2); list-style: none; margin: 0; padding: 0; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--swatch-min), 1fr)); gap: var(--space-2); list-style: none; margin: 0; padding: 0; }
 .swatch { border: var(--border-hair); }
-.swatch .chip { height: 72px; }
-.swatch .label { padding: var(--space-1); font: var(--step-1)/1.6 var(--font-mono); color: var(--dust); }
+.swatch .chip { height: var(--chip-height); }
+.swatch .label { padding: var(--space-1); font: var(--step-1)/var(--leading-body) var(--font-mono); color: var(--dust); }
 .swatch .label b { color: var(--star); display: block; }
 .scale-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-3); padding-block: var(--space-2); border-top: var(--border-hair); }
 .scale-row > span:last-child { max-width: 100%; overflow-wrap: anywhere; }
-.scale-row .name { min-width: 96px; font: var(--step-1)/1.6 var(--font-mono); color: var(--dust); }
+.scale-row .name { min-width: var(--col-who); font: var(--step-1)/var(--leading-body) var(--font-mono); color: var(--dust); }
 .sg-example { padding-block: var(--space-3) var(--space-4); border-top: var(--border-hair); }
-.sg-table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; font-size: var(--step-2); margin-top: var(--space-3); }
-.sg-table th, .sg-table td { border-bottom: var(--border-hair); padding: 8px 14px 8px 0; text-align: left; vertical-align: top; }
-.sg-table th { font: var(--step-1)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); color: var(--dust); }
 .sg-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .sg-stack > * + * { margin-top: var(--space-2); }
 
 /* Series ------------------------------------------------------------------ */
 
 /* The Network masthead is a title card: an amber rule over the raised ground,
-   cream display type, one hairline under it. It is the only place --amber,
-   --cyan and --cream are used as chrome, and it does not animate. */
+   cream display type, one hairline under it. It does not animate. */
 .network {
-  padding-block: var(--space-6) var(--space-4);
+  padding-block: var(--space-open) var(--space-4);
   background: var(--deep);
-  border-top: 4px solid var(--amber);
+  border-top: var(--rule-thick) solid var(--amber);
   border-bottom: var(--border-hair);
 }
 .network-bug {
   display: flex; flex-wrap: wrap;
-  gap: 4px var(--space-3);
-  font: var(--step-1)/1.6 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .1em;
+  gap: var(--space-half) var(--space-3);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
 .network-bug span:first-child { color: var(--amber); }
 .network-title {
   margin-top: var(--space-2);
   font: var(--step-5)/1 var(--font-display);
-  text-transform: uppercase; letter-spacing: .01em;
+  text-transform: uppercase; letter-spacing: var(--track-display);
   color: var(--cream);
 }
 .network-title em { font-style: normal; color: var(--amber); }
@@ -880,14 +993,13 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 
 /* The line-up is a toy shelf: four portrait plates on the grid, name and job
    under each, one hairline before the line the unit says. */
-.cast-section { padding-top: var(--space-5); }
+.cast-section { padding-top: var(--space-section); }
 .cast {
   list-style: none; margin-top: var(--space-3); padding: 0;
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-4) var(--space-3);
+  gap: var(--space-5) var(--space-3);
 }
 .cast-card { display: flex; flex-direction: column; }
-.cast-single { grid-template-columns: minmax(0, 300px); }
 .cast-portrait {
   width: 100%; aspect-ratio: 4 / 5; height: auto;
   object-fit: contain;
@@ -896,20 +1008,21 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 }
 .cast-unit {
   margin-top: var(--space-2);
-  font: var(--step-1)/1.6 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .08em;
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
-.cast-name { margin-top: 4px; font-size: var(--step-4); line-height: 1.1; color: var(--cream); }
-.cast-role { margin-top: 4px; font-size: var(--step-2); line-height: 1.5; color: var(--starlight); }
+.cast-name { margin-top: var(--space-half); font-size: var(--step-4); line-height: 1.1; color: var(--cream); }
+.cast-role { margin-top: var(--space-half); font-size: var(--step-2); line-height: 1.5; color: var(--starlight); }
 .cast-front {
   margin-top: var(--space-1);
-  font: var(--step-1)/1.6 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .07em;
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
-.cast-front a { color: var(--amber); text-decoration: none; border-bottom: 1px solid currentColor; }
-.cast-front a:hover { color: var(--cream); border-bottom-width: 2px; }
+.cast-front a { color: var(--amber); text-decoration: none; border-bottom: var(--hair) solid currentColor; }
+.cast-front a:hover { color: var(--cream); border-bottom-width: var(--ring); }
+.cast-front a:active { color: var(--cream); }
 .cast-voice {
   margin-top: auto; padding-top: var(--space-2);
   border-top: var(--border-hair);
@@ -923,14 +1036,14 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .idents .lede { margin-top: var(--space-2); }
 .ident-list { list-style: none; margin-top: var(--space-3); padding: 0; }
 .ident {
-  display: grid; grid-template-columns: 120px minmax(0, 1fr);
+  display: grid; grid-template-columns: var(--col-who) minmax(0, 1fr);
   gap: var(--space-2) var(--space-3);
   padding-block: var(--space-2);
   border-top: var(--border-hair);
 }
 .ident-who {
   font: var(--step-1)/1.9 var(--font-mono);
-  text-transform: uppercase; letter-spacing: .08em;
+  text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--amber);
 }
 .ident-line { font-size: var(--step-4); line-height: 1.45; color: var(--star); max-width: var(--measure); }
@@ -944,9 +1057,9 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
    repository's own figure, a plotted field, or none — and one strip that runs
    the programme without JavaScript. The poster reads the semantic tokens, so
    an identity re-lights it: the film line is --accent-text, the genre and
-   labels --state-text, the title --star, the credits --dust. Only the five
-   poster light values are its own, because a printed sheet needs a lamp, a
-   scrim and a frame that the page does not. */
+   labels --state-text, the title --star, the credits --dust. Only the printed
+   surfaces are its own, because a printed sheet needs a lamp, a scrim and a
+   frame that the page does not. */
 
 .poster {
   container-type: inline-size;
@@ -955,7 +1068,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   aspect-ratio: 2 / 3;
   overflow: hidden;
   background: var(--void);
-  border: 1px solid var(--poster-metal);
+  border: var(--hair) solid var(--poster-metal);
   color: var(--star);
   isolation: isolate;
 }
@@ -967,10 +1080,11 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   text-decoration: none;
   text-underline-offset: 0;
 }
-.poster:focus-within { outline: 2px solid var(--state); outline-offset: 3px; }
+.poster:focus-within { outline: var(--ring) solid var(--state); outline-offset: var(--space-half); }
 .poster:hover,
 .poster:focus-within { border-color: var(--poster-edge); }
 .poster:hover .poster-title { color: var(--accent-text); }
+.poster:active .poster-title { color: var(--accent-peak); }
 
 /* The print: a scanline at broadcast weight, a vignette, the warm wash of a
    projector lamp over the top edge. */
@@ -984,26 +1098,22 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   content: "";
   position: absolute; inset: 0;
   z-index: 1;
-  background:
-    repeating-linear-gradient(to bottom, transparent 0 2px, var(--poster-scrim) 2px 3px),
-    radial-gradient(120% 90% at 50% 0%, var(--poster-wash), transparent 62%),
-    linear-gradient(to top, var(--poster-scrim) 0%, transparent 42%);
+  background: var(--poster-print);
   opacity: .9;
 }
 
-/* The release number is a decal, drawn with the decal tokens at poster scale.
-   It is not the .decal component: that one is an eyebrow on the page ground and
-   the poster identity turns its film off, which is exactly wrong for the one
-   label that sits on a photograph. This carries its own film in every
-   identity, so the only text over key art always has its own ground. */
+/* The release number is a decal, drawn with the film tokens at poster scale.
+   It is the one label that sits on a photograph, so it keeps its own ground in
+   every identity — the poster identity turns page chips into plain labels, and
+   that would be exactly wrong here. */
 .poster-no {
   position: absolute;
   z-index: 2;
   top: var(--poster-pad); left: var(--poster-pad);
-  padding: 2px 6px 3px;
-  border-radius: var(--radius-decal);
-  background: var(--poster-plate);
-  color: var(--poster-plate-text);
+  padding: 0 var(--space-half);
+  border-radius: var(--radius-chip);
+  background: var(--film-bg);
+  color: var(--film-text);
   font: 600 var(--poster-slate)/1.4 var(--font-mono);
   letter-spacing: var(--track-label); text-transform: uppercase;
 }
@@ -1014,43 +1124,22 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   position: absolute;
   left: var(--poster-pad);
   bottom: 0;
-  height: 42cqi;
+  height: var(--poster-figure);
   width: auto;
   object-fit: contain;
   z-index: 2;
-  filter: drop-shadow(0 4px 14px var(--poster-scrim));
+  filter: drop-shadow(var(--glow-soft));
 }
 
 /* No figure to print: a plotted field, drawn in gradients. A ring, a warm core
    and a ruled grid, the way a terminal draws an orbit. */
-.poster--field .poster-art {
-  background:
-    repeating-linear-gradient(to right, var(--line) 0 1px, transparent 1px 12.5%),
-    repeating-linear-gradient(to bottom, var(--line) 0 1px, transparent 1px 12.5%),
-    radial-gradient(circle at 50% 46%, var(--poster-lamp) 0 16%, transparent 58%),
-    radial-gradient(circle at 50% 46%,
-      transparent 0 33%, var(--poster-edge) 33% calc(33% + 2px),
-      transparent calc(33% + 2px) 54%, var(--poster-wash) 54% calc(54% + 1px),
-      transparent calc(54% + 1px)),
-    var(--deep);
-}
-.poster--field .poster-art::after {
-  background:
-    repeating-linear-gradient(to bottom, transparent 0 2px, var(--poster-scrim) 2px 3px),
-    radial-gradient(120% 90% at 50% 0%, var(--poster-wash), transparent 62%);
-  opacity: .6;
-}
+.poster--field .poster-art { background: var(--poster-field); }
+.poster--field .poster-art::after { background: var(--poster-print-field); opacity: .6; }
 
 /* Text only: the whole frame is type, and the film has no still at all. */
 .poster--text .poster-link { grid-template-rows: 1fr; }
 .poster--text .poster-art { display: none; }
-.poster--text .poster-body {
-  border-top: 0;
-  background:
-    radial-gradient(90% 60% at 78% 4%, var(--poster-wash), transparent 60%),
-    radial-gradient(70% 46% at 12% 98%, var(--poster-lamp), transparent 62%),
-    var(--void);
-}
+.poster--text .poster-body { border-top: 0; background: var(--poster-text-ground); }
 
 .poster-body {
   display: flex;
@@ -1060,7 +1149,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   overflow: hidden;
   padding: var(--poster-pad);
   background: var(--void);
-  border-top: 1px solid var(--poster-edge);
+  border-top: var(--hair) solid var(--poster-edge);
 }
 .poster-genre {
   font: var(--poster-genre)/1.5 var(--font-mono);
@@ -1089,9 +1178,9 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .poster-cast {
   margin-top: auto;
   padding-top: var(--poster-gap);
-  border-top: 1px solid var(--line);
+  border-top: var(--hair) solid var(--line);
   font: var(--poster-cast)/1.55 var(--font-mono);
-  letter-spacing: .06em; text-transform: uppercase;
+  letter-spacing: var(--track-label); text-transform: uppercase;
   color: var(--dust);
 }
 .poster-cast-label { display: block; color: var(--state-text); letter-spacing: var(--track-label); font-size: .88em; }
@@ -1107,8 +1196,8 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .poster-now::before {
   content: "";
   display: inline-block;
-  width: .5em; height: .5em;
-  margin-right: .55em;
+  width: var(--tick); height: var(--tick);
+  margin-right: var(--space-1);
   background: var(--accent);
   box-shadow: var(--glow-accent);
   vertical-align: middle;
@@ -1128,6 +1217,11 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   .poster-link { grid-template-rows: 58fr 42fr; }
 }
 
+/* @liquid poster--field, poster--text, poster--still, poster--long
+   These four variant names are composed in _includes/campaign/poster.html as
+   poster--{{ variant }}, so the class the browser receives is not a string in
+   any file. Declaring them here is how the usage check knows they render. */
+
 /* A reprint carries less: the logline goes, then the credits, both before
    either could set below the smallest size the type system allows. */
 @container (max-width: 340px) {
@@ -1135,7 +1229,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 }
 @container (max-width: 260px) {
   .poster-logline { display: none; }
-  .poster-genre { letter-spacing: .08em; }
+  .poster-genre { letter-spacing: var(--track-label); }
 }
 
 /* The now-showing strip. The track holds the programme twice, the second copy
@@ -1151,26 +1245,28 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .now-showing-head .kicker { margin-top: 0; }
 .strip-toggle {
   position: absolute;
-  width: 1px; height: 1px;
+  width: var(--hair); height: var(--hair);
   opacity: 0;
   margin: 0;
 }
 .strip-pause {
-  display: inline-flex; align-items: center; gap: 9px;
+  display: inline-flex; align-items: center; gap: var(--space-1);
   cursor: pointer;
-  font: var(--step-1)/1.6 var(--font-mono);
+  padding-block: var(--space-half);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
 .strip-pause::before {
   content: ""; flex: none;
-  width: 9px; height: 9px;
-  border: 1px solid var(--dust);
+  width: var(--switch); height: var(--switch);
+  border: var(--hair) solid var(--dust);
 }
 .strip-toggle:checked ~ .now-showing-head .strip-pause::before { background: var(--state); border-color: var(--state); }
 .strip-toggle:checked ~ .now-showing-head .strip-pause { color: var(--star); }
-.strip-toggle:focus-visible ~ .now-showing-head .strip-pause { outline: 2px solid var(--state); outline-offset: 4px; color: var(--star); }
+.strip-toggle:focus-visible ~ .now-showing-head .strip-pause { outline: var(--ring) solid var(--state); outline-offset: var(--space-half); color: var(--star); }
 .strip-pause:hover::before { border-color: var(--star); }
+.strip-pause:active::before { background: var(--dust); }
 .strip-pause-off { display: none; }
 .strip-toggle:checked ~ .now-showing-head .strip-pause-on { display: none; }
 .strip-toggle:checked ~ .now-showing-head .strip-pause-off { display: inline; }
@@ -1202,20 +1298,20 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 }
 
 /* The campaign block on a repository page: the poster, and what the film is.
-   The billing reuses the decal-and-label pair the repository head already uses,
+   The billing reuses the chip-and-label pair the repository head already uses,
    so the two headers read as one system. */
 .campaign {
   display: grid;
-  grid-template-columns: clamp(220px, 26vw, 360px) minmax(0, 1fr);
-  gap: var(--space-5);
+  grid-template-columns: var(--campaign-col) minmax(0, 1fr);
+  gap: var(--space-section);
   align-items: start;
-  margin-top: var(--space-5);
-  padding-top: var(--space-4);
+  margin-top: var(--space-section);
+  padding-top: var(--space-5);
   border-top: var(--border-hair);
 }
 .campaign-poster { width: 100%; }
 .campaign-body { max-width: var(--measure); }
-.campaign-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 8px var(--space-2); }
+.campaign-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); }
 .campaign-title { font-size: var(--step-4); line-height: 1.15; margin-top: var(--space-2); color: var(--star); }
 .campaign-logline {
   margin-top: var(--space-2);
@@ -1227,7 +1323,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   margin-top: var(--space-3);
   max-width: var(--measure-narrow);
   padding-left: var(--space-2);
-  border-left: 1px solid var(--poster-edge);
+  border-left: var(--hair) solid var(--poster-edge);
 }
 .campaign-voice blockquote {
   font: italic var(--step-3)/1.5 var(--font-text);
@@ -1235,7 +1331,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 }
 .campaign-voice figcaption {
   margin-top: var(--space-1);
-  font: var(--step-1)/1.6 var(--font-mono);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
   color: var(--dust);
 }
@@ -1247,55 +1343,59 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   color: var(--dust);
 }
 .campaign-meta .text-link { color: var(--accent-text); }
-.campaign-stills-label { margin-top: var(--space-4); }
+.campaign-stills-label { margin-top: var(--space-5); }
 .campaign-stills {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(var(--still-min), 1fr));
   gap: var(--space-3);
   margin-top: var(--space-2);
 }
 .campaign-stills img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
 .campaign-stills figcaption {
   margin-top: var(--space-1);
-  font: var(--step-1)/1.6 var(--font-mono);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
   color: var(--dust);
 }
 
 /* The showing: the index page over the same posters. */
-.showing-masthead { padding-block: var(--space-6) var(--space-2); }
+.showing-masthead { padding-block: var(--space-open) var(--space-2); }
 .showing-masthead h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
 .showing-masthead .lede { margin-top: var(--space-3); }
 .showing-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: var(--space-4) var(--space-3);
-  margin-top: var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(var(--showing-min), 1fr));
+  gap: var(--space-5) var(--space-3);
+  margin-top: var(--space-section);
   padding: 0; list-style: none;
 }
 .showing-grid .poster { width: 100%; }
 .showing-note {
-  margin-top: var(--space-5);
+  margin-top: var(--space-section);
   max-width: var(--measure);
   font: var(--step-1)/1.8 var(--font-mono);
   color: var(--dust);
 }
 .showing-note a { color: var(--dust); }
+.showing-note a:hover { color: var(--star); }
 
 /* Identity A — instrument ------------------------------------------------ */
 
 /* Alien's screens, not Alien's assets: amber phosphor on carbon, one accent
    doing every job, mono for anything the machine says, a scanline so fine it
-   only changes the ground, gauge rails on every section, and one hazard stripe
-   on the home page. Everything emissive carries the two-layer bloom. */
+   only changes the ground, gauge rails on every section. Everything emissive
+   carries the two-layer bloom. */
 html[data-lab="a"] .hero {
   background-image: none;
-  min-height: 82svh;
+  min-height: var(--hero-min-instrument);
 }
 html[data-lab="a"] .hero img {
-  opacity: .16;
+  opacity: var(--hero-wash);
   filter: saturate(.45) contrast(1.08);
   animation: hero-drift var(--dur-slow) var(--ease-soft) infinite alternate;
 }
+/* The photograph here is a faint wash over a lit panel, so a second panel
+   behind it would read as content. */
+html[data-lab="a"] .hero .skeleton { display: none; }
 html[data-lab="a"] .hero h1 {
   font-family: var(--font-mono);
   font-weight: 500;
@@ -1304,13 +1404,13 @@ html[data-lab="a"] .hero h1 {
   text-shadow: var(--text-glow);
 }
 /* The readout frame around the hero copy: two ticks, no box. */
-html[data-lab="a"] .hero-inner { position: relative; padding-block: var(--space-5); }
+html[data-lab="a"] .hero-inner { position: relative; padding-block: var(--space-section); }
 html[data-lab="a"] .hero-inner::before,
 html[data-lab="a"] .hero-inner::after {
   content: "";
   position: absolute;
-  width: 24px; height: 24px;
-  border: 1px solid var(--accent);
+  width: var(--space-4); height: var(--space-4);
+  border: var(--hair) solid var(--accent);
   box-shadow: var(--glow-accent);
   pointer-events: none;
 }
@@ -1318,21 +1418,20 @@ html[data-lab="a"] .hero-inner::before { top: 0; left: 0; border-right: 0; borde
 html[data-lab="a"] .hero-inner::after { bottom: 0; right: 0; border-left: 0; border-top: 0; }
 
 html[data-lab="a"] .home-link {
-  padding: 2px 8px;
-  border: 1px solid var(--accent);
-  border-radius: var(--radius-decal);
+  padding-inline: var(--space-1);
+  border: var(--hair) solid var(--accent);
+  border-radius: var(--radius-chip);
   color: var(--accent);
   font-weight: 500;
   box-shadow: var(--glow-accent);
 }
 html[data-lab="a"] .site-header { border-bottom: var(--border-hair); }
-html[data-lab="a"] ::selection { background: var(--accent); color: var(--void); }
 
-/* Hardware decals rather than labels: condensed, tracked, near-white on film. */
+/* Hardware chips rather than labels: condensed, tracked, near-white on film. */
 html[data-lab="a"] .decal {
-  font: 400 12px/1.35 var(--font-display);
-  letter-spacing: .06em;
-  padding: 2px 7px 4px;
+  font: 400 var(--step-1)/1.35 var(--font-display);
+  letter-spacing: var(--track-label);
+  padding: 0 var(--space-1);
 }
 
 /* No crawl here: a panel shows a readout, and text does not drift. */
@@ -1347,14 +1446,14 @@ html[data-lab="a"] .crawl-switch { display: none; }
 
 /* Section names are machine labels here, not poster lines. */
 html[data-lab="a"] .section-title {
-  font: var(--step-1)/1.6 var(--font-mono);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
   font-weight: 500;
   letter-spacing: var(--track-label);
   color: var(--accent);
   text-shadow: var(--text-glow);
 }
 html[data-lab="a"] .journal-topic h2 {
-  font: var(--step-1)/1.6 var(--font-mono);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
   font-weight: 500;
   letter-spacing: var(--track-label);
   color: var(--accent);
@@ -1363,7 +1462,7 @@ html[data-lab="a"] .page-heading h1,
 html[data-lab="a"] .entry-head h1 {
   font-family: var(--font-mono);
   font-weight: 500;
-  letter-spacing: .01em;
+  letter-spacing: var(--track-display);
   text-transform: uppercase;
   color: var(--accent);
   text-shadow: var(--text-glow);
@@ -1372,7 +1471,7 @@ html[data-lab="a"] .entry-head h1 {
 html[data-lab="a"] .repo-head h1 {
   font-family: var(--font-mono);
   font-weight: 500;
-  letter-spacing: .01em;
+  letter-spacing: var(--track-display);
   color: var(--accent);
   text-shadow: var(--text-glow);
 }
@@ -1381,35 +1480,24 @@ html[data-lab="a"] .sg-section > h2 {
   font-family: var(--font-mono);
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: .04em;
+  letter-spacing: var(--track-display);
   color: var(--accent);
 }
 
-html[data-lab="a"] .topic-list { letter-spacing: .02em; }
-html[data-lab="a"] .topic-list .dot { border-radius: 0; width: 7px; height: 7px; box-shadow: var(--glow-accent); }
+html[data-lab="a"] .topic-list { letter-spacing: var(--track-display); }
+html[data-lab="a"] .topic-list .dot { border-radius: 0; box-shadow: var(--glow-accent); }
 
 /* Log entries: a gauge rule down the side of the list, the stamp and its state
    mark in the first column, the title in the second. */
-html[data-lab="a"] .entry-list { border-left: 1px solid var(--accent); padding-left: var(--space-2); box-shadow: -1px 0 12px rgba(255, 194, 74, .10); }
+html[data-lab="a"] .entry-list { border-left: var(--hair) solid var(--accent); padding-left: var(--space-2); box-shadow: var(--glow-soft); }
 html[data-lab="a"] .entry-date { color: var(--accent-warm); }
 html[data-lab="a"] .entry-date::before { background: var(--accent); box-shadow: var(--glow-accent); }
-html[data-lab="a"] .entry-title { font-family: var(--font-mono); font-size: inherit; font-weight: 500; color: var(--accent); }
-html[data-lab="a"] .entry-dek { font-family: var(--font-mono); }
 
 html[data-lab="a"] .empty-state { border-color: var(--accent); }
 html[data-lab="a"] .empty-title { color: var(--accent); }
 html[data-lab="a"] .figure, html[data-lab="a"] .card,
-html[data-lab="a"] .callout, html[data-lab="a"] .audio,
-html[data-lab="a"] .empty-state { border-color: var(--accent); }
-
-/* One hazard stripe, on the home page, under the opening. */
-html[data-lab="a"] .hazard {
-  display: block;
-  height: 9px;
-  margin-bottom: var(--space-5);
-  background: repeating-linear-gradient(-45deg,
-    var(--accent) 0 7px, var(--void) 7px 15px);
-}
+html[data-lab="a"] .audio, html[data-lab="a"] .empty-state,
+html[data-lab="a"] .notice { border-color: var(--accent); }
 
 /* The CRT. A 1px line every 3px at 7% black: on the ground it reads as a
    phosphor grid, over type it costs 0.8 of a point of contrast (amber 12.3 to
@@ -1420,8 +1508,7 @@ html[data-lab="a"] body::after {
   inset: 0;
   z-index: 100;
   pointer-events: none;
-  background: repeating-linear-gradient(180deg,
-    rgba(0, 0, 0, .07) 0 1px, rgba(0, 0, 0, 0) 1px 3px);
+  background: var(--scanlines);
 }
 
 /* Identity B — poster --------------------------------------------------- */
@@ -1430,67 +1517,57 @@ html[data-lab="a"] body::after {
    highlight, and the opening statement on a crawl plane. No glow anywhere: a
    poster is printed. Nothing but the crawl moves. */
 html[data-lab="b"] .hero {
-  min-height: 92svh;
+  min-height: var(--hero-min-poster);
   align-items: center;
   text-align: center;
   background-image: none;
 }
-/* The stars keep their brightness at the frame's edges and give way where the
-   copy sits: a radial darkening centred on the copy, measured so the brightest
-   pixel behind a letter is a star at 10% of its own light. */
 html[data-lab="b"] .hero::after {
-  background:
-    radial-gradient(74% 48% at 50% 50%,
-      rgba(5, 5, 8, .92) 0%,
-      rgba(5, 5, 8, .74) 42%,
-      rgba(5, 5, 8, 0) 80%),
-    var(--vignette),
-    var(--hero-scrim);
+  background: var(--hero-veil), var(--vignette), var(--hero-scrim);
 }
 html[data-lab="b"] .hero img {
-  opacity: .13;
+  opacity: var(--hero-wash);
   filter: saturate(.35) brightness(1.05);
   animation: none;
   object-position: 50% 35%;
 }
+html[data-lab="b"] .hero .skeleton { display: none; }
 html[data-lab="b"] .starfield {
   display: block;
   position: absolute; inset: 0; z-index: -2;
-  background: url('/assets/art/starfield.svg') repeat;
-  background-size: 1200px 800px;
+  background: var(--starfield) repeat;
+  background-size: auto;
   opacity: .85;
   pointer-events: none;
 }
 html[data-lab="b"] .hero-inner {
-  padding-block: var(--space-6);
+  padding-block: var(--space-open);
   display: flex; flex-direction: column; align-items: center;
 }
 html[data-lab="b"] .hero h1 { line-height: 1; }
 html[data-lab="b"] .hero .lede {
   margin-inline: auto;
   color: var(--starlight);
-  letter-spacing: .035em;
+  letter-spacing: var(--track-hero);
   text-align: center;
 }
-html[data-lab="b"] .crawl { --crawl-tilt: 4deg; width: 100%; padding-block: 40px; }
+html[data-lab="b"] .crawl { --crawl-tilt: 4deg; width: 100%; padding-block: var(--crawl-pad); }
 html[data-lab="b"] .crawl-hold { margin-inline: auto; }
 html[data-lab="b"] .topic-list { justify-content: center; }
-html[data-lab="b"] .topic-list .dot { width: 5px; height: 5px; }
 
 html[data-lab="b"] .site-header { border-bottom: var(--border-hair); }
-html[data-lab="b"] .home-link { letter-spacing: .22em; font-weight: 600; }
-html[data-lab="b"] ::selection { background: var(--accent); color: var(--void); }
-/* No decals on a poster: the eyebrow is a plain tracked label. */
+html[data-lab="b"] .home-link { letter-spacing: var(--track-label); font-weight: 600; }
+/* No chips on a poster: the eyebrow is a plain tracked label. */
 html[data-lab="b"] .decal {
   background: none;
   border: 0;
-  border-radius: 0;
+  border-radius: var(--radius);
   padding: 0;
-  font: 500 12px/1.6 var(--font-mono);
+  font: 500 var(--step-1)/var(--leading-body) var(--font-mono);
 }
-html[data-lab="b"] .section-title { font-size: var(--step-5); letter-spacing: .03em; }
-html[data-lab="b"] .journal-topic h2 { font-size: var(--step-4); letter-spacing: .03em; }
-html[data-lab="b"] .page-heading h1 { letter-spacing: .02em; }
+html[data-lab="b"] .section-title { font-size: var(--step-5); letter-spacing: var(--track-display); }
+html[data-lab="b"] .journal-topic h2 { font-size: var(--step-4); letter-spacing: var(--track-display); }
+html[data-lab="b"] .page-heading h1 { letter-spacing: var(--track-display); }
 html[data-lab="b"] .entry-date::before { border-radius: 50%; }
 html[data-lab="b"] .empty-title { color: var(--star); }
 
@@ -1500,9 +1577,7 @@ html[data-lab="b"] .empty-title { color: var(--star); }
    never the figure: a caption is text and keeps the contrast it was measured
    at. A browser without scroll-driven animations shows the picture at once —
    no class, no script, nothing hidden — and the reduced-motion block at the
-   end of this file stops it along with the rest. The page's own slow moves
-   (the crawl, the instrument's hero drift) are declared above, in their
-   sections. */
+   end of this file stops it along with the rest. */
 
 @supports (animation-timeline: view()) {
   .prose figure img,
@@ -1521,55 +1596,46 @@ html[data-lab="b"] .empty-title { color: var(--star); }
 /* Narrow ----------------------------------------------------------------- */
 
 @media (max-width: 700px) {
-  /* The identity table stacks rather than scrolling sideways: a doc table a
-     phone has to drag is a table nobody reads. */
-  .sg-table thead { display: none; }
-  .sg-table tr { display: block; padding-block: var(--space-2); border-bottom: var(--border-hair); }
-  .sg-table td { display: block; border: 0; padding: 0 0 3px; }
-  .sg-table td::before {
-    content: attr(data-label) " ";
-    font: var(--step-1)/1.6 var(--font-mono);
-    text-transform: uppercase; letter-spacing: var(--track-label);
-    color: var(--dust);
-  }
-  .sg-table td:first-child::before { content: none; }
-  .sg-table td:first-child { font: 500 var(--step-1)/1.6 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); color: var(--accent-text); }
-  .site-header { font-size: 12px; letter-spacing: var(--track-label); column-gap: 12px; }
-  .site-header nav { gap: 10px; }
-  .site-header nav a { padding-block: 5px; }
-  .hero { min-height: 92svh; }
-  .hero h1 { font-size: clamp(40px, 12.4vw, 76px); }
+  .site-header { font-size: var(--step-0); letter-spacing: var(--track-label); column-gap: var(--space-2); }
+  .site-header nav { gap: var(--space-1); }
+  .hero { min-height: var(--hero-min-poster); }
+  .hero h1 { font-size: var(--step-hero); }
   .topic-list { font-size: var(--step-2); }
   .plates { grid-template-columns: 1fr; }
   .plate img { aspect-ratio: 3 / 2; }
   .entry { grid-template-columns: 1fr; column-gap: 0; }
-  .repo-row { grid-template-columns: 1fr; gap: 2px; padding-block: 9px; }
-  .repo-name { font-size: 12px; }
+  .repo-row { grid-template-columns: 1fr; gap: var(--space-half); padding-block: var(--space-2); }
   .entry-date { font-size: var(--step-1); }
   .entry-dek { grid-column: 1; }
-  .crawl { padding-block: 26px; }
-  html[data-lab="b"] .crawl { padding-block: 30px; }
-  .cast { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3) var(--space-2); }
-  .cast.cast-single { grid-template-columns: minmax(0, 1fr); }
+  .crawl { padding-block: var(--space-5); }
+  .cast { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4) var(--space-2); }
   .cast-name { font-size: var(--step-3); }
   .ident { grid-template-columns: 1fr; gap: 0; }
-  .campaign { grid-template-columns: 1fr; gap: var(--space-4); }
-  .campaign-poster { max-width: 232px; }
-  .showing-grid { grid-template-columns: 1fr; gap: var(--space-4); }
-  .now-showing-head .strip-pause { font-size: 12px; }
-  .ident-who { line-height: 1.6; }
+  .campaign { grid-template-columns: 1fr; gap: var(--space-5); }
+  .campaign-poster { max-width: var(--strip-card); }
+  .showing-grid { grid-template-columns: 1fr; gap: var(--space-5); }
+  .now-showing-head .strip-pause { font-size: var(--step-1); }
+  .ident-who { line-height: var(--leading-body); }
   .ident-line { font-size: var(--step-3); }
+  .table-note { max-width: none; }
 }
 
-/* Below 420 the wordmark and four links will not fit at 12px: they need 373px
-   and a 360 viewport has 324. So the header drops a step of type and closes
-   its gaps, and stays one row at 57px. 10.5px rather than 11 is what makes it
-   hold with a desktop scrollbar taking its 15px as well as without. The 5px of
-   link padding is set above with the rest of the narrow header, so every phone
-   width clears the 24px target rather than only the smallest one. */
+/* Between 420 and 480 the four links fit at --step-0 only with their tracking
+   given up: at 420 the wordmark and nav need 397px and the row has 388. The
+   tracking is the first thing to go because the type is already the smallest
+   step the header uses at that width; below 420 the type drops as well. */
+@media (max-width: 480px) {
+  .site-header { letter-spacing: var(--track-display); }
+}
+
+/* Below 420 the wordmark and four links will not fit at --step-1: they need
+   373px and a 360 viewport has 324. So the header drops to --step-header and
+   closes its gaps, and stays one row. The link padding is set above with the
+   rest of the header, so every phone width clears the 24px target rather than
+   only the smallest one. */
 @media (max-width: 419px) {
-  .site-header { font-size: 10.5px; letter-spacing: .01em; column-gap: 8px; }
-  .site-header nav { gap: 8px; }
+  .site-header { font-size: var(--step-header); letter-spacing: var(--track-display); column-gap: var(--space-1); }
+  .site-header nav { gap: var(--space-1); }
 }
 
 @media (prefers-reduced-motion: reduce) {

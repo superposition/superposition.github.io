@@ -1,17 +1,18 @@
 const footer = `<footer class="site-footer wide">
   <div class="wrap">
-    <p>Superposition · Data informatics, AI, matrices, kinematics, cryptographic proofs</p>
-    <p><a href="#storybook-root">RSS</a> <span aria-hidden="true">/</span> <a href="#storybook-root">GitHub</a> <span aria-hidden="true">/</span> <a href="#storybook-root">Image credits</a> <span aria-hidden="true">/</span> <a href="#storybook-root">Design system</a> <span aria-hidden="true">/</span> <a href="#storybook-root">Say hello</a></p>
+    <p>Superposition · Notes on mathematics, AI, and the systems behind them</p>
+    <p><a href="#storybook-root">RSS</a> <span aria-hidden="true">/</span> <a href="#storybook-root">GitHub</a> <span aria-hidden="true">/</span> <a href="#storybook-root">Image credits</a> <span aria-hidden="true">/</span> <a href="#storybook-root">Design system</a> <span aria-hidden="true">/</span> <a href="#storybook-root">Series</a> <span aria-hidden="true">/</span> <a href="#storybook-root">Now showing</a> <span aria-hidden="true">/</span> <a href="#storybook-root">Say hello</a></p>
   </div>
 </footer>`;
 
 export default {
   title: 'Components/Footer',
   parameters: {
+    usedOn: ['_layouts/default.html'],
     docs: {
       description: {
         component:
-          'The credits and social row, on every page: the subtitle, then the five ways out. 13px mono upper case in dust, links in starlight, one hairline above.',
+          'The credits and social row, on every page: the subtitle, then the seven ways out — including the Series and Now showing links the header hides below 640px, which is what keeps exactly one reachable copy of each at every width. --step-1 mono upper case in --dust (7.51:1), links in --starlight (15.44:1) with 4px of block padding so each is a 31.4px target, one hairline above. The separators are aria-hidden, so a screen reader hears seven links and no slashes.',
       },
     },
   },
@@ -23,8 +24,14 @@ export const Default = {
   args: { body: footer },
 };
 
-export const InPlace = {
-  args: {
-    body: `<div class="wrap"><p class="kicker">A page’s last line</p><p>Content ends here, the footer’s own margin-top is --space-6, and the hairline is the only rule.</p></div>${footer}`,
+export const Focused = {
+  args: { body: footer },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Tab into the row: each link takes the 2px --state ring at a 4px offset, measured at 12.93:1 on the ground.',
+      },
+    },
   },
 };

@@ -7,7 +7,9 @@
   "scripts": {
     "storybook": "storybook dev -p 6017 --ci",
     "build-storybook": "storybook build",
-    "contrast": "node scripts/contrast.mjs"
+    "contrast": "node scripts/contrast.mjs",
+    "slop": "node scripts/slop.mjs",
+    "a11y": "node scripts/a11y.mjs"
   },
   "devDependencies": {
     "@storybook/addon-docs": "^10.6.9",

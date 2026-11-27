@@ -7,10 +7,11 @@ const figure = (src, srcset, sizes, width, height, alt, caption) =>
 export default {
   title: 'Components/Figure',
   parameters: {
+    usedOn: ['index.html', '_repos/mage.md'],
     docs: {
       description: {
         component:
-          'A picture with a caption. The width and height attributes are the file’s real ones so the browser reserves the right box, but the drawn height always comes from the ratio: width 100%, height auto. That rule is why a picture cannot arrive stretched.',
+          'A picture with a caption. The width and height attributes are the file s real ones so the browser reserves the right box, but the drawn height always comes from the ratio: width 100%, height auto — that rule is why a picture cannot arrive stretched. The frame is one hairline (1.29:1, a divider, no floor) with the two amber corner ticks at 13.07:1; the caption is --dust at 7.51:1 over its own hairline. Every image in the repository ships an alt and a real width and height; npm run a11y fails the build otherwise.',
       },
     },
   },

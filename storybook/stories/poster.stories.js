@@ -25,7 +25,7 @@ const poster = ({ variant = 'still', c = campaign, number = '02 of 20', width = 
       ? ''
       : `<span class="poster-art">${
           variant === 'still'
-            ? `<img src="${c.still}" alt="" width="1200" height="1200" loading="lazy" decoding="async">`
+            ? `<img src="${c.still}" alt="" width="1200" height="750" loading="lazy" decoding="async">`
             : ''
         }<span class="poster-no">${number}</span></span>`;
   return `<article class="poster poster--${variant}${long ? ' poster--long' : ''}"${width ? ` style="width:${width}"` : ''}>
@@ -48,6 +48,7 @@ const poster = ({ variant = 'still', c = campaign, number = '02 of 20', width = 
 export default {
   title: 'Components/Poster',
   parameters: {
+    usedOn: ['now-showing.html', '_includes/campaign/poster.html'],
     docs: {
       description: {
         component:

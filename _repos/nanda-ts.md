@@ -8,6 +8,9 @@ stars: 0
 pushed: 2025-12-07
 url: https://github.com/superposition/nanda-ts
 order: 20
+notice:
+  title: "The cryptography is a placeholder"
+  text: "`sign` returns SHA-256 over the key and the data instead of an Ed25519 signature, so a DID minted here will not verify against a real `did:key` resolver. The MCP bridge throws on every call, and 1,029 of the 1,134 tracked files are a committed PlatformIO build tree."
 ---
 
 ## What it is

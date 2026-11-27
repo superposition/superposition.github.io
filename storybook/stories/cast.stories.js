@@ -54,7 +54,7 @@ const card = (u) => `<li class="cast-card">
 
 const single = (u) => `<div class="wide">
   <p class="kicker">${u.note}</p>
-  <ul class="cast cast-single">${card(u)}</ul>
+  <ul class="cast" style="grid-template-columns: minmax(0, 300px)">${card(u)}</ul>
   <p class="kicker">The same portrait at 48px, 96px and 320px. At 48 it is a lamp, a dome, an arrow and a ring: four silhouettes that stay apart.</p>
   <div class="sg-row">
     <img src="${portrait(u)}" alt="" width="48" height="60">
@@ -66,10 +66,11 @@ const single = (u) => `<div class="wide">
 export default {
   title: 'Series/Cast',
   parameters: {
+    usedOn: ['series/index.html'],
     docs: {
       description: {
         component:
-          'The Superposition Network: four characters, one per library, each one hand-authored SVG in assets/series/. The portraits are the shipped files, not redrawings, so a story and /series/ cannot drift apart.',
+          'The Superposition Network: four characters, one per library, each a hand-authored SVG in assets/series/ at 320×400. The portraits are the shipped files, not redrawings, so a story and /series/ cannot drift apart. Measured: name --cream 15.44:1 on the void, role --starlight 15.44:1, the library link --amber 13.07:1.',
       },
     },
   },

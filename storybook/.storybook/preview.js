@@ -17,7 +17,7 @@ export default {
     controls: { expanded: false },
     options: {
       storySort: {
-        order: ['When to use what', 'Components', ['Button', 'Link', 'Badge', 'Card', 'Poster', 'Campaign block', 'Now showing strip', 'Entry list', 'Nav', 'Hero', 'Prose', 'Figure', 'Empty state', 'Footer', 'Pagination']],
+        order: ['When to use what', 'Components', ['Button', 'Link', 'Card', 'Entry list', 'Table', 'Definition row', 'Range control', 'Notice', 'Poster', 'Campaign block', 'Now showing strip', 'Nav', 'Hero', 'Prose', 'Figure', 'Skeleton', 'Empty state', 'Footer', 'Identity parts'], 'Series']
       },
     },
   },

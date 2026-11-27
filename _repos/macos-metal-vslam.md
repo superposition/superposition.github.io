@@ -8,6 +8,9 @@ stars: 0
 pushed: 2026-04-01
 url: https://github.com/superposition/macos-metal-vslam
 order: 18
+notice:
+  title: "CI has failed on every push since GTSAM"
+  text: "The workflow runs CMake, which requires a GTSAM config package no commit provides: four runs succeeded before that commit, four failed after. There are no tests, and the counters are live readouts rather than a recorded run."
 ---
 
 ## What it is
