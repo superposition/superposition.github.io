@@ -272,6 +272,8 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   font: var(--step-1)/1.6 var(--font-mono);
   color: var(--dust);
 }
+/* Captions in the repository pages are raw HTML, so their inline code is bare. */
+.prose figcaption code { background: none; padding: 0; font-size: .95em; color: var(--starlight); }
 
 mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
 mjx-container[display="true"] { margin: 1.2em 0 !important; }
