@@ -339,7 +339,7 @@ def alert_mark():
 def build(seed, constellations, density, angle):
     """Place every trail and craft. Returns the two groups and a stats table."""
     rng = random.Random(seed)
-    back, front, rows = [], [], []
+    back, front, rows, far = [], [], [], []
 
     def craft_at(orbit, t, size):
         x, y = orbit.point(t)
@@ -356,6 +356,8 @@ def build(seed, constellations, density, angle):
 
     def draw(made, family, band):
         out = []
+        if band == "sky":
+            far.extend(made)
         for x, y, a, s in made:
             if family == "inspector":
                 out.append(gc(inspector(s * (2.6 if band == "front" else 1.0)), x, y, a))
@@ -427,9 +429,15 @@ def build(seed, constellations, density, angle):
     front.append(gc(close_bus(980, 78, 520), rng.uniform(700, 780),
                     rng.uniform(1280, 1320), angle))
 
-    # one alert, kept out of the station's column
-    front.append(gc(alert_mark(), rng.uniform(1980, 2090), rng.uniform(430, 500),
-                    rng.uniform(-16, 2)))
+    # one alert: a reticle on the sky craft nearest the upper right, so the red
+    # always marks a body leaving its trail and never floats over the station
+    near = [c for c in far if c[0] > 1620 and 290 < c[1] < 640]
+    if near:
+        ax, ay = min(near, key=lambda c: math.hypot(c[0] - 2040, c[1] - 460))[:2]
+        ax, ay = ax + rng.uniform(96, 128), ay - rng.uniform(66, 96)
+    else:
+        ax, ay = rng.uniform(1980, 2090), rng.uniform(430, 500)
+    front.append(gc(alert_mark(), min(ax, 2130), max(ay, 250), rng.uniform(-16, 2)))
 
     return back, front, rows
 
