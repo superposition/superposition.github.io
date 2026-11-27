@@ -20,6 +20,16 @@ Each value was sampled from the imagery, not chosen.
 | `--teal` | `#2d7f96` | Sombrero deep blue `#194862` lifted |
 | `--plum` | `#6b3f4d` | Carina plum-brown `#3b272e` lifted |
 
+The Network — the series cast — has its own five tokens. They are not sampled from a photograph: they are the emitted light the characters are drawn in, on the dark metal of the page.
+
+| Token | Value | Use |
+|---|---|---|
+| `--amber` | `#ffc24a` | the series signal: idents, masthead rule, cast names on hover |
+| `--cyan` | `#8fd3ff` | the second signal; a cast unit's own colour |
+| `--cream` | `#e6dcc8` | the series body: display type on the masthead and cast names |
+| `--alert` | `#e2402f` | alerts. Marks and edges only; 4.1:1 on `--surface` |
+| `--alert-text` | `#f4735f` | the same alert where it is small type, 6.1:1 on `--surface` |
+
 Four accents are also defined in a text-safe form — `--rust-text`, `--nebula-text`, `--teal-text`, `--plum-mark` — because the sampled values do not all clear 4.5:1 for small text on the dark ground. The contrast block at the top of `tokens.css` carries every measured pair, and `/style/` prints the same numbers beside each swatch.
 
 ### The rule
@@ -30,6 +40,7 @@ Four accents are also defined in a text-safe form — `--rust-text`, `--nebula-t
 - **`--teal`** is focus rings and state edges; `--teal-text` where that state is written.
 - **`--plum`** never carries text. It fills the blockquote edge and the fifth topic dot (`--plum-mark` for the dot, which needs the lift).
 - **Never** introduce a colour that is not in `tokens.css`. If an image brings a new one, sample it, measure it, and add it to the token file with the measurement.
+- **`--amber`**, **`--cyan`** and **`--cream`** are the series chrome and nothing else. They appear on `/series/` (the masthead, the cast cards, the idents) and in `assets/series/*.svg` as the drawings' light. They are not a second site accent: a link outside prose is still `--rust-text`.
 
 ## Type
 
@@ -76,6 +87,11 @@ Motion is one thing: the hero photograph drifts from scale 1 to 1.06 over `--dur
 | Prose | `prose`, `callout`, `callout-title` | entries, repository pages, About, credits |
 | Empty state | `empty-state`, `empty-title`, `empty-text` | `/journal/`, `/projects/` |
 | Footer | `site-footer` | every page |
+| Series masthead | `network`, `network-bug`, `network-title` | `/series/` |
+| Cast card | `cast`, `cast-card`, `cast-portrait`, `cast-unit`, `cast-name`, `cast-role`, `cast-front`, `cast-voice` | `/series/`, Storybook |
+| Ident | `ident-list`, `ident`, `ident-who`, `ident-line` | `/series/` |
+
+The cast's four portraits are hand-authored SVG in `assets/series/`, one file per character, each with its own `title` and `role`, and no raster or external reference anywhere in them. `_data/cast.yml` is the cast: name, role, the line the unit says, the library it fronts, and the tokens it is drawn in.
 
 `/style/` shows every one of them rendered live, which is the test that they are applied rather than described. The Storybook workbench in `storybook/` imports the same two stylesheets and adds the variants and states a page does not happen to be showing; `storybook/scripts/contrast.mjs` measures all 38 colour pairs the components ship, and `/style/` prints the same numbers beside each swatch.
 
