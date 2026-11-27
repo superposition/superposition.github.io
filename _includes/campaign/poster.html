@@ -55,7 +55,7 @@
 {%- endfor -%}
 {%- assign long_title = false -%}
 {%- if campaign.title.size > 11 -%}{%- assign long_title = true -%}{%- endif -%}
-<article class="poster poster--{{ variant }}{% if long_title %} poster--long{% endif %}">
+<article class="poster poster--{{ variant }}{% if long_title %} poster--long{% endif %}" data-motion="poster">
   <a class="poster-link" href="{{ repo.url | relative_url }}">
     {%- if variant != "text" %}
     <span class="poster-art">

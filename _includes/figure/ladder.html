@@ -1,0 +1,33 @@
+{%- comment -%}
+  One measured ladder (GALA-87).
+
+    include.set  a key in _data/benchmarks.yml (required)
+
+  Renders the list only; the page wraps it in its own <figure>, so the caption
+  stays where the author wrote it. A row is a name, its time, and a bar whose
+  width is that time against the slowest in the set, so the set is read as a
+  comparison rather than as six numbers.
+
+  The time is a string in the data file — "0.94" — because the printed label is
+  the measured value and has to keep its second decimal. The width comes from
+  the same string: Liquid's plus: 0 casts it to a number, so there is one number
+  in the file and not two. Without JavaScript the bars are drawn at their real
+  widths and the times are printed; assets/motion.js only grows them from
+  nothing, and never changes what they say.
+{%- endcomment -%}
+{%- assign set = site.data.benchmarks[include.set] -%}
+{%- assign slowest = 0 -%}
+{%- for step in set.steps -%}
+  {%- assign value = step.time | plus: 0 -%}
+  {%- if value > slowest -%}{%- assign slowest = value -%}{%- endif -%}
+{%- endfor -%}
+<ol class="ladder-list">
+  {%- for step in set.steps %}
+  {%- assign value = step.time | plus: 0 %}
+  <li class="ladder-row">
+    <span class="ladder-name">{{ step.label }}</span>
+    <span class="ladder-value"><span data-value="{{ step.time }}">{{ step.time }}</span> {{ set.unit }}</span>
+    <span class="ladder-track"><span class="ladder-bar" data-bar style="--size: {{ value | times: 100.0 | divided_by: slowest | round: 2 }}%"></span></span>
+  </li>
+  {%- endfor %}
+</ol>

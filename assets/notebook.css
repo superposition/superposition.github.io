@@ -1593,6 +1593,86 @@ html[data-lab="b"] .empty-title { color: var(--star); }
 
 @keyframes figure-in { from { opacity: 0; } }
 
+/* Scene motion (GALA-87) -------------------------------------------------- */
+
+/* The GSAP layer's footholds in the stylesheet. Everything else a scene does is
+   a transform the runtime writes inline; these are the things CSS has to own
+   because they exist before or without the runtime. A page that has not asked
+   for motion in its front matter loads no scripts and never gets the classes
+   this section is scoped to, so its static shell is unchanged: html.motion is
+   set by assets/motion.js and by nothing else. */
+
+/* The opening scene holds the hero for one viewport. The hold itself is
+   ScrollTrigger's (it wraps the hero in a spacer of the same height and fixes
+   it), because that keeps the page's own scroll and the browser's scroll
+   anchoring in charge: nothing about the pin is a full-screen overlay, focus
+   order never enters it, and an anchor jump still lands where it says. The
+   wrapper is the scene's scope in the markup and takes no style of its own. */
+
+/* The first frame. An element a sequence moves is visible in the HTML and laid
+   out where it belongs; this is the only rule in the site that hides content
+   for the runtime. The class is set by the boot snippet in _includes/motion.html
+   only when the reader has not asked for reduced motion, it is removed by the
+   runtime before the first tween is built, and the snippet removes it on a
+   timer if the runtime never arrives — so a failed script ends as the static
+   page, not as a blank hero. */
+html.motion-boot .hero .lede,
+html.motion-boot .hero .topic-list,
+html.motion-boot [data-reveal] { opacity: 0; transform: translateY(var(--rise-distance)); }
+/* The switch paused the statement's own loop, and on this page the scroll is
+   what moves it: the control and its checkbox leave the page together, before
+   the first paint and for as long as the scene runs, so nothing reflows when the
+   runtime takes the loop away and no invisible checkbox keeps a tab stop. */
+html.motion-boot .hero .crawl-switch,
+html.motion-boot .hero .crawl-hold,
+html.motion .hero .crawl-switch,
+html.motion .hero .crawl-hold { display: none; }
+
+/* The reading rail on an entry: a hairline across the top, filling to the
+   entry's own progress. It is only drawn while a scene runs, so the page
+   without JavaScript has no rail and no gap where one would be. Decorative —
+   the entry is the content — so it is hidden from the accessibility tree in
+   the markup and carries no pointer target. */
+.reading-rail { display: none; }
+html.motion .reading-rail {
+  display: block; position: fixed; inset-block-start: 0; inset-inline: 0; z-index: 10;
+  height: var(--rail-height);
+  background: var(--line);
+  pointer-events: none;
+}
+.reading-rail span {
+  --progress: 0;
+  display: block; height: 100%;
+  background: var(--accent);
+  box-shadow: var(--glow-accent);
+  transform: scaleX(var(--progress));
+  transform-origin: 0 50%;
+  transition: transform var(--dur-quick) var(--ease-move);
+}
+
+/* A measured ladder: one row per version, the name and the time on one line and
+   the bar beneath them, so the figure reads as a list at 360 and as a chart at
+   1440 without a second layout. The bar's width is its value as a share of the
+   slowest, set from the data file as --size; the runtime grows the same bar
+   from nothing, and a reader without it sees the finished chart. */
+.ladder { margin-block: var(--space-5); }
+.ladder-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.ladder-row {
+  display: grid; grid-template-columns: 1fr auto; align-items: baseline;
+  gap: var(--space-half) var(--space-2);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+}
+.ladder-name { color: var(--starlight); }
+.ladder-value { color: var(--dust); font-variant-numeric: tabular-nums; }
+.ladder-track { grid-column: 1 / -1; height: var(--tick); background: var(--deep); border: var(--border-hair); }
+.ladder-bar { display: block; height: 100%; width: var(--size); background: var(--accent); transform-origin: 0 50%; }
+
+/* The runtime owns a picture while it runs: the view() timeline below would
+   otherwise arrive at the same moment and fade it twice. Pages without motion
+   keep the CSS reveal. */
+html.motion .prose figure img,
+html.motion .plate img { animation: none; }
+
 /* Narrow ----------------------------------------------------------------- */
 
 @media (max-width: 700px) {

@@ -40,6 +40,12 @@
   <link rel="preload" href="{{ '/assets/fonts/ibm-plex-mono-regular.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="{{ '/assets/tokens.css' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/notebook.css' | relative_url }}?v=4">
+  {%- comment -%}
+    Motion is opt-in per page (GALA-87). Without a `motion:` value in front
+    matter a page loads no script at all, which is every page that has nothing
+    to say with it; docs/motion.md says what a page may ask for and why.
+  {%- endcomment -%}
+  {% if page.motion %}{% include motion.html %}{% endif %}
   {% if page.math %}
   <script>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]],displayMath:[["$$","$$"],["\\[","\\]"]],processEscapes:true},options:{skipHtmlTags:["script","noscript","style","textarea","pre","code"]}};</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
