@@ -102,7 +102,11 @@ const walk = (dir, out = []) => {
   }
   return out;
 };
-const markupFiles = walk(root).filter((f) => ['.html', '.md', '.yml'].includes(extname(f)));
+/* Markup is what the site renders, and an SVG under _includes is markup: the
+   home page's map is generated into _includes/scene/map.svg and inlined by
+   _includes/scene/map.html, so its `.scene-*` classes are written, not
+   composed. Reading it here is what lets rule 2 judge them. */
+const markupFiles = walk(root).filter((f) => ['.html', '.md', '.yml', '.svg'].includes(extname(f)));
 
 /* Comments are not use: a class named only in a comment is a class nobody
    renders. Liquid comments go the same way. */

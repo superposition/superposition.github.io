@@ -40,6 +40,19 @@
   <link rel="preload" href="{{ '/assets/fonts/ibm-plex-mono-regular.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="{{ '/assets/tokens.css' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/notebook.css' | relative_url }}?v=4">
+  {%- comment -%}
+    A page that carries a scene names it in its front matter. The import map is
+    the one place the vendored copy of three.js is addressed, so every scene on
+    the site imports the same file; nothing else on the site loads it, and
+    assets/scene/map.js only asks for it once the page has loaded and only if
+    the browser can draw it.
+  {%- endcomment -%}
+  {% if page.scene %}
+  <script type="importmap">
+  {"imports":{"three":"{{ '/assets/vendor/three/three.module.min.js' | relative_url }}","three/lines":"{{ '/assets/vendor/three/lines.module.min.js' | relative_url }}"}}
+  </script>
+  <script type="module" src="{{ '/assets/scene/map.js' | relative_url }}"></script>
+  {% endif %}
   {% if page.math %}
   <script>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]],displayMath:[["$$","$$"],["\\[","\\]"]],processEscapes:true},options:{skipHtmlTags:["script","noscript","style","textarea","pre","code"]}};</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>

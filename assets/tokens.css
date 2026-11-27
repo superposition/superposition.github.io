@@ -433,7 +433,6 @@ html[data-lab="b"] {
       rgba(5, 5, 8, .74) 42%,
       rgba(5, 5, 8, 0) 80%);
   --hero-wash: .13;
-  --starfield: url('/assets/art/starfield.svg');
 
   --font-text: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
   --track-label: .20em;

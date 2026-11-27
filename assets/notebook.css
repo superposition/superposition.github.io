@@ -212,9 +212,114 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 }
 .hero .lede { color: var(--starlight); }
 
-/* The star field is a poster-only layer: display:none elsewhere, so its
-   background image is never fetched on a page that does not show it. */
-.starfield { display: none; }
+/* The map ----------------------------------------------------------------- */
+
+/* The hero's backplate is the site's own map rather than a photograph: the five
+   topics, the twenty repository pages, the four series units and the journal,
+   laid out in space around the station at the origin. The plate is generated
+   (scripts/scene/map.mjs) from the same data the canvas reads, so there is one
+   layout and two renderers; assets/scene/map.js draws it in WebGL when the
+   reader's browser can, and otherwise does nothing at all. docs/scene-map.md is
+   the spec: what maps to what, how the camera is bounded, and the measurements
+   the frame is held to.
+
+   Nothing here is load-bearing for the page's content. Every node on the map is
+   a link that already exists in the lists below it, and the description of the
+   whole drawing is the visually-hidden line in _includes/scene/map.html. */
+
+.map {
+  position: absolute; inset: 0; z-index: -3;
+  pointer-events: none;
+}
+
+/* The plate keeps its composition at every window: its width is the frame's
+   width and its height follows. A phone shows the whole map, smaller, rather
+   than a crop of its middle, and the black above and below it is the page's own
+   ground -- which is why the frame's own edges are never visible. */
+.map .scene-still,
+.map .map-canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+
+/* The still is the scene until a frame has drawn. The canvas is in the page
+   from the start but shows nothing until then, so no reader ever meets an empty
+   rectangle, and no part of the layout depends on a canvas existing. */
+.map .map-canvas { display: none; }
+.map[data-map="live"] .map-canvas { display: block; }
+.map[data-map="live"] .scene-still { visibility: hidden; }
+
+/* The plate's strokes, in the site's three weights. `non-scaling-stroke` keeps
+   them device pixels in the drawing's own units, so a one-pixel rule is one
+   pixel at every width, exactly as it is in the type. */
+.scene-still path { vector-effect: non-scaling-stroke; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.scene-edge,
+.scene-unit,
+.scene-repo,
+.scene-journal { stroke-width: var(--hair); }
+.scene-edge { stroke: var(--dust); }
+.scene-open { stroke: var(--dust); stroke-width: var(--hair); stroke-dasharray: var(--hair) var(--space-1); }
+.scene-spine,
+.scene-topic { stroke: var(--star); stroke-width: calc(var(--hair) * 2); }
+.scene-repo { stroke: var(--cream); }
+.scene-unit { stroke: var(--state); }
+.scene-journal { stroke: var(--dust); }
+.scene-datum { stroke: var(--accent); stroke-width: var(--rule-thick); }
+.scene-star { stroke: var(--star); stroke-width: var(--hair); }
+.scene-star[data-size="2"] { stroke-width: calc(var(--hair) * 2); }
+
+/* The names on the plate. The still carries them as text in the drawing; the
+   live scene carries them as text in the page, at the same anchors, so the map
+   keeps its names when it is a canvas. */
+.scene-label,
+.map-label {
+  font: var(--step-1)/var(--leading-tight) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+  fill: var(--dust);
+}
+.map-labels { position: absolute; inset: 0; }
+.map-label {
+  position: absolute; inset-block-start: 0; inset-inline-start: 0;
+  white-space: nowrap;
+  visibility: hidden;
+}
+.map[data-map="live"] .map-label { visibility: visible; }
+
+/* The plate's own caption: what it is, how much of it there is, which record is
+   under the pointer, and the switch that stops it. One row above the drawing,
+   wrapping rather than crowding at narrow widths. */
+.map-bug {
+  position: absolute; inset-block-start: var(--space-3); inset-inline: 0;
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: var(--space-half) var(--space-3);
+  font: var(--step-1)/var(--leading-tight) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+}
+/* The caption sits over the plate's empty sky, but a star or a stroke can still
+   pass behind a thirteen-pixel line, and measured at the brightest frame it fell
+   to 2.9:1. Each item therefore carries the page's own ground behind it: the
+   caption's contrast is the caption's, and never depends on what the map is
+   doing underneath. Over black the backing is invisible. */
+.map-bug > span,
+.map-bug .crawl-hold label {
+  background: var(--void);
+  padding-inline: var(--space-1);
+}
+.map-bug > span:first-child { color: var(--star); margin-inline-start: calc(var(--space-1) * -1); }
+.map-bug .map-name { margin-inline-start: auto; color: var(--state-text); }
+.map-bug .crawl-hold { margin-top: 0; margin-inline-start: auto; }
+.map-bug .map-name:not(:empty) ~ .crawl-hold { margin-inline-start: 0; }
+.map-switch:checked ~ .map-bug .crawl-hold label::before { background: var(--state); border-color: var(--state); }
+.map-switch:focus-visible ~ .map-bug .crawl-hold label { outline: var(--ring) solid var(--state); outline-offset: var(--space-half); color: var(--star); }
+
+/* A phone shows the plate, not its names: eleven labels on a four-hundred-pixel
+   drawing are eleven labels on each other. The forms and the caption still say
+   what is there, and the lists below still link every one of them. */
+@media (max-width: 700px) {
+  .map-labels { display: none; }
+}
 
 @keyframes hero-drift {
   from { transform: scale(1); }
@@ -235,10 +340,6 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
   display: block;
   background: var(--panel);
   border: var(--border-hair);
-}
-.skeleton-hero {
-  position: absolute; inset: 0; z-index: -4;
-  border: 0;
 }
 .skeleton-label {
   position: absolute;
@@ -1532,14 +1633,6 @@ html[data-lab="b"] .hero img {
   object-position: 50% 35%;
 }
 html[data-lab="b"] .hero .skeleton { display: none; }
-html[data-lab="b"] .starfield {
-  display: block;
-  position: absolute; inset: 0; z-index: -2;
-  background: var(--starfield) repeat;
-  background-size: auto;
-  opacity: .85;
-  pointer-events: none;
-}
 html[data-lab="b"] .hero-inner {
   padding-block: var(--space-open);
   display: flex; flex-direction: column; align-items: center;
@@ -1657,4 +1750,5 @@ html[data-lab="b"] .empty-title { color: var(--star); }
   .card:focus-visible .card-media img { transform: none; }
   .strip-track { animation: none; }
   .strip-toggle, .strip-pause { display: none; }
+  .map-bug .crawl-hold { display: none; }
 }
