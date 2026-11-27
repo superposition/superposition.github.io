@@ -1,0 +1,67 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="The workbench" />
+
+# The workbench
+
+This is the component workbench for [superposition.github.io](https://superposition.github.io): every component the site ships, rendered from the two stylesheets the site ships, in the variants and states a page does not happen to be showing.
+
+There is one rule and everything else follows from it. A story imports `assets/tokens.css` and `assets/notebook.css` and nothing else, so a story and the page it came from cannot disagree. There is no workbench stylesheet: if a component needs a rule, the rule goes into the site's own CSS and both places get it.
+
+## Run it
+
+```bash
+cd storybook
+npm ci
+npm run storybook        # http://localhost:6017
+```
+
+| Command | What it does |
+| --- | --- |
+| `npm run build-storybook` | builds the static workbench into `storybook-static/` |
+| `npm run test` | runs the `play` functions in a real browser |
+| `npm run a11y` | axe over every story in the built workbench; non-zero on a violation |
+| `npm run contrast` | every colour pair over the three identities; non-zero under 4.5:1 text, 3:1 edge |
+
+`npm run a11y` reads a build, so run `npm run build-storybook` first — or let CI, which runs both in order.
+
+## The identity toolbar
+
+The site has three identities, switched by `data-lab` on `<html>`: **c** shipped, **a** instrument, **b** poster. They are the same components over a different ground, accent and typeface — no component is duplicated and no markup changes.
+
+The **Identity** control in the toolbar sets that attribute for the whole preview. A story cannot render it itself: a story is a fragment, and the attribute belongs to the document. Two things follow:
+
+- What you see is the component in the identity you selected, so check a new component in all three before calling it done.
+- A test cannot press a toolbar button, so the stories in **Components → Identity parts** that are named for an identity pin the same global the toolbar sets and assert against it.
+
+## Viewport and ground
+
+The toolbar carries the three widths the site is designed at — 1440, 420 and 375 — and two grounds: **ground** (the page's own black) and **photograph** (a NASA image behind the component). Judge a translucent edge or a dust label on both; a hairline that holds on black can vanish on a lit image.
+
+## Tokens
+
+`assets/tokens.css` is the only place a colour, typeface, size, space or motion value is defined. A component names its job, never its colour: `--accent-text`, `--state`, `--star`. That is what lets an identity re-light the whole site by redefining a handful of values.
+
+- **Never** write a colour into a component. If a value is missing, it is missing from `tokens.css`.
+- **Never** write a rule into a Storybook-only file. A story that needs a new rule is a rule missing from `notebook.css`.
+- Body copy is `--star`, `--starlight` or `--dust`. Nothing else carries text.
+
+Who uses what, and where: [docs/design-system.md](https://github.com/superposition/superposition.github.io/blob/main/docs/design-system.md) has the measured tables and the reasoning; `/style/` renders every token and component live on the site itself.
+
+## Which page uses which component
+
+| Page | Components |
+| --- | --- |
+| `/` | hero, crawl, topic row, now-showing strip, entry list, empty state |
+| `/journal/` | entry list (grouped by topic), empty state |
+| `/journal/<slug>/` | prose, figure, code block, callout, blockquote |
+| `/projects/` | card grid, empty state |
+| `/projects/<slug>/` | campaign block, poster, prose, figure |
+| `/now-showing/` | poster gallery |
+| `/series/` | network masthead, cast card, ident list |
+| `/topics/` | topic row |
+| `/style/` | every token and every component, rendered live |
+| `/404.html` | alert |
+| every page | nav, footer, skip link |
+
+A component that is on no page is still here on purpose: a button, a badge and a card variant are ready for an action the site does not have yet, and the workbench is where they stay honest until it does.

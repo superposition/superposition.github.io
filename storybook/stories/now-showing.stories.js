@@ -3,6 +3,8 @@
    with six campaigns instead of twenty, so the loop is easy to watch and the
    pause can be tried without waiting through the whole programme. */
 
+import { expect, userEvent, waitFor } from 'storybook/test';
+
 const shows = [
   { title: 'Mage', film: 'Inside the kernel, or around it', genre: 'Technical thriller', runtime: '1h 32m', logline: 'A terminal GPU profiler that makes the clock visible: inside the kernel, or around the call.', still: '/assets/repos/mage/kernel-progression-1200.webp' },
   { title: 'Qualia', film: 'Twenty crates, one agent', genre: 'Science fiction', runtime: '2h 04m', logline: 'Shared-memory arenas, crash-safe evidence logs, and a JEPA runtime whose promotion is gated on evidence.', field: true },
@@ -32,7 +34,10 @@ const track = `<ol class="strip-track" style="--strip-steps: ${shows.length}">
     ${shows.map(card).join('')}
     ${shows
       .map(card)
-      .map((item) => item.replace('<li class="strip-item">', '<li class="strip-item" aria-hidden="true">'))
+      // The second copy is a duplicate for the eye only: a screen reader hears
+      // each campaign once and a keyboard never tabs through it twice. `inert`
+      // is what makes that true of the focus order as well as of the text.
+      .map((item) => item.replace('<li class="strip-item">', '<li class="strip-item" aria-hidden="true" inert>'))
       .join('')}
   </ol>`;
 
@@ -58,4 +63,30 @@ export default {
   argTypes: {},
 };
 
-export const Running = {};
+export const Running = {
+  // The strip moves in CSS, and the control that stops it is a checkbox with a
+  // label. Both facts are worth a test: a moving row has to be stoppable without
+  // a script (WCAG 2.2.2), and the drawn box has to say which way it is set.
+  play: async ({ canvasElement, step }) => {
+    const track = canvasElement.querySelector('.strip-track');
+    const label = canvasElement.querySelector('.strip-pause');
+
+    await step('the strip is running', async () => {
+      await expect(getComputedStyle(track).animationPlayState).toBe('running');
+      await expect(label.querySelector('.strip-pause-on')).toBeVisible();
+      await expect(label.querySelector('.strip-pause-off')).not.toBeVisible();
+    });
+
+    await step('the control stops it, and says so', async () => {
+      await userEvent.click(label);
+      await waitFor(() => expect(getComputedStyle(track).animationPlayState).toBe('paused'));
+      await expect(label.querySelector('.strip-pause-on')).not.toBeVisible();
+      await expect(label.querySelector('.strip-pause-off')).toBeVisible();
+    });
+
+    await step('clicking again lets it run', async () => {
+      await userEvent.click(label);
+      await waitFor(() => expect(getComputedStyle(track).animationPlayState).toBe('running'));
+    });
+  },
+};

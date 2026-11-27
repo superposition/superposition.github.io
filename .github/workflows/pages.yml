@@ -51,10 +51,19 @@ jobs:
         run: npm run slop
       - name: Check states, targets and markup
         working-directory: storybook
-        run: npm run a11y
+        run: npm run states
       - name: Measure contrast
         working-directory: storybook
         run: npm run contrast
+      - name: Install a browser
+        working-directory: storybook
+        run: npx playwright install --with-deps chromium
+      - name: Accessibility
+        working-directory: storybook
+        run: npm run a11y
+      - name: Interaction tests
+        working-directory: storybook
+        run: npm run test
   deploy:
     if: github.event_name != 'pull_request'
     needs: build
