@@ -7,7 +7,7 @@ image: /assets/art/orbits.png
 <h1 class="masthead">Superposition</h1>
 <p class="intro">Notes on mathematics, AI, and the systems behind them. Written out in full: the argument, the measurement, the working.</p>
 <ul class="topic-list" aria-label="Topics">
-  {% for topic in site.data.topics %}{% assign posts = site.posts | where: "topic", topic.slug %}<li><span class="dot dot-{{ topic.colour }}" aria-hidden="true"></span><a href="{{ '/journal/' | relative_url }}{% if posts.size > 0 %}#{{ topic.slug }}{% endif %}">{{ topic.name }}</a></li>{% endfor %}
+  {% for topic in site.data.topics %}{% assign posts = site.posts | where: "topic", topic.slug %}<li><a href="{{ '/journal/' | relative_url }}{% if posts.size > 0 %}#{{ topic.slug }}{% endif %}">{{ topic.name }}</a></li>{% endfor %}
 </ul>
 {% if site.posts.size > 0 %}
 <section class="recent" aria-labelledby="recent-title">
