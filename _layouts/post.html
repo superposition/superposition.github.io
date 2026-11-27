@@ -2,7 +2,7 @@
 layout: default
 ---
 {% assign topic = site.data.topics | where: "slug", page.topic | first %}
-<article class="entry-page wrap">
+<article class="entry-page wide">
   <header class="entry-head">
     <p><span class="decal">{{ topic.name | default: "Journal" }}</span> <span class="kicker"><time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: "%Y-%m-%d" }}</time></span></p>
     <h1>{{ page.title }}</h1>

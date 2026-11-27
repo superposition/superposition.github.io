@@ -7,13 +7,15 @@ layout: default
     <p><span class="decal">Repository</span>{% if page.language %} <span class="kicker">{{ page.language }}</span>{% endif %}</p>
     <h1>{{ page.title | default: repo_slug }}</h1>
     {% if page.tagline %}<p class="lede">{{ page.tagline }}</p>{% endif %}
+  </header>
+  <div class="repo-aside">
     <p class="meta">
       {% if page.language %}<span>{{ page.language }}</span>{% endif %}
       {% if page.stars %}<span>{{ page.stars }} star{% if page.stars != 1 %}s{% endif %}</span>{% endif %}
       {% if page.pushed %}<span>Last push {{ page.pushed | date: "%d %b %Y" }}</span>{% endif %}
     </p>
     {% if page.repo %}<p class="repo-links"><a class="text-link" href="https://github.com/{{ page.repo }}">View on GitHub</a>{% if page.site %} <a class="text-link" href="{{ page.site }}">Project site</a>{% endif %}</p>{% endif %}
-  </header>
+  </div>
   {%- assign campaign = site.data.campaigns | where: "slug", page.slug | first %}
   {%- if campaign %}{% include campaign/block.html campaign=campaign %}{% endif %}
   <div class="prose repo-body">{{ content }}</div>
