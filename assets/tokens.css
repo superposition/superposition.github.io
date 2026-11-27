@@ -347,8 +347,9 @@
   /* The scene on /station/. Three depths drift at three speeds, so a still
      drawing reads as a camera; the action keeps a clock of its own. The
      travels are user units of the 2400 by 1500 canvas, so one number holds at
-     every width the page is read at. --pulse-span is the truss the pulse runs
-     out along: 0.83 of the station's 1280 units of canvas. */
+     every width the page is read at. --pulse-span is what the pulse runs
+     out along: the truss chord the compositor measures, less the 14% of it the
+     pulse starts at. */
   --dur-drift-far: 120s;
   --dur-drift-mid: 96s;
   --dur-drift-near: 72s;
@@ -360,7 +361,7 @@
   --drift-mid: 15px;
   --drift-near: 30px;
   --drift-lift: 6px;
-  --pulse-span: 942px;
+  --pulse-span: 840px;
   --beam-march: -20px;
   --approach-x: 26px;
   --approach-y: -3.7px;

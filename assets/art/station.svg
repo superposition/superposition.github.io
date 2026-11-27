@@ -771,11 +771,11 @@
       </g>
     </g>
     <g id="signal-carrier">
-      <path d="M624 547.2H1686.4" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.2"/>
-      <g><path d="M664 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M760 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M856 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M952 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1048 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1144 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1240 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1336 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1432 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1528 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1624 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/></g>
+      <path d="M688.1 488.3L1676.4 396.8" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.2"/>
+      <g><path d="M688.6 493.8L687.6 482.8" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M784.2 484.9L783.2 474" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M879.8 476.1L878.8 465.1" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M975.4 467.2L974.4 456.3" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1071 458.4L1070 447.4" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1166.6 449.5L1165.5 438.6" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1262.2 440.7L1261.1 429.7" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1357.7 431.8L1356.7 420.9" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1453.3 423L1452.3 412" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1548.9 414.1L1547.9 403.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1644.5 405.3L1643.5 394.3" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/></g>
     </g>
-    <g id="signal-pulse">
-      <g transform="translate(744 547.2)">
+    <g transform="translate(826.5 475.5) rotate(-5.3)">
+      <g id="signal-pulse">
         <path d="M-118 0H-52" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.16"/>
         <path d="M-52 0H-14" stroke="#ffc24a" stroke-width="2" stroke-opacity="0.4"/>
         <circle r="7" fill="none" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/>

@@ -34,6 +34,7 @@ seed and the same layer bytes.
 
 import argparse
 import math
+import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -394,30 +395,107 @@ def beam_and_dock(nose, hoop, hull):
     ])
 
 
-def pulse(y, x0, x1):
-    """The carrier along the truss and the pulse riding it. The pulse sits at its
-    own origin so a transform moves it along x and nothing else."""
-    ticks = []
-    x = x0 + 40.0
-    while x < x1 - 20.0:
-        ticks.append(
-            '<path d="M%s %sV%s" stroke="%s" stroke-width="1" stroke-opacity="0.3"/>'
-            % (fmt(x), fmt(y - 5), fmt(y + 5), AMBER)
+def measure_truss(children):
+    """The truss spine, walked off the station layer.
+
+    A truss is drawn as a chain of short segments that continue one another in
+    one direction, and nothing else on the station is that long and that
+    straight. So: collect the segments, walk forward from each one while the
+    next continues it within six degrees, and keep the longest walk. That is the
+    chord the pulse rides, and it follows the camera the station was drawn
+    through instead of assuming the spine came out level. Falls back to the
+    contract's horizontal when the walk is shorter than half the zone."""
+    x0, y0, x1, y1 = STATION_ZONE
+    zone_width = x1 - x0
+
+    def key(point):
+        return (round(point[0], 1), round(point[1], 1))
+
+    def heading(a, b):
+        return math.degrees(math.atan2(b[1] - a[1], b[0] - a[0]))
+
+    segments = []
+    for top in children:
+        for node in top.iter():
+            d = node.get("d")
+            if not d:
+                continue
+            for chunk in d.split("M")[1:]:
+                numbers = [float(n) for n in re.findall(r"-?\d+(?:\.\d+)?", chunk)]
+                points = list(zip(numbers[0::2], numbers[1::2]))
+                for a, b in zip(points, points[1:]):
+                    if a != b:
+                        segments.append((a, b))
+
+    starts = {}
+    for index, (a, _) in enumerate(segments):
+        starts.setdefault(key(a), []).append(index)
+
+    best = (0.0, None)
+    for a, b in segments:
+        if abs(b[0] - a[0]) < 20:
+            continue
+        direction = heading(a, b)
+        length = math.hypot(b[0] - a[0], b[1] - a[1])
+        current = b
+        for _ in range(48):
+            step = None
+            for index in starts.get(key(current), ()):
+                c, d = segments[index]
+                if abs(((heading(c, d) - direction + 180) % 360) - 180) > 6:
+                    continue
+                step = d
+                break
+            if step is None:
+                break
+            length += math.hypot(step[0] - current[0], step[1] - current[1])
+            current = step
+        if length > best[0]:
+            best = (length, (a, current))
+
+    if best[1] is None or best[0] < zone_width * 0.45:
+        return (
+            (x0 + zone_width * TRUSS_X0, y0 + (y1 - y0) * TRUSS_Y),
+            (x0 + zone_width * TRUSS_X1, y0 + (y1 - y0) * TRUSS_Y),
         )
-        x += 96.0
-    # The pulse sits just inside the head of the truss, so its tails are on the
-    # carrier rather than floating beside it in the still; the page moves it the
-    # rest of the way along, and a reader with reduced motion gets it where the
-    # file put it.
-    px = x0 + 120.0
+    return best[1]
+
+
+def pulse(start, end):
+    """The carrier along the truss and the pulse riding it. The truss is rarely
+    level — the station is drawn through a camera, so its spine tilts — and the
+    carrier is a line between the two measured ends while the pulse rides a
+    rotated frame, so the page can move it along x and it still follows the
+    truss instead of drifting off it."""
+    dx = end[0] - start[0]
+    dy = end[1] - start[1]
+    length = math.hypot(dx, dy)
+    ux, uy = dx / length, dy / length
+    nx, ny = -uy * 5.5, ux * 5.5
+    ticks = []
+    along = 0.0
+    while along < length - 24.0:
+        x = start[0] + ux * along
+        y = start[1] + uy * along
+        ticks.append(
+            '<path d="M%s %sL%s %s" stroke="%s" stroke-width="1" stroke-opacity="0.3"/>'
+            % (fmt(x + nx), fmt(y + ny), fmt(x - nx), fmt(y - ny), AMBER)
+        )
+        along += 96.0
+    # A little along, so its tails sit on the carrier rather than hanging off
+    # the head of the truss in the still; the page moves it the rest of the way,
+    # and a reader with reduced motion gets it where the file put it.
+    px = start[0] + ux * length * 0.14
+    py = start[1] + uy * length * 0.14
+    angle = math.degrees(math.atan2(dy, dx))
     return "\n".join([
         '    <g id="signal-carrier">',
-        '      <path d="M%s %sH%s" stroke="%s" stroke-width="1" stroke-opacity="0.2"/>'
-        % (fmt(x0), fmt(y), fmt(x1), AMBER),
+        '      <path d="M%s %sL%s %s" stroke="%s" stroke-width="1" stroke-opacity="0.2"/>'
+        % (fmt(start[0]), fmt(start[1]), fmt(end[0]), fmt(end[1]), AMBER),
         "      <g>%s</g>" % "".join(ticks),
         "    </g>",
-        '    <g id="signal-pulse">',
-        '      <g transform="translate(%s %s)">' % (fmt(px), fmt(y)),
+        '    <g transform="translate(%s %s) rotate(%s)">' % (fmt(px), fmt(py), fmt(angle)),
+        '      <g id="signal-pulse">',
         '        <path d="M-118 0H-52" stroke="%s" stroke-width="1" stroke-opacity="0.16"/>'
         % AMBER,
         '        <path d="M-52 0H-14" stroke="%s" stroke-width="2" stroke-opacity="0.4"/>' % AMBER,
@@ -455,10 +533,9 @@ def haze(rng):
     return '  <g id="scene-haze" fill="none">\n%s\n  </g>' % "\n".join(lines)
 
 
-def action(rng):
+def action(rng, truss):
     x0, y0, x1, y1 = STATION_ZONE
     w, h = x1 - x0, y1 - y0
-    truss_y = y0 + h * TRUSS_Y
     hoop = (x0 + w * HOOP[0], y0 + h * HOOP[1])
     shuttle_at = (x0 + w * SHUTTLE[0], y0 + h * SHUTTLE[1])
     hull = (x0 + w * ARM_X, y0 + h * 0.7)
@@ -472,7 +549,7 @@ def action(rng):
         shuttle_markup,
         drone("drone-a", ((-90.0, 690.0), (760.0, 556.0), (1560.0, 512.0), (2490.0, 640.0)), 0.34, 13.0),
         drone("drone-b", ((2490.0, 300.0), (1720.0, 236.0), (880.0, 372.0), (-90.0, 306.0)), 0.62, 10.0),
-        pulse(truss_y, x0 + w * TRUSS_X0, x0 + w * TRUSS_X1),
+        pulse(truss[0], truss[1]),
         "  </g>",
     ])
 
@@ -533,6 +610,11 @@ def compose(seed, layer_dir):
         body.append(placeholder("scene-station", ZONES["station"],
                                 "station layer not drawn", "assets/scene/station.svg"))
 
+    truss = measure_truss(present["station"]["children"]) if "station" in present else (
+        (STATION_ZONE[0] + 1280 * TRUSS_X0, STATION_ZONE[1] + 840 * TRUSS_Y),
+        (STATION_ZONE[0] + 1280 * TRUSS_X1, STATION_ZONE[1] + 840 * TRUSS_Y),
+    )
+
     if front:
         prefix_ids(front, "traffic")
         body.append("  <!-- scene-traffic-front: assets/scene/traffic.svg#traffic-front -->")
@@ -570,7 +652,7 @@ def compose(seed, layer_dir):
     head.append('  <desc id="station-scene-desc">%s</desc>' % esc(desc))
     head.append("")
     head.append("\n".join(body))
-    head.append(action(rng))
+    head.append(action(rng, truss))
     head.append("</svg>")
     return "\n".join(head) + "\n", report, present, missing
 

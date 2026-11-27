@@ -86,7 +86,7 @@ the station. The fractions are module constants in `compose.py`:
 
 | Primitive | Parameter | Value |
 | --- | --- | --- |
-| Truss line | y, x range, as fractions of the zone | 0.58 of the height → y 547.2; 0.05–0.88 of the width → x 624–1686 |
+| Truss line | walked off the station layer, not placed | the longest chain of segments that continue one another in one direction — (688.1, 488.3) → (1676.4, 396.8) in the layer committed here, a 5.3° spine; the contract's level fallback is y 547.2, x 624–1686 |
 | Docking hoop | centre, as fractions of the zone | (0.95, 0.74) → (1776, 681.6) |
 | Boom | hull anchor → hoop | (0.84, 0.70) → (1635.2, 648) to the hoop |
 | Shuttle | centre, as fractions of the zone | (0.40, 0.86) → (1072, 782.4), clamped above y 836 |
@@ -111,7 +111,7 @@ transform belongs to the animation, and to the next thing that drives it.
 | `#scene-city`, `#scene-traffic-back` | `transform` — 9 units | 120s, ease-in-out, alternate |
 | `#scene-station` | `transform` — 15 units and a 6-unit lift | 96s, ditto |
 | `#scene-traffic-front` | `transform` — 30 units and a 6-unit lift | 72s, ditto |
-| `#signal-pulse` | `transform`, `opacity` — 1062 units, the truss | 16s, linear |
+| `#signal-pulse` | `transform`, `opacity` — 840 units along the truss | 16s, linear |
 | `#alignment-line` | `stroke-dashoffset` — 20 units | 6s, linear |
 | `#docking-shuttle` | `transform` — 26 units along the approach | 20s, ease-in-out, alternate |
 | `#drone-a`, `#drone-b` | `transform` — 26 and 22 units | 44s, ease-in-out, alternate |
