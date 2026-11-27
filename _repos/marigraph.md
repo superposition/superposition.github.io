@@ -14,7 +14,26 @@ order: 14
 
 A Bun and Ink terminal application that renders an options volatility surface as a rotating, shaded object of block characters, surrounded by the numbers it implies. `src/tui/index.tsx` draws the columns and `src/cli.ts` is the entry point; underneath sit a 3-D projector, a character rasterizer, streaming statistics, an SVI fit, an arbitrage checker, and Solidity contracts.
 
+<figure>
+  <img src="/assets/repos/marigraph/risk-oracle-1800.webp"
+       srcset="/assets/repos/marigraph/risk-oracle-900.webp 900w, /assets/repos/marigraph/risk-oracle-1800.webp 1800w"
+       sizes="(min-width: 1000px) 900px, 100vw"
+       width="1800" height="1552" style="height:auto" loading="lazy" decoding="async"
+       alt="A dark terminal filled by the risk oracle: a pinned block header with ETH at $2054 and risk at 92%, a shaded 3D volatility surface, a six-column oracle bar chart reading RV 222.6% to RISK 4%, and five panels for market, vol stats, Greeks, pool liquidity and term structure.">
+  <figcaption>The seven-column risk oracle on its demo surface data, paused at the block the fork config pins — 20,450,000, 5 August 2024 — with the day labelled <em>Yen Carry Trade Unwinding</em> and ETH at $2054. The middle band is the surface itself, drawn as block characters by <code>src/render/rasterize.ts</code> and rotated by a hand-rolled camera; the row beneath it is the oracle's own reading, RV 222.6% against IV 98.7%, a variance risk premium of −124.0% and 4% risk. The five panels are separate worker processes rendering into their own columns.</figcaption>
+</figure>
+
 The thing drawn is implied volatility across strike and time to expiry. It is a surface, and the information is in its shape: the skew of a smile, whether variance rises with expiry, where a butterfly spread turns negative. As a grid of numbers it is unreadable, and plotted it wants a graphics stack a terminal lacks. Marigraph projects it to two dimensions, rasterizes the projection into characters, and sets the diagnostics that fall out of the shape beside it.
+
+<figure>
+  <img src="/assets/repos/marigraph/cli-1346.webp"
+       srcset="/assets/repos/marigraph/cli-673.webp 673w, /assets/repos/marigraph/cli-1346.webp 1346w"
+       sizes="(min-width: 1000px) 800px, 100vw"
+       width="1346" height="1778" style="height:auto" loading="lazy" decoding="async"
+       alt="A terminal: marigraph --help lists template, risk-oracle, generate, headless, socket-dir, version and help, and --generate prints the head of a Sixcol YAML template with layout rows, cols, gap and a first column entry.">
+  <figcaption>The CLI's two doors: <code>--help</code> lists the template, risk-oracle, headless and socket options, and <code>--generate</code> prints the layout contract a column configuration has to satisfy — rows, cols, gap, then one entry per column with its id, type, title and position.</figcaption>
+</figure>
+
 
 ## How it works
 

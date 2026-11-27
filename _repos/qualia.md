@@ -84,6 +84,15 @@ figure URL.
 
 Two long builds have Makefile targets; one fatbin carries both the 4090 and the Orin Nano:
 
+<figure>
+  <img src="/assets/repos/qualia/kernel-durations-1320.webp"
+       srcset="/assets/repos/qualia/kernel-durations-660.webp 660w, /assets/repos/qualia/kernel-durations-1320.webp 1320w"
+       sizes="(min-width: 700px) 660px, 100vw"
+       width="1320" height="539" style="height:auto" loading="lazy" decoding="async"
+       alt="A horizontal bar chart of thirteen kernel launches on the Orin Nano, from 1.07 microseconds to 16.9, with sustained and elapsed times annotated.">
+  <figcaption>Thirteen launches on the 8 GB Orin Nano, from <code>docs/figures/the-4090-and-the-nano/</code>: 4,784.75 µs of sustained kernel time against 39,182.18 µs elapsed from first issue to last completion. The figure's own headline is the reading — residency is not the constraint, the loop is — and the per-launch times run from 1.07 µs for <code>add_one</code> to 16.9 µs for <code>cognition_patch</code>.</figcaption>
+</figure>
+
 ```bash
 make agent
 make cuda-fatbin          # CUDAARCHS='87-real;89-real' by default
