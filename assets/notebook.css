@@ -645,6 +645,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 @media (max-width: 700px) {
   .site-header { font-size: 12px; letter-spacing: .04em; column-gap: 12px; }
   .site-header nav { gap: 10px; }
+  .site-header nav a { padding-block: 5px; }
   .hero { min-height: 92svh; }
   .hero h1 { font-size: clamp(46px, 15vw, 80px); }
   .topic-list { font-size: var(--step-2); }
@@ -656,6 +657,17 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   .ident { grid-template-columns: 1fr; gap: 0; }
   .ident-who { line-height: 1.6; }
   .ident-line { font-size: var(--step-3); }
+}
+
+/* Below 420 the wordmark and four links will not fit at 12px: they need 373px
+   and a 360 viewport has 324. So the header drops a step of type and closes
+   its gaps, and stays one row at 57px. 10.5px rather than 11 is what makes it
+   hold with a desktop scrollbar taking its 15px as well as without. The 5px of
+   link padding is set above with the rest of the narrow header, so every phone
+   width clears the 24px target rather than only the smallest one. */
+@media (max-width: 419px) {
+  .site-header { font-size: 10.5px; letter-spacing: .01em; column-gap: 8px; }
+  .site-header nav { gap: 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
