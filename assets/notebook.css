@@ -264,6 +264,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 .decal {
   display: inline-block;
   padding: 3px 7px 4px;
+  border: 1px solid var(--decal-edge);
   border-radius: var(--radius-decal);
   background: var(--decal-bg);
   color: var(--decal-text);
@@ -424,14 +425,17 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 }
 .topic-list a { color: var(--star); text-decoration: none; }
 .topic-list a:hover { color: var(--accent-text); text-decoration: underline; }
-.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+.dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  display: inline-block; flex: none;
+  background: var(--accent);
+}
 .topic-list .dot { margin-right: 9px; }
 .topic-list li { display: flex; align-items: center; }
-.dot-accent { background: var(--accent); }
-.dot-nebula { background: var(--nebula); }
-.dot-state { background: var(--state); }
-.dot-plum { background: var(--plum-mark); }
-.dot-dust { background: var(--dust); }
+/* One dot, one colour. The five topic dots used to carry five hues, which was
+   the only place on the site where content encoded itself in colour: the topics
+   have no fixed colour anywhere else, and the photographs supply the site's
+   colour. A dot is a bullet, so it is one amber dot and the name does the work. */
 
 /* Card ------------------------------------------------------------------- */
 
@@ -1060,7 +1064,7 @@ html[data-lab="b"] .hero .lede {
 html[data-lab="b"] .crawl { --crawl-tilt: 4deg; width: 100%; padding-block: 40px; }
 html[data-lab="b"] .crawl-hold { margin-inline: auto; }
 html[data-lab="b"] .topic-list { justify-content: center; }
-html[data-lab="b"] .topic-list .dot { width: 5px; height: 5px; background: var(--nebula); }
+html[data-lab="b"] .topic-list .dot { width: 5px; height: 5px; }
 
 html[data-lab="b"] .site-header { border-bottom: var(--border-hair); }
 html[data-lab="b"] .home-link { letter-spacing: .22em; font-weight: 600; }
@@ -1068,6 +1072,7 @@ html[data-lab="b"] ::selection { background: var(--accent); color: var(--void); 
 /* No decals on a poster: the eyebrow is a plain tracked label. */
 html[data-lab="b"] .decal {
   background: none;
+  border: 0;
   border-radius: 0;
   padding: 0;
   font: 500 12px/1.6 var(--font-mono);

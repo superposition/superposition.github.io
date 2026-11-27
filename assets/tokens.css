@@ -34,7 +34,8 @@
      --alert       5.0 /  4.5 /  4.1   red edge; its text is --alert-text (7.5)
      --alert-text  7.5 /  6.7 /  6.1   the same red where it is text
      --nebula-text 6.7 /  6.0 /  5.5   prose links, sampled from Carina
-     --decal-text 15.7                 a decal chip on its own film
+     --decal-text 10.5                 a decal chip on its own film
+     --decal film  1.6 / 1.5 / 1.0     the chip against its ground (1.0 = no chip, poster)
      --plum        2.4 /  2.2 /  2.0   never text; fill only
      --plum-mark   4.2 /  3.8 /  3.5   the plum mark, at edge contrast
 
@@ -46,7 +47,8 @@
      --state      12.2 / 11.7 / 11.1   (#8fd3ff)
      --alert       4.7 /  4.6 /  4.3
      --alert-text  7.0 /  6.8 /  6.4
-     --decal-text 16.7
+     --decal-text 10.4
+     --decal film  1.5                 the chip against its ground
      amber under the scanline overlay 11.5 (7% black on one row in three)
      cream under the scanline overlay 15.0
 
@@ -112,9 +114,14 @@
   --plum: #6b3f4d;
   --plum-mark: #9a5e72;
 
-  /* A decal: a hardware label is a chip, near-white on film. */
-  --decal-bg: rgba(0, 0, 0, .85);
+  /* A decal: a hardware label is a chip. The film is a warm charcoal, not black:
+     on an absolute-black ground a black film has nothing to sit on, so the chip
+     carries its own surface and a hairline edge with it. 15.7:1 for the type on
+     the film, 1.55:1 for the film against the ground — a label, so decoration,
+     but visible as a chip at both widths. */
+  --decal-bg: rgba(58, 52, 44, .92);
   --decal-text: #efe6d3;
+  --decal-edge: var(--line);
 
   /* Two-layer bloom on anything emissive: a close glow and a wide one. It is
      what makes amber read as light rather than as paint. */

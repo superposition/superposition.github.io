@@ -4,9 +4,9 @@ const hero = `<section class="hero">
     <h1>Superposition</h1>
     <p class="lede">Notes on mathematics, AI, and the systems behind them. Written out in full: the argument, the measurement, the working.</p>
     <ul class="topic-list" aria-label="Topics">
-      <li><span class="dot dot-accent" aria-hidden="true"></span><a href="#storybook-root">Data informatics</a></li>
+      <li><span class="dot" aria-hidden="true"></span><a href="#storybook-root">Data informatics</a></li>
       <li><span class="dot dot-nebula" aria-hidden="true"></span><a href="#storybook-root">AI</a></li>
-      <li><span class="dot dot-state" aria-hidden="true"></span><a href="#storybook-root">Matrices</a></li>
+      <li><span class="dot" aria-hidden="true"></span><a href="#storybook-root">Matrices</a></li>
       <li><span class="dot dot-plum" aria-hidden="true"></span><a href="#storybook-root">Kinematics</a></li>
       <li><span class="dot dot-dust" aria-hidden="true"></span><a href="#storybook-root">Cryptographic proofs</a></li>
     </ul>

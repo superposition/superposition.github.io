@@ -44,8 +44,8 @@ export const WithDot = {
   args: {
     note: 'With a topic dot: the same five colours the topic row uses, for a compact topic label.',
     body: [
-      '<span class="badge badge-accent"><span class="dot dot-accent" aria-hidden="true"></span>Data informatics</span>',
-      '<span class="badge badge-accent"><span class="dot dot-state" aria-hidden="true"></span>Matrices</span>',
+      '<span class="badge badge-accent"><span class="dot" aria-hidden="true"></span>Data informatics</span>',
+      '<span class="badge badge-accent"><span class="dot" aria-hidden="true"></span>Matrices</span>',
       '<span class="badge badge-accent"><span class="dot dot-plum" aria-hidden="true"></span>Kinematics</span>',
     ].join(''),
   },
