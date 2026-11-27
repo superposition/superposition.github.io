@@ -33,7 +33,7 @@
   <link rel="icon" type="image/svg+xml" href="{{ '/assets/mark/primitive.svg' | relative_url }}">
   <link rel="preload" href="{{ '/assets/fonts/anton-regular.ttf' | relative_url }}" as="font" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="{{ '/assets/tokens.css' | relative_url }}">
-  <link rel="stylesheet" href="{{ '/assets/notebook.css' | relative_url }}?v=3">
+  <link rel="stylesheet" href="{{ '/assets/notebook.css' | relative_url }}?v=4">
   {% if page.math %}
   <script>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]],displayMath:[["$$","$$"],["\\[","\\]"]],processEscapes:true},options:{skipHtmlTags:["script","noscript","style","textarea","pre","code"]}};</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
@@ -46,6 +46,7 @@
     <nav aria-label="Main navigation">
       <a href="{{ '/projects/' | relative_url }}" {% if page.url == '/projects/' or page.collection == 'repos' %}aria-current="page"{% endif %}>Repositories</a>
       <a href="{{ '/journal/' | relative_url }}" {% if page.url == '/journal/' or page.collection == 'posts' %}aria-current="page"{% endif %}>Journal</a>
+      <a href="{{ '/series/' | relative_url }}" {% if page.url == '/series/' %}aria-current="page"{% endif %}>Series</a>
       <a href="{{ '/topics/' | relative_url }}" {% if page.url == '/topics/' %}aria-current="page"{% endif %}>Topics</a>
       <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>About</a>
     </nav>

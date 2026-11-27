@@ -545,6 +545,94 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .sg-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .sg-stack > * + * { margin-top: var(--space-2); }
 
+/* Series ------------------------------------------------------------------ */
+
+/* The Network masthead is a title card: an amber rule over the raised ground,
+   cream display type, one hairline under it. It is the only place --amber,
+   --cyan and --cream are used as chrome, and it does not animate. */
+.network {
+  padding-block: var(--space-6) var(--space-4);
+  background: var(--deep);
+  border-top: 4px solid var(--amber);
+  border-bottom: var(--border-hair);
+}
+.network-bug {
+  display: flex; flex-wrap: wrap;
+  gap: 4px var(--space-3);
+  font: var(--step-1)/1.6 var(--font-mono);
+  text-transform: uppercase; letter-spacing: .1em;
+  color: var(--dust);
+}
+.network-bug span:first-child { color: var(--amber); }
+.network-title {
+  margin-top: var(--space-2);
+  font: var(--step-5)/1 var(--font-display);
+  text-transform: uppercase; letter-spacing: .01em;
+  color: var(--cream);
+}
+.network-title em { font-style: normal; color: var(--amber); }
+.network .lede { margin-top: var(--space-3); }
+
+/* The line-up is a toy shelf: four portrait plates on the grid, name and job
+   under each, one hairline before the line the unit says. */
+.cast-section { padding-top: var(--space-5); }
+.cast {
+  list-style: none; margin-top: var(--space-3); padding: 0;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-3);
+}
+.cast-card { display: flex; flex-direction: column; }
+.cast-single { grid-template-columns: minmax(0, 300px); }
+.cast-portrait {
+  width: 100%; aspect-ratio: 4 / 5; height: auto;
+  object-fit: contain;
+  background: var(--deep);
+  border: var(--border-hair);
+}
+.cast-unit {
+  margin-top: var(--space-2);
+  font: var(--step-1)/1.6 var(--font-mono);
+  text-transform: uppercase; letter-spacing: .08em;
+  color: var(--dust);
+}
+.cast-name { margin-top: 4px; font-size: var(--step-4); line-height: 1.1; color: var(--cream); }
+.cast-role { margin-top: 4px; font-size: var(--step-2); line-height: 1.5; color: var(--starlight); }
+.cast-front {
+  margin-top: var(--space-1);
+  font: var(--step-1)/1.6 var(--font-mono);
+  text-transform: uppercase; letter-spacing: .07em;
+  color: var(--dust);
+}
+.cast-front a { color: var(--amber); text-decoration: none; border-bottom: 1px solid currentColor; }
+.cast-front a:hover { color: var(--cream); border-bottom-width: 2px; }
+.cast-voice {
+  margin-top: auto; padding-top: var(--space-2);
+  border-top: var(--border-hair);
+  font-size: var(--step-2); line-height: 1.6;
+  color: var(--starlight);
+}
+
+/* Idents are a script: who on the left, the line at display size on the
+   right, one hairline per speech. */
+.idents { margin-top: var(--space-6); }
+.idents .lede { margin-top: var(--space-2); }
+.ident-list { list-style: none; margin-top: var(--space-3); padding: 0; }
+.ident {
+  display: grid; grid-template-columns: 120px minmax(0, 1fr);
+  gap: var(--space-2) var(--space-3);
+  padding-block: var(--space-2);
+  border-top: var(--border-hair);
+}
+.ident-who {
+  font: var(--step-1)/1.9 var(--font-mono);
+  text-transform: uppercase; letter-spacing: .08em;
+  color: var(--amber);
+}
+.ident-line { font-size: var(--step-4); line-height: 1.45; color: var(--star); max-width: var(--measure); }
+
+.series-note { margin-top: var(--space-6); padding-top: var(--space-2); border-top: var(--border-hair); }
+.series-note .prose { margin-top: var(--space-3); max-width: var(--measure); }
+
 /* Narrow ----------------------------------------------------------------- */
 
 @media (max-width: 700px) {
@@ -555,6 +643,12 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   .topic-list { font-size: var(--step-2); }
   .plates { grid-template-columns: 1fr; }
   .plate img { aspect-ratio: 3 / 2; }
+  .cast { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3) var(--space-2); }
+  .cast.cast-single { grid-template-columns: minmax(0, 1fr); }
+  .cast-name { font-size: var(--step-3); }
+  .ident { grid-template-columns: 1fr; gap: 0; }
+  .ident-who { line-height: 1.6; }
+  .ident-line { font-size: var(--step-3); }
 }
 
 @media (prefers-reduced-motion: reduce) {

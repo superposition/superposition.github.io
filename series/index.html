@@ -1,0 +1,56 @@
+---
+layout: default
+title: The Superposition Network
+permalink: /series/
+description: Four original characters, one per library, drawn as hand-authored SVG and announced the way a channel used to announce a cartoon.
+---
+<section class="network" aria-labelledby="network-title">
+  <div class="wide">
+    <p class="network-bug"><span>Channel {{ site.data.cast.channel }}</span><span>{{ site.data.cast.series }}</span><span>{{ site.data.cast.cast.size }} units</span><span>Signal: amber</span></p>
+    <h1 class="network-title" id="network-title">The Superposition <em>Network</em></h1>
+    <p class="lede">Four characters, one per library, introduced the way a channel introduced a cartoon: a face, a job, and one line before the programme starts. All four are drawn by hand, all four are ours.</p>
+  </div>
+</section>
+
+<div class="wide">
+  <section class="cast-section" aria-labelledby="cast-title">
+    <h2 class="section-title" id="cast-title">The line-up</h2>
+    <ul class="cast">
+      {% for unit in site.data.cast.cast %}
+      <li class="cast-card">
+        <img class="cast-portrait" src="{{ unit.svg | relative_url }}" alt="{{ unit.alt }}" width="320" height="400">
+        {% assign n = forloop.index | prepend: '0' | slice: -2, 2 %}
+        <p class="cast-unit">Unit {{ n }} · {{ unit.job }}</p>
+        <h3 class="cast-name">{{ unit.name }}</h3>
+        <p class="cast-role">{{ unit.role }}</p>
+        {% assign repo = site.repos | where: "slug", unit.library.slug | first %}
+        <p class="cast-front">Fronts {% if repo %}<a href="{{ repo.url | relative_url }}">{{ unit.library.name }}</a>{% else %}<a href="{{ unit.library.url }}">{{ unit.library.name }}</a>{% endif %}</p>
+        <p class="cast-voice">{{ unit.voice }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="idents" aria-labelledby="idents-title">
+    <h2 class="section-title" id="idents-title">Idents</h2>
+    <p class="lede">Ten lines, in order: how each unit opens a segment and hands off to the next. Drop one before anything you make.</p>
+    <ol class="ident-list">
+      {% for ident in site.data.cast.idents %}
+      <li class="ident">
+        <p class="ident-who">{{ ident.who }}</p>
+        <p class="ident-line">{{ ident.line }}</p>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <section class="series-note" aria-labelledby="note-title">
+    <h2 class="section-title" id="note-title">How the line is made</h2>
+    <div class="prose">
+      <p>Each unit is one hand-written SVG at 320 by 400, in four colours: cream body, an amber or cyan signal, and the void as the outline between every part. No raster, no image generation, no external reference — the files are in <code>assets/series/</code>, each carrying its own <code>title</code> and <code>role</code>, and each under four kilobytes.</p>
+      <p>The palette is the site's own. <code>--amber</code>, <code>--cyan</code>, <code>--cream</code> and <code>--alert</code> were added to <code>assets/tokens.css</code> with their measured contrast, so a unit never carries a colour the design system has not accounted for: amber and cyan clear 10.6:1 and cream 12.7:1 on the raised surface, and <code>--alert</code> is marks and edges only.</p>
+      <p>The pairing is a joke told with a straight face. Vellum files everything, so it fronts <a href="{{ '/projects/qualia/' | relative_url }}">Qualia</a> and its crash-safe evidence logs. Gauge reads heat before it reads words, so it fronts <a href="{{ '/projects/mage/' | relative_url }}">Mage</a>. Dray runs manifests, so it fronts <a href="https://github.com/superposition/reeldeal">Reeldeal</a>. Sextant holds every course at once, so it fronts <a href="{{ '/projects/quantum-superposition/' | relative_url }}">Quantum Superposition</a>.</p>
+      <p>The names are ours, the register is a broadcast ident, and nothing here is licensed from anything: no characters, no logos, no stills. Every face on this page was drawn in a text editor.</p>
+    </div>
+  </section>
+</div>
