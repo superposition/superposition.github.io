@@ -38,6 +38,16 @@ bash scripts/check-docs-glossary.sh
 python3 scripts/check-vector-manifest.py --self-test --require-official
 python3 scripts/check-side-channel-manifest.py --self-test
 bash scripts/check-rust-crate-gate.sh
+
+<figure>
+  <img src="/assets/repos/ml-kem-ml-dsa-lab/ctest-run-1496.webp"
+       srcset="/assets/repos/ml-kem-ml-dsa-lab/ctest-run-748.webp 748w, /assets/repos/ml-kem-ml-dsa-lab/ctest-run-1496.webp 1496w"
+       sizes="(min-width: 1000px) 1000px, 100vw"
+       width="1496" height="1862" style="height:auto" loading="lazy" decoding="async"
+       alt="A terminal showing ctest output: twenty tests listed by name, all passing, with 100% tests passed and 0 failed in 0.11 seconds.">
+  <figcaption>The C++ suite, run the way the README's command list says: configure with <code>-DPQCORE_BUILD_TESTS=ON</code>, build, then <code>ctest</code>. Twenty tests, all passing, 0.11 s of test time. The names are the derivation gates the rest of the repository is arranged around — <code>test_kem_internal</code>, <code>test_dsa_public_policy</code>, <code>test_vector_harness</code>, <code>test_secret_data</code>.</figcaption>
+</figure>
+
 ```
 
 The toolchain is pinned by declaration: CMake 3.20 or newer and `cxx_std_20` for the C++ side, Rust edition 2021 with `serde` and `serde_json` 1.0 for the crate, plus a `python3` and a `bash` for the manifest checks. CTest registers twenty test executables, including release-policy tests that assert the deterministic sampling hooks stay unreachable without `PQCORE_ENABLE_TEST_SAMPLING`.
@@ -49,3 +59,13 @@ Nothing here is production cryptography, and the repository says so repeatedly. 
 The vector story is deliberately unflattering. The ACVP prompt and expected-result files are vendored and hash-checked, but the Rust runner can only report them as pending — `docs/vector-ingestion.md` records the actual output of a real run, `summary passed=0 pending=859 skipped=0 failed=0`, and a unit test in `rust/pqcore/src/vector_runner.rs` pins that 859. A missing vector set is never silently treated as a pass.
 
 `audits/side-channel/manifest.json` sets `gate_status` to `incomplete-production-blocker` with `production_status: false`, and names the reasons across eight modules: value-dependent normalization branches in the field arithmetic, rejection loops in the samplers that branch on secret candidates, and unreviewed optimized compiler output. There are no benchmarks and no performance claim, and no cross-implementation differential result: the Rust crate exposes no public algorithm, so the C++/Rust comparison the derivation loop calls for cannot run.
+
+<figure>
+  <img src="/assets/repos/ml-kem-ml-dsa-lab/audit-status-2000.webp"
+       srcset="/assets/repos/ml-kem-ml-dsa-lab/audit-status-1000.webp 1000w, /assets/repos/ml-kem-ml-dsa-lab/audit-status-2000.webp 2000w"
+       sizes="(min-width: 1040px) 1000px, 100vw"
+       width="2000" height="1028" style="height:auto" loading="lazy" decoding="async"
+       alt="Horizontal stacked bars counting review statuses across eight modules for review status, secret-dependent branches, secret-dependent memory access and error paths, with five branch entries marked as open production blockers.">
+  <figcaption>The side-channel manifest, counted: eight modules, and for each of its four review dimensions how the entries are marked. Five modules carry an <code>open-production-blocker</code> secret-dependent branch, and five need a final review of secret-dependent memory access. That is what <code>gate_status: incomplete-production-blocker</code> looks like when you count it rather than read it.</figcaption>
+</figure>
+

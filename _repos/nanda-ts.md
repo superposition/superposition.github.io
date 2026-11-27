@@ -20,6 +20,15 @@ The same tree also carries hardware: an ESP32 firmware directory for an M5StickC
 
 `src/server/AgentServer.ts` wraps `Bun.serve` with a fixed set of routes: `GET /.well-known/agent.json` returns the agent card, `/health`, `/healthz` and `/readyz` return health responses, `POST /rpc` dispatches JSON-RPC and switches to server-sent events when the request's `Accept` header asks for `text/event-stream`, and `POST /rpc/stream` always streams. CORS headers go on every response. Handlers are registered by JSON-RPC method name through `on`, and `onMessage` binds the `message/send` method to a callback that can create tasks and update their state.
 
+<figure>
+  <img src="/assets/repos/nanda-ts/server-session-1826.webp"
+       srcset="/assets/repos/nanda-ts/server-session-913.webp 913w, /assets/repos/nanda-ts/server-session-1826.webp 1826w"
+       sizes="(min-width: 1040px) 1000px, 100vw"
+       width="1826" height="728" style="height:auto" loading="lazy" decoding="async"
+       alt="A terminal: a health check returning ok for echo-agent, the agent card JSON with one echo skill, and a message/send JSON-RPC call returning a completed task with Echo: ping.">
+  <figcaption>The example server, three requests: <code>/health</code> reports the echo agent, <code>/.well-known/agent.json</code> returns the card with its single skill, and a <code>message/send</code> JSON-RPC post comes back as a task in state <code>COMPLETED</code> carrying <code>Echo: ping</code>. That round trip is the claim the README makes, run against the tree as committed.</figcaption>
+</figure>
+
 `src/server/A2AHandler.ts` is the dispatcher behind those routes: a map from method name to handler, an in-memory task store, and three built-in methods — `tasks/get`, `tasks/list` and `tasks/cancel` — that operate on it.
 
 `src/registry/IndexClient.ts` talks to `https://api.projectnanda.org/v1` by default: `POST /agents` to register, `GET /agents/:handle` to resolve (a 404 becomes `null`), and a query-string search. `src/registry/cache.ts` wraps `bun:sqlite` with a TTL, five minutes unless configured. `src/registry/QuiltResolver.ts` resolves one handle across several registries in parallel and merges the agent card, the AgentFacts document and the endpoint list into one record.
@@ -41,6 +50,15 @@ curl http://127.0.0.1:3111/.well-known/agent.json
 ```
 
 The card comes back with the echo skill, and a `message/send` JSON-RPC post to `/rpc` returns a task in state `COMPLETED`. The example listens on port 3000 unless `PORT` says otherwise.
+
+<figure>
+  <img src="/assets/repos/nanda-ts/unit-tests-1500.webp"
+       srcset="/assets/repos/nanda-ts/unit-tests-750.webp 750w, /assets/repos/nanda-ts/unit-tests-1500.webp 1500w"
+       sizes="(min-width: 1000px) 900px, 100vw"
+       width="1500" height="983" style="height:auto" loading="lazy" decoding="async"
+       alt="A terminal showing the end of a bun test run: coverage rows per file, then 371 pass, 0 fail, 820 expect() calls, and Ran 371 tests across 12 files in 638 milliseconds.">
+  <figcaption>The unit suite as the README's second command runs it: 371 tests across 12 files, 0 failures, 820 assertions, 638 ms. The coverage rows above the summary are Bun's own, printed per file; the integration suite, which the page counts separately, is a different command.</figcaption>
+</figure>
 
 ## Caveats
 

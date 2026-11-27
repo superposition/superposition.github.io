@@ -23,12 +23,21 @@ SceneLab is a control layer for Ableton Live that takes its orders as JSON. A re
   <figcaption>The plan <code>plan_arrangement</code> returns for the <code>city-pop-6-8</code> template, drawn from the JSON it printed: six scenes from Intro Hook to Outro Vamp, seven tracks, forty-two clips, at 96 BPM in A major with a 6/8 meter. The tint of each section follows its energy value, printed under its name, and the number inside a block is how many MIDI notes that clip carries — forty-two clips, no Live set touched.</figcaption>
 </figure>
 
-
 The problem is that an AI agent editing a real DAW session has no stable contract to work against. Every client would otherwise reimplement clip creation, and none of them would be safe. SceneLab puts a single CLI in the middle: it owns the schemas, the dry-run default, and the confirmation gate, so an MCP client, a shell script, and a test all drive the same code. Writes are opt-in twice over — a request must carry `"dryRun": false` and `"confirm": "apply"` before anything mutates, and the request set contains no destructive operations.
 
 ## How it works
 
 The repository is an npm workspace with three packages. `packages/cli/src/index.ts` is the entry point: it reads stdin, parses JSON, validates through `schema.ts`, and dispatches to `actions.ts`. `scan_library` and `plan_arrangement` are implemented in the CLI itself; every other action is forwarded to the bridge when `SCENELAB_BRIDGE_URL` is set and otherwise returns a `not_implemented` response rather than pretending to work.
+
+<figure>
+  <img src="/assets/repos/scenelab/cli-plan-1448.webp"
+       srcset="/assets/repos/scenelab/cli-plan-724.webp 724w, /assets/repos/scenelab/cli-plan-1448.webp 1448w"
+       sizes="(min-width: 1000px) 900px, 100vw"
+       width="1448" height="1604" style="height:auto" loading="lazy" decoding="async"
+       alt="A terminal showing the CLI invocation and the start of its JSON reply: ok true, dryRun true, summary Planned City Pop 6/8 Proof, then the plan's meter, 96 BPM, A major and the first scene.">
+  <figcaption>The dry run, printed: one JSON object in on standard input, one object out — <code>ok</code>, <code>dryRun</code> still true, and the plan beneath it, opening with the 6/8 meter, 96 BPM and A major before the scenes. Nothing was applied; a write needs <code>"confirm": "apply"</code> as well as <code>"dryRun": false</code>.</figcaption>
+</figure>
+
 
 `planner.ts` holds the arrangement model and one stretch of hand-written city pop harmony: per section, arrays of chords, a bass line, and a lead line as MIDI note numbers. `plan_arrangement` expands those into an `ArrangementPlan` of scenes, tracks with roles and required flags, one clip per scene-track pair with named MIDI notes, and automation entries with a target and a gesture. `templates.ts` validates the JSON templates in `templates/arrangements/` with zod — meter, tempo range, sections, tracks, assets — and raises `TemplateRegistryError` on a bad registry. `library.ts` walks an Ableton User Library and classifies `.adg`, `.alc`, `.adv`, `.wav`, `.amxd`, and `.als` files into a typed inventory.
 

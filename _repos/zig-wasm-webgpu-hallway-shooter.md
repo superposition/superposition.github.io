@@ -14,6 +14,15 @@ order: 17
 
 A dark browser canvas holding one vertical corridor, 320 units wide and 720 tall. A green box sits near the top of it and the corridor streams up toward that box: orange rectangles and blue swinging rectangles climb the screen while white four-pixel bullets travel down into them. A monospace HUD in the corner prints the score and the keys — WASD or arrows to move, Space to shoot, R to reset — and the rest of the page is empty.
 
+<figure>
+  <img src="/assets/repos/zig-wasm-webgpu-hallway-shooter/corridor-open-1440.webp"
+       srcset="/assets/repos/zig-wasm-webgpu-hallway-shooter/corridor-open-720.webp 720w, /assets/repos/zig-wasm-webgpu-hallway-shooter/corridor-open-1440.webp 1440w"
+       sizes="(min-width: 1040px) 1000px, 100vw"
+       width="1440" height="900" style="height:auto" loading="lazy" decoding="async"
+       alt="A dark vertical corridor with a green player box near the top, orange and blue obstacle rectangles climbing toward it, and a small monospace score readout.">
+  <figcaption>The game running: the corridor with the green player box near the top, orange and blue obstacles, and the HUD reading Score 231 about a second into a run. Built from this tree with Zig 0.14.1 into <code>dist/game.wasm</code> and driven in Chromium with a software rasteriser, so these are the module's own rectangles, drawn without a GPU.</figcaption>
+</figure>
+
 Three runtimes do the work in sequence. The simulation is a Zig program compiled to a freestanding `wasm32` module, the module runs inside a Web Worker, and the main thread draws whatever the worker last produced with WebGPU, as a single instanced draw over flat quads. The repository is the wiring for that seam rather than a game: nine files, no dependencies, no build system beyond Zig's own and npm's script runner. Its subject is how much of a program can live behind a WebAssembly boundary when there is no runtime on the far side.
 
 ## How it works
@@ -23,6 +32,15 @@ Three runtimes do the work in sequence. The simulation is a Zig program compiled
 `buildRender()` then rewrites the instance buffer in camera-relative coordinates, and that buffer is the whole interface to the renderer. `zig/build.zig` exports five symbols — `reset`, `step`, `get_render_ptr`, `get_render_len_f32`, `get_score` — and disables the entry point, so the module carries no WASI imports and no start function.
 
 `web/src/sim.worker.js` instantiates `/dist/game.wasm`, calls `step` from a 16 ms interval, copies the frame out of the module's memory into a fresh `Float32Array`, and transfers that buffer to the main thread so it can be read without waiting on the worker. `web/src/main.js` holds the WebGPU side: one pipeline, a six-vertex unit quad, and per-instance attributes for position, size and colour. The vertex shader converts hall pixels to clip space through a uniform holding the canvas size, and the corridor is letterboxed with `min(width / 320, height / 720)`.
+
+<figure>
+  <img src="/assets/repos/zig-wasm-webgpu-hallway-shooter/corridor-moving-1440.webp"
+       srcset="/assets/repos/zig-wasm-webgpu-hallway-shooter/corridor-moving-720.webp 720w, /assets/repos/zig-wasm-webgpu-hallway-shooter/corridor-moving-1440.webp 1440w"
+       sizes="(min-width: 1040px) 1000px, 100vw"
+       width="1440" height="900" style="height:auto" loading="lazy" decoding="async"
+       alt="The same corridor twelve seconds later, obstacles in new positions and the score readout at 2822.">
+  <figcaption>Twelve seconds later: Score 2822, the corridor still streaming, the player sprite moved up the hall. The score is distance travelled plus fifty for each obstacle destroyed, so most of it is survival; the hall is a fixed viewport and the sprite moves inside it, because the renderer draws flat quads and has no camera to tilt.</figcaption>
+</figure>
 
 `server.mjs` is an ordinary static file server. It listens on `127.0.0.1:5173`, refuses paths outside the repository root, sends `.wasm` as `application/wasm`, and sets the cross-origin isolation headers a shared-memory build would need.
 

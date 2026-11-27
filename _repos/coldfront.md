@@ -24,6 +24,15 @@ Cold Front is a dark landing page for a fictional Arctic espionage mission. It o
   <figcaption>The static export in a 1440×1000 window; the chip at top right is the auth dock reporting an unconfigured Clerk application.</figcaption>
 </figure>
 
+<figure>
+  <img src="/assets/repos/coldfront/mission-cards-1440.webp"
+       srcset="/assets/repos/coldfront/mission-cards-720.webp 720w, /assets/repos/coldfront/mission-cards-1440.webp 1440w"
+       sizes="(min-width: 1040px) 1000px, 100vw"
+       width="1440" height="900" style="height:auto" loading="lazy" decoding="async"
+       alt="The mission section of the deployed page: three numbered cards headed 01/BRIEFING, 02/COUNTERINTEL and 03/EXTRACTION, each with a headline and a short paragraph.">
+  <figcaption>The same page scrolled past the hero, at the deployed address rather than in a local window: three numbered mission cards, with the counterintelligence card carrying its own channel warning. The components are the ones in <code>crates/coldfront-ui</code> — the section is a template assembled from atoms and molecules, not bespoke markup for this page.</figcaption>
+</figure>
+
 The problem is familiar: marketing pages get assembled from one-off markup before there is anything to describe, and the visual language is never tested as a system. Here the site is the design system. Typed tokens, atomic components, a workbench with browser checks, and a static exporter all read from one crate, so a change is visible in the landing page, the catalog, and the exported Pages build at once.
 
 ## How it works

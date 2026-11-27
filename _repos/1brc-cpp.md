@@ -25,7 +25,6 @@ The problem is the One Billion Row Challenge. A file of `station;temperature` li
   <figcaption>The README's benchmark table, ten million rows on sixteen cores, drawn as the ladder the repository is arranged around: one change per version. <code>run_benchmark.sh</code> produced these numbers with <code>time -p</code> and they are not reproduced in CI. The last bar is the interesting one — <code>v6_optimized</code> is slower than the <code>v5_parallel</code> it was meant to improve on.</figcaption>
 </figure>
 
-
 ## How it works
 
 `src/common.hpp` fixes the data model for every version. `brc::Stats` holds `min`, `max`, `sum` and `count` as `int64_t`, and a temperature is stored as the integer tenths of a degree — `-12.3` is `-123` — so the hot loop never calls `stod` and never sees a float. `update` and `merge` are the only two mutations. `output_results` does the conversion back to one decimal place via `format_temp` and walks the stations in sorted order.
@@ -54,7 +53,6 @@ The toolchain is pinned in `.bazelrc`: C++20, and a default `--config=opt` of `-
 ## Caveats
 
 The code is POSIX-only. Every version past the first includes `sys/mman.h` and `unistd.h`, and `open`/`fstat`/`mmap`/`munmap` are called directly, so the workspace does not build on Windows.
-
 
 <figure>
   <img src="/assets/repos/1brc-cpp/step-savings-1800.webp"

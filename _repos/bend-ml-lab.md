@@ -62,7 +62,6 @@ gcc, OpenMP, Node and NumPy twins and writes `bench/einsum/results.csv`.
   <figcaption>The trainer's own sweep, from <code>train/epochs.csv</code>: <code>train/epoch_sweep.sh</code> rewrites the epoch count into a scratch copy of the trainer and records the final loss and the wall clock of each run. Loss falls roughly with the square root of the epoch count while the time grows linearly, which is the shape this toy trainer was built to expose rather than to beat.</figcaption>
 </figure>
 
-
 ## Run it
 
 The README's quickstart targets WSL2 and pins Bend 2.0.40 (also what CI installs):
@@ -107,7 +106,6 @@ path unsupported. Native Linux is the supported host; there is no Windows target
        alt="Horizontal bar chart of GPU kernel time for six tile configurations, from 9,008 ms for the naive 256-lane kernel down to 95 ms for the 2x2 tiled kernel at 1,024 lanes.">
   <figcaption>The same matmul as a GPU kernel, six ways, from <code>bench/einsum/gpu.csv</code>, with the checksum identical in every row. Transposing B turned strided reads into contiguous ones and took 9.0 s to 1.4 s; giving each lane a row, then a 2x2 tile of rows, took it to 141 ms and then 95 ms. The kernel never changed its arithmetic, only what each lane touched and how much of it was in flight.</figcaption>
 </figure>
-
 
 The einsum work is a lowering, not an engine. `docs/einsum.md` says there is no runtime contraction
 engine on purpose: an equation picks one specialised kernel. Its table still marks batched contraction
