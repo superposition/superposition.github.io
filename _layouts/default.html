@@ -4,7 +4,30 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0a0d">
+  {%- comment -%}
+    jekyll-seo-tag falls back to a document's excerpt, which for a collection
+    document is its first heading, so every repository page would ship
+    "What it is" as its description. Repository pages carry their own tagline
+    instead, and emit it once — meta, Open Graph and Twitter all read the same
+    value here, so nothing is duplicated by the seo tag being skipped.
+  {%- endcomment -%}
+  {% if page.collection == 'repos' %}
+  {%- assign repo_description = page.tagline | default: site.description -%}
+  <title>{{ page.title | default: page.slug }} · {{ site.title }}</title>
+  <meta name="description" content="{{ repo_description | strip_html | normalize_whitespace | escape }}">
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ page.title | default: page.slug | strip_html | escape }}">
+  <meta property="og:description" content="{{ repo_description | strip_html | normalize_whitespace | escape }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:site_name" content="{{ site.title }}">
+  {% if page.image %}<meta property="og:image" content="{{ page.image | absolute_url }}">{% endif %}
+  <meta name="twitter:card" content="{% if page.image %}summary_large_image{% else %}summary{% endif %}">
+  <meta name="twitter:title" content="{{ page.title | default: page.slug | strip_html | escape }}">
+  <meta name="twitter:description" content="{{ repo_description | strip_html | normalize_whitespace | escape }}">
+  {% else %}
   {% seo %}
+  {% endif %}
   {% feed_meta %}
   {% include jsonld.html %}
   <link rel="icon" type="image/svg+xml" href="{{ '/assets/mark/primitive.svg' | relative_url }}">
