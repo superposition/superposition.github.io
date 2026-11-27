@@ -933,6 +933,39 @@ mjx-container[display="true"] { margin-block: var(--space-3) !important; }
 .site-footer a:hover { color: var(--accent-text); text-decoration: underline; }
 .site-footer a:active { color: var(--accent-peak); }
 
+/* Soundtrack -------------------------------------------------------------- */
+
+/* The site's own track, in the footer row with the quiet links. It is a button
+   and not a link, because it starts and stops something rather than going
+   somewhere, and it is the one control on the site sized to a thumb rather than
+   to its type: --target-touch square, because a play control is pressed on a
+   phone in this footer and never read like a line of text. Pressing it moves
+   nothing — the glyph swaps inside the same 12px box and the word stays put, so
+   the row cannot reflow when the state changes. --starlight at rest (15.44:1 on
+   void), --accent-text on hover (12.93:1), the --state ring at 4px on focus, and
+   --accent-text for a listener who asked for the music before: the stored choice
+   paints the control, and never plays it. */
+.soundtrack-toggle {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  min-height: var(--target-touch); min-width: var(--target-touch);
+  padding-block: var(--space-half);
+  border: 0;
+  background: none;
+  color: var(--starlight);
+  font: var(--step-1)/1.8 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  cursor: pointer;
+  appearance: none;
+  transition: color var(--dur-state) var(--ease-out);
+}
+.soundtrack-icon { width: var(--space-2); height: var(--space-2); fill: currentColor; }
+.soundtrack-toggle[aria-pressed="true"] .soundtrack-play { display: none; }
+.soundtrack-toggle[aria-pressed="false"] .soundtrack-pause { display: none; }
+.soundtrack-toggle[data-pref="on"] { color: var(--accent-text); }
+.soundtrack-toggle:hover { color: var(--accent-text); text-decoration: underline; }
+.soundtrack-toggle:active { color: var(--accent-peak); }
+.soundtrack-toggle:focus-visible { outline: var(--ring) solid var(--state); outline-offset: var(--space-half); }
+
 /* Repository pages -------------------------------------------------------- */
 
 .repo-page { padding-bottom: var(--space-section); }

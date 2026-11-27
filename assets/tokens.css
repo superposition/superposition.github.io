@@ -278,6 +278,11 @@
   --space-section: clamp(40px, 5.4vw, 72px);
   --space-open: clamp(56px, 8vw, 112px);
 
+  /* The one box on the site sized to a thumb rather than to its type. The
+     soundtrack control is pressed on a phone in the footer, so it is a 44px
+     square; every other control clears the 24px floor from its padding. */
+  --target-touch: 44px;
+
   /* Two densities, one scale. Comfortable is the reading density: prose, a
      journal row, a card. Compact is the data density: the repository index and
      any table with more than a dozen rows, where the reader is scanning columns
