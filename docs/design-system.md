@@ -68,19 +68,21 @@ The instrument identity sets `--font-text` to the mono face as well, so everythi
 |---|---|---|
 | `--step-hero` | `clamp(48px, 10.4vw, 150px)` | the home wordmark |
 | `--step-5` | `clamp(28px, 4.4vw, 44px)` | page and entry h1 |
-| `--step-4` | `clamp(19px, 2vw, 22px)` | lede, section titles, prose h2 |
-| `--step-3` | `17px` | body |
+| `--step-4` | `clamp(19px, 2vw, 22px)` | lede, section titles |
+| `--step-3` | `19px` | body |
 | `--step-2` | `15px` | entry lines |
 | `--step-1` | `13px` | meta, captions, buttons |
 | `--step-decal` | `11px` | decal eyebrows |
 
-Line height is `--leading-body` (1.7) for prose and `--leading-tight` (1.1) for display sizes. Measures are `--measure` (64ch) for prose, `--measure-narrow` (46ch) for lede text, `--max-crawl` (56ch) for the crawl.
+Line height is `--leading-body` (1.6) for prose and `--leading-tight` (1.1) for display sizes. Measures are `--measure` (34rem, 544px) for prose, `--measure-narrow` (30rem) for lede text, `--max-crawl` (56ch) for the crawl.
+
+A prose section heading is not display type. `h2` in prose is the label voice — IBM Plex Mono 600 at `--step-1`, uppercase, `--track-label`, in `--star` on the hairline — one rung above the `h3` that sits in the same voice at `--starlight`. Anton starts at `--step-4` and is the name a page is called by, not a heading inside a column: at 22px in a 544px column the condensed face reads as a shout at text size, and it overhangs nothing only because every block now shares one measure.
 
 Tracking is three tokens: `--track-label` (.10em, .16em instrument, .20em poster) for uppercase labels, `--track-display` (−.01em) for display type, `--track-hero` (.04em) for the wordmark. Display names are uppercase; a repository's own name and an entry's own title keep the case they were written with.
 
 ## Space, edges and motion
 
-`--space-1` … `--space-6` run 6px, 12px, 20px, 32px, `clamp(40px,5.4vw,72px)`, `clamp(56px,8vw,112px)`. `--radius` is 0 and `--border-hair` is the one hairline. The single exception is `--radius-decal` (3px), because a hardware label is a physical chip.
+`--space-1` … `--space-6` run 6px, 12px, 20px, 32px, `clamp(40px,5.4vw,72px)`, `clamp(56px,8vw,112px)`. Those size the inside of a component. Three named roles size the gaps between them, so a break of one kind is one number: `--flow` (`calc(var(--step-3) * 1.25)`, 23.75px) between blocks of prose, `--space-section` (`clamp(40px,5.4vw,72px)`) between the sections of a page, `--space-open` (`clamp(56px,8vw,112px)`) between the nav and the page's first line and again before the footer. `--radius` is 0 and `--border-hair` is the one hairline. The single exception is `--radius-decal` (3px), because a hardware label is a physical chip.
 
 `--hud-tick` (14px) and `--hud-weight` (1px) size the corner ticks. `--rail-bar` (3px), `--rail-pitch` (10px) and `--rail-cap` (1.5px) size the gauge rail; `--rail` is its colour.
 

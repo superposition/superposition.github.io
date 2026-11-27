@@ -150,18 +150,20 @@
   --step-decal: 11px;
   --step-1: 13px;
   --step-2: 15px;
-  --step-3: 17px;
+  --step-3: 19px;
   --step-4: clamp(19px, 2vw, 22px);
   --step-5: clamp(28px, 4.4vw, 44px);
   --step-hero: clamp(48px, 10.4vw, 150px);
 
   --leading-tight: 1.1;
-  --leading-body: 1.7;
+  --leading-body: 1.6;
   /* Rem, not ch: a ch measure resolves against the font of whatever element
      it lands on, so the same token gave 544px in prose, 696px inside an Anton
-     heading and 488px in mono. 34rem is the 544px the prose wants. */
+     heading and 488px in mono. 34rem is the 544px the prose wants, and the
+     narrower one is narrower: at 38rem the lede was 608px against a 544px
+     column and overhung the text it introduces by 64px. */
   --measure: 34rem;
-  --measure-narrow: 38rem;
+  --measure-narrow: 30rem;
 
   /* Tracking. Labels are the machine voice; display is the poster. */
   --track-label: .10em;
@@ -175,6 +177,14 @@
   --space-4: 32px;
   --space-5: clamp(40px, 5.4vw, 72px);
   --space-6: clamp(56px, 8vw, 112px);
+
+  /* Rhythm roles. The steps above size the inside of a component; these three
+     name the gaps between them, so a break of one kind is one number. --flow
+     is resolved once against the body size, so a paragraph break is 23.75px
+     whatever the block beside it is set to. */
+  --flow: calc(var(--step-3) * 1.25);
+  --space-section: clamp(40px, 5.4vw, 72px);
+  --space-open: clamp(56px, 8vw, 112px);
 
   /* Edges. The site has no rounded corners and one hairline weight; a decal is
      the single exception, because a hardware label is a physical chip. */

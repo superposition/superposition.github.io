@@ -43,7 +43,7 @@ sitemap: false
     <div class="scale-row"><span class="name">--step-hero</span><span style="font: var(--step-hero)/.92 var(--font-display); letter-spacing: -.02em">Superposition</span></div>
     <div class="scale-row"><span class="name">--step-5</span><span style="font: var(--step-5)/1.1 var(--font-display)">Heading one</span></div>
     <div class="scale-row"><span class="name">--step-4</span><span style="font: var(--step-4)/1.25 var(--font-display)">Heading two</span></div>
-    <div class="scale-row"><span class="name">--step-3</span><span style="font: var(--step-3)/1.7 var(--font-text)">Body text, set in the text face.</span></div>
+    <div class="scale-row"><span class="name">--step-3</span><span style="font: var(--step-3)/var(--leading-body) var(--font-text)">Body text, set in the text face.</span></div>
     <div class="scale-row"><span class="name">--step-2</span><span style="font: var(--step-2)/1.7 var(--font-mono)">Entry line, mono</span></div>
     <div class="scale-row"><span class="name">--step-2</span><span style="font: var(--step-2)/1.7 var(--font-mono)">Entry line, IBM Plex Mono</span></div>
     <div class="scale-row"><span class="name">--step-1</span><span style="font: var(--step-1)/1.6 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label)">Meta, mono, tracked</span></div>
@@ -78,6 +78,8 @@ sitemap: false
       <p class="kicker">Prose</p>
       <div class="prose">
         <p>Body copy in the text face, with a <a href="#sg-parts">link in the prose colour</a> and <code>inline code</code> on the surface.</p>
+        <h2>A section heading inside prose</h2>
+        <p>The section heading is the label voice, not the display face: IBM Plex Mono 600 at --step-1, uppercase, tracked, in star on the hairline. Anton starts at 22px and is the name a page is called by.</p>
         <blockquote>A blockquote keeps the plum edge and steps back to the secondary text colour.</blockquote>
         <h3>A third-level heading</h3>
         <p>Text under it.</p>
