@@ -139,21 +139,24 @@
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
   --grain-opacity: .05;
   --vignette: radial-gradient(118% 92% at 50% 42%, transparent 46%, rgba(5, 4, 3, .42) 78%, rgba(5, 4, 3, .62) 100%);
-  /* Campaign posters. The five values below are the alphas a poster needs on
-     top of the shared palette: a lamp behind the key art, the lit rule under it,
-     the cool half of the wash over it, the scrim it fades into, and the metal
-     its frame is cut from. Everything else a poster draws with is a semantic
-     token, so the three identities re-light a poster without touching it. */
+  /* Campaign posters. The values below are what a printed sheet needs on top
+     of the shared palette: a lamp behind the key art, the lit rule under it,
+     the cool half of the wash over it, the scrim it fades into, the metal its
+     frame is cut from, and the film under its one label. The scrim is the
+     ground's own channels, so a poster fades into whatever ground an identity
+     has set; everything else a poster draws with is a semantic token. */
   --poster-lamp: rgba(255, 194, 74, .16);
   --poster-edge: rgba(255, 194, 74, .38);
   --poster-wash: rgba(143, 211, 255, .10);
-  --poster-scrim: rgba(11, 10, 13, .96);
+  --poster-scrim: rgba(var(--void-rgb), .96);
   --poster-metal: rgba(230, 220, 200, .26);
   /* The film under the release number. It is deliberately not --decal-bg: the
      poster identity turns the page's decals into plain labels, and the one
      label that sits on a photograph has to keep its own ground in every
-     identity. Measured on its own film: --poster-plate-text 12.2:1. */
-  --poster-plate: rgba(5, 4, 8, .88);
+     identity. It stays a literal black rather than a ground channel so the
+     contrast predictor can composite it: --poster-plate-text 16.9:1 there,
+     16.8:1 in the two other identities. */
+  --poster-plate: rgba(0, 0, 0, .88);
   --poster-plate-text: #efe6d3;
 
   --hero-scrim: linear-gradient(180deg,
