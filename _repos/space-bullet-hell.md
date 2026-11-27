@@ -19,7 +19,7 @@ A browser game with no build step. `index.html` holds the markup, the CSS and an
   <img src="/assets/repos/space-bullet-hell/guardian-warlord-1200.webp"
        srcset="/assets/repos/space-bullet-hell/guardian-warlord-1200.webp 1200w, /assets/repos/space-bullet-hell/guardian-warlord-2400.webp 2400w"
        sizes="(min-width: 1040px) 1000px, 100vw"
-       width="1200" height="675" loading="lazy"
+       width="1200" height="675" style="height:auto" loading="lazy"
        alt="A dark starfield with the game's HUD in the corners, the player near the left edge with its jetpack flame lit, pink and cyan enemy bullets across the middle, and the boss bar reading WARLORD.">
   <figcaption>WARLORD, the first of the five bosses, at full health (900) in THE DATA RING. The
   score reads 660 and the weapon has been upgraded to 2. The HUD is DOM sitting over the canvas;
@@ -40,7 +40,7 @@ The problem is a rendering budget with no slack. A bullet hell puts hundreds of 
   <img src="/assets/repos/space-bullet-hell/guardian-data-ring-1200.webp"
        srcset="/assets/repos/space-bullet-hell/guardian-data-ring-1200.webp 1200w, /assets/repos/space-bullet-hell/guardian-data-ring-2400.webp 2400w"
        sizes="(min-width: 1040px) 1000px, 100vw"
-       width="1200" height="675" loading="lazy"
+       width="1200" height="675" style="height:auto" loading="lazy"
        alt="The first sector in play: a dark starfield, the player at the left edge with an orange jetpack flame, and obstacles and enemies scattered across the middle of the screen.">
   <figcaption>THE DATA RING early in its schedule, before the boss. Asteroids, clusters and drones
   arrive in the order <code>js/levels.js</code> lists them, and the score is 290.</figcaption>

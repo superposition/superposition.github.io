@@ -39,6 +39,9 @@ python3 scripts/check-vector-manifest.py --self-test --require-official
 python3 scripts/check-side-channel-manifest.py --self-test
 bash scripts/check-rust-crate-gate.sh
 
+
+```
+
 <figure>
   <img src="/assets/repos/ml-kem-ml-dsa-lab/ctest-run-1496.webp"
        srcset="/assets/repos/ml-kem-ml-dsa-lab/ctest-run-748.webp 748w, /assets/repos/ml-kem-ml-dsa-lab/ctest-run-1496.webp 1496w"
@@ -47,8 +50,6 @@ bash scripts/check-rust-crate-gate.sh
        alt="A terminal showing ctest output: twenty tests listed by name, all passing, with 100% tests passed and 0 failed in 0.11 seconds.">
   <figcaption>The C++ suite, run the way the README's command list says: configure with <code>-DPQCORE_BUILD_TESTS=ON</code>, build, then <code>ctest</code>. Twenty tests, all passing, 0.11 s of test time. The names are the derivation gates the rest of the repository is arranged around — <code>test_kem_internal</code>, <code>test_dsa_public_policy</code>, <code>test_vector_harness</code>, <code>test_secret_data</code>.</figcaption>
 </figure>
-
-```
 
 The toolchain is pinned by declaration: CMake 3.20 or newer and `cxx_std_20` for the C++ side, Rust edition 2021 with `serde` and `serde_json` 1.0 for the crate, plus a `python3` and a `bash` for the manifest checks. CTest registers twenty test executables, including release-policy tests that assert the deterministic sampling hooks stay unreachable without `PQCORE_ENABLE_TEST_SAMPLING`.
 
