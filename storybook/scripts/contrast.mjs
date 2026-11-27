@@ -127,7 +127,7 @@ const PAIRS = [
   ['poster logline',       'starlight',   'void',         'text'],
   ['poster credits',       'dust',        'void',         'text'],
   ['poster slate link',    'accent-text', 'void',         'text'],
-  ['poster release decal', 'decal-text',  'decal-bg',     'text'],
+  ['poster release film',  'poster-plate-text', 'poster-plate', 'text'],
   ['poster focus ring',    'state',       'void',         'edge'],
   ['poster lit edge',      'poster-edge', 'void',         'divider'],
   ['poster frame',         'poster-metal','void',         'divider'],

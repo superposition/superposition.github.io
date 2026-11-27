@@ -27,7 +27,7 @@ const poster = ({ variant = 'still', c = campaign, number = '02 of 20', width = 
           variant === 'still'
             ? `<img src="${c.still}" alt="" width="1200" height="1200" loading="lazy" decoding="async">`
             : ''
-        }<span class="poster-no decal">${number}</span></span>`;
+        }<span class="poster-no">${number}</span></span>`;
   return `<article class="poster poster--${variant}${long ? ' poster--long' : ''}"${width ? ` style="width:${width}"` : ''}>
   <a class="poster-link" href="#storybook-root">
     ${art}

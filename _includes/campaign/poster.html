@@ -65,7 +65,7 @@
       {%- if star_drawing %}
       <img class="poster-figure" src="{{ star_drawing.path | relative_url }}" alt="{{ star.alt | default: star.name | default: star.slug | escape }}" width="320" height="400" loading="lazy" decoding="async">
       {%- endif %}
-      <span class="poster-no decal">{% if number > 0 %}{{ number }} of {{ programme }}{% else %}Superposition Pictures{% endif %}</span>
+      <span class="poster-no">{% if number > 0 %}{{ number }} of {{ programme }}{% else %}Superposition Pictures{% endif %}</span>
     </span>
     {%- endif %}
     <span class="poster-body">

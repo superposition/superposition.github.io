@@ -28,9 +28,12 @@
   logline: "Einsum, training epochs and weight diagnostics in Bend 2, measured against C and NumPy twins."
   cast: [the einsum, the twin, the epoch]
   stills:
-    - src: /assets/art/galaxy/andromeda-960.webp
-      alt: "A panoramic field of stars in Andromeda."
-      credit: NASA/JPL-Caltech
+    - src: /assets/repos/bend-ml-lab/matmul-implementations-2000.webp
+      alt: "Horizontal bar chart on a log scale, one bar per implementation: Bend one lane 3,978 ms, Bend 256 lanes 213 ms, C sequential 4,048 ms, C with OpenMP 223 ms, Node sequential 4,503 ms, NumPy BLAS 24 ms."
+      credit: From the repository
+    - src: /assets/repos/bend-ml-lab/epoch-sweep-1800.webp
+      alt: "Line chart on log-log axes of final loss against epochs run: 0.2537 after one epoch in 6 ms, 0.0883 after two in 9 ms, 0.0293 after four in 16 ms, 0.0096 after eight in 30 ms."
+      credit: From the repository
 
 - slug: mage
   title: Mage
@@ -41,13 +44,13 @@
   cast: [the profiler, the kernel, the wall clock]
   stills:
     - src: /assets/repos/mage/kernel-progression-1200.webp
-      alt: "Two step charts of GPU kernel time in microseconds, each stage labelled with the change that produced it."
+      alt: "Two step charts of GPU kernel time in microseconds: matrix multiplication falls from 343.99 to 68.62, LayerNorm from 18.64 to 8.97, each stage labelled with the change that produced it."
       credit: From the repository
     - src: /assets/repos/mage/comparison-views-1200.webp
-      alt: "Bar charts of GPU kernel time, and of time around the call, per operation, for PyTorch, Triton and Rust."
+      alt: "Bar charts of GPU kernel time and of time around the call, per operation, for PyTorch, Triton and Rust."
       credit: From the repository
     - src: /assets/repos/mage/matmul-layouts-1200.webp
-      alt: "Two schematics of the same matmul, one threaded by the compiler and one by the kernel author."
+      alt: "Two schematics of the same matmul: cuTile Rust on the left, where the compiler threads a 32 by 128 output tile, and cuda-oxide on the right, a 64 by 64 block with a 4 by 4 register tile per thread."
       credit: From the repository
 
 - slug: qualia
@@ -59,13 +62,13 @@
   cast: [the arena, the evidence log, the jepa runtime]
   stills:
     - src: /assets/repos/qualia/console-brain-panel-800.webp
-      alt: "The Qualia console's Brain panel: a point cloud of the fly connectome with the current tick's firing neurons lit."
+      alt: "The Qualia console's Brain panel: a point cloud of the fly connectome with the current tick's firing neurons lit, beside a panel of artifact counts."
       credit: From the repository
     - src: /assets/repos/qualia/dataset-gate-800.webp
-      alt: "A bar chart of two recorded sessions through the dataset's transition gates, with the promotion floor drawn far above them."
+      alt: "A bar chart of two recorded sessions through the dataset's transition gates, with the promotion floor drawn above them far off the scale."
       credit: From the repository
     - src: /assets/repos/qualia/prior-path-800.webp
-      alt: "A flow diagram from a connectome dataset through the committed graph to the belief layer the console reads."
+      alt: "A flow diagram from the connectome dataset through the committed graph and manifest, a digest-checked load and a peak-normalised in-strength, into the coupling applied to belief slots, and out to the belief layer the console panel reads."
       credit: From the repository
 
 - slug: divulge
@@ -77,13 +80,13 @@
   cast: [the binary, the model, the evidence graph]
   stills:
     - src: /assets/repos/divulge/first-screen-windows-1200.webp
-      alt: "The DIVULGE window on Windows: an investigation tree, an evidence graph, and a Harness Insight panel."
+      alt: "The DIVULGE window on Windows: an investigation tree on the left, an evidence graph in the centre, and a Harness Insight panel on the right, with the built-in teaching example loaded."
       credit: From the repository
     - src: /assets/repos/divulge/synthetic-explanation-800.webp
       alt: "Harness Insight showing a recorded explanation with its question, action, evidence, limitation and next probe."
       credit: From the repository
     - src: /assets/repos/divulge/v15-code-large-1200.webp
-      alt: "The Code view's instruction inspector: the bytes, the source and image coordinates, and a candidate destination."
+      alt: "The Code view's instruction inspector on a saved V15 investigation, showing the bytes, the distinct source and image coordinates, and a candidate destination."
       credit: From the repository
 
 - slug: "91"
@@ -95,10 +98,13 @@
   cast: [the chord circle, the comping bass, the drum machine]
   stills:
     - src: /assets/repos/91/hero-752.webp
-      alt: "Three instrument screens side by side: the home screen's chord circle, the master bus, and a kaleidoscope visualizer."
+      alt: "Three instrument screens side by side: the home screen with its circular chord display, the master bus, and a kaleidoscope visualizer"
       credit: From the repository
     - src: /assets/repos/91/pages-752.webp
-      alt: "Six instrument pages in a grid: the FX page, the flex bank, the performance screen, the mixer, Synth Jam, and the sampler."
+      alt: "Six instrument pages in a grid: the FX page, the flex bank, the performance screen, the mixer, Synth Jam, and the sampler"
+      credit: From the repository
+    - src: /assets/repos/91/palettes-752.webp
+      alt: "Six instrument screens side by side: the home screen and the five theme screens the theme picker offers."
       credit: From the repository
 
 - slug: quantum-superposition
@@ -109,11 +115,11 @@
   logline: "Eight quantum models in one viewport, with sliders for balance and phase, and a basis select."
   cast: [the basis, the phase, the measurement]
   stills:
-    - src: /assets/repos/quantum-superposition/bloch-600.webp
-      alt: "A dark sphere with three labelled measurement axes and a copper line pointing from its centre to the prepared state."
+    - src: /assets/repos/quantum-superposition/bloch-1200.webp
+      alt: "A dark sphere with three labelled measurement axes and a copper line pointing from its centre to the prepared state"
       credit: From the repository
-    - src: /assets/repos/quantum-superposition/wave-600.webp
-      alt: "A luminous field of points forming two interfering wave patterns on a dark ground."
+    - src: /assets/repos/quantum-superposition/wave-1200.webp
+      alt: "A luminous field of points forming two interfering wave patterns on a dark ground"
       credit: From the repository
 
 - slug: coatcheck
@@ -124,9 +130,12 @@
   logline: "Points at a Topcoat workbench and writes one Playwright test per story, then runs them."
   cast: [the manifest, the story, the axe result]
   stills:
-    - src: /assets/art/galaxy/barred-1920.webp
-      alt: "A barred spiral galaxy: two bright arms sweeping out from a straight bar of stars."
-      credit: NASA/GSFC
+    - src: /assets/repos/coatcheck/flow-2000.webp
+      alt: "A diagram: the host app and Coatcheck.toml lead to a manifest, which produces generated Playwright and Axe tests, then story frames and screenshots, then axe results and an exit status."
+      credit: From the repository
+    - src: /assets/repos/coatcheck/init-session-1346.webp
+      alt: "A terminal: coatcheck init writes coatcheck/example.spec.ts and Coatcheck.toml, then the TOML's host and test sections and the first lines of the generated Playwright test."
+      credit: From the repository
 
 - slug: topcoat-blocks
   title: Topcoat Blocks
@@ -137,10 +146,10 @@
   cast: [the block, the registry, the copied source]
   stills:
     - src: /assets/repos/topcoat-blocks/sign-in-desktop-640.webp
-      alt: "The sign-in form on a light page at desktop width: a card holding an email field, a password field and a submit button."
+      alt: "The sign-in form on a light page at desktop width: a card holding an email field, a password field and a submit button"
       credit: From the repository
     - src: /assets/repos/topcoat-blocks/sign-in-mobile-393.webp
-      alt: "The same sign-in card on a narrow mobile viewport, fields and button stacked to the width of the screen."
+      alt: "The same sign-in card on a narrow mobile viewport, fields and button stacked to the width of the screen"
       credit: From the repository
 
 - slug: coldfront
@@ -152,7 +161,10 @@
   cast: [the dossier, the cipher, the courier]
   stills:
     - src: /assets/repos/coldfront/landing.webp
-      alt: "The Cold Front landing page: an oversized headline beside a live-intelligence rail showing satellite cover at 04 percent."
+      alt: "The Cold Front landing page: an oversized COLD FRONT headline beside a live-intelligence rail showing satellite cover at 04 percent."
+      credit: From the repository
+    - src: /assets/repos/coldfront/mission-cards-1440.webp
+      alt: "The mission section of the deployed page: three numbered cards headed 01/BRIEFING, 02/COUNTERINTEL and 03/EXTRACTION, each with a headline and a short paragraph."
       credit: From the repository
 
 - slug: cannoli-hell
@@ -163,8 +175,11 @@
   logline: "A blue capsule, four caves, and cannolis that walk over, light a fuse, and explode."
   cast: [the capsule, the fuse, the punch-back]
   stills:
-    - src: /assets/repos/cannoli-hell/arena.webp
-      alt: "The Cannoli Hell arena mid-run, with the HP counter in the top-left corner and the walled floor stretching away."
+    - src: /assets/repos/cannoli-hell/arena-play-1280.webp
+      alt: "The Cannoli Hell arena mid-run: a blue capsule player at the centre of a grey floor, golden cannoli bodies and red-orange bullets around it, and a stats line reading HP 4, Time 9s, Kills 2, Reflects 3, Caves 4."
+      credit: From the repository
+    - src: /assets/repos/cannoli-hell/arena-open-1280.webp
+      alt: "The arena four seconds into a run: a wide grey floor ringed by dark walls, the blue capsule at centre, a few golden cannolis scattered, and a stats line reading HP 5, Time 4s, Kills 0, Caves 4."
       credit: From the repository
 
 - slug: kotoba-line
@@ -176,7 +191,10 @@
   cast: [the drill, the kana, the skill tree]
   stills:
     - src: /assets/repos/kotoba-line/drill-1200.webp
-      alt: "The Kotoba Line drill: a vocabulary panel showing one word with its kana, and the form skill tree beside it."
+      alt: "The Kotoba Line drill in a browser: a vocabulary panel showing 行く with its kana いく, and the form skill tree beside it."
+      credit: From the repository
+    - src: /assets/repos/kotoba-line/state-flow-1000.webp
+      alt: "A diagram: a keypress goes to a TUI mode, which emits one of nine event types, appends it to the event log, and a reducer replays the log in order into Progress — cards with streaks and hints, points, unlocked levels."
       credit: From the repository
 
 - slug: scenelab
@@ -187,9 +205,12 @@
   logline: "Ableton arrangements addressed as JSON, with writes behind a dry run and a confirmation gate."
   cast: [the template, the planner, the confirmation gate]
   stills:
-    - src: /assets/art/galaxy/sombrero-1200.webp
-      alt: "The Sombrero Galaxy seen edge-on, a bright core inside a dark dust lane."
-      credit: NASA/JPL-Caltech
+    - src: /assets/repos/scenelab/arrangement-grid-2000.webp
+      alt: "Timeline grid of a planned arrangement: seven tracks down the left, bars one to thirty-nine across the bottom, six shaded sections from Intro Hook to Outro Vamp, and a clip block for every track in every section, each labelled with its MIDI note count."
+      credit: From the repository
+    - src: /assets/repos/scenelab/cli-plan-1448.webp
+      alt: "A terminal showing the CLI invocation and the start of its JSON reply: ok true, dryRun true, summary Planned City Pop 6/8 Proof, then the plan's meter, 96 BPM, A major and the first scene."
+      credit: From the repository
 
 - slug: ml-kem-ml-dsa-lab
   title: ML-KEM / ML-DSA Lab
@@ -202,6 +223,9 @@
     - src: /assets/art/galaxy/barred-1600.webp
       alt: "A barred spiral galaxy: two bright arms sweeping out from a straight bar of stars."
       credit: NASA/GSFC
+    - src: /assets/repos/ml-kem-ml-dsa-lab/audit-status-1000.webp
+      alt: "Horizontal stacked bars counting review statuses across eight modules for review status, secret-dependent branches, secret-dependent memory access and error paths, with five branch entries marked as open production blockers."
+      credit: From the repository
 
 - slug: marigraph
   title: Marigraph
@@ -211,9 +235,12 @@
   logline: "A volatility surface drawn in block characters, with the SVI fit and the arbitrage check beside it."
   cast: [the surface, the SVI fit, the arbitrage check]
   stills:
-    - src: /assets/art/galaxy/carina-1920.webp
-      alt: "The Cosmic Cliffs of the Carina Nebula: clouds of rust and blue gas rising against black space."
-      credit: NASA, ESA, CSA, STScI
+    - src: /assets/repos/marigraph/risk-oracle-1800.webp
+      alt: "A dark terminal filled by the risk oracle: a pinned block header with ETH at $2054 and risk at 92%, a shaded 3D volatility surface, a six-column oracle bar chart reading RV 222.6% to RISK 4%, and five panels for market, vol stats, Greeks, pool liquidity and term structure."
+      credit: From the repository
+    - src: /assets/repos/marigraph/cli-1346.webp
+      alt: "A terminal: marigraph --help lists template, risk-oracle, generate, headless, socket-dir, version and help, and --generate prints the head of a Sixcol YAML template with layout rows, cols, gap and a first column entry."
+      credit: From the repository
 
 - slug: 1brc-cpp
   title: 1BRC in C++
@@ -223,9 +250,12 @@
   logline: "One billion rows through six C++ parsers, one optimisation per cut, and a common header between them."
   cast: [the naive pass, the wide sweep, the shared header]
   stills:
-    - src: /assets/art/galaxy/barred-1920.webp
-      alt: "A barred spiral galaxy: two bright arms sweeping out from a straight bar of stars."
-      credit: NASA/GSFC
+    - src: /assets/repos/1brc-cpp/version-ladder-2000.webp
+      alt: "Horizontal bar chart of six C++ versions of the same reducer over ten million rows: v1 naive 0.94 s, v2 mmap 0.32 s, v3 custom hash 0.27 s, v4 fast parse 0.20 s, v5 parallel 0.07 s, v6 optimized 0.08 s, with speedup labels 1.0x to 14x."
+      credit: From the repository
+    - src: /assets/repos/1brc-cpp/step-savings-1800.webp
+      alt: "Waterfall chart of the same six versions, each bar the time one step saved: 0.62 s for mmap, 0.05 s for the custom hashmap, 0.07 s for integer parsing, 0.13 s for threads, and a red 0.01 s bar where the branchless version added time back."
+      credit: From the repository
 
 - slug: space-bullet-hell
   title: Guardian of the Spread
@@ -236,10 +266,10 @@
   cast: [the guardian, the spread, the sector]
   stills:
     - src: /assets/repos/space-bullet-hell/guardian-warlord-1200.webp
-      alt: "A dark starfield with the HUD in the corners, the player's jetpack flame lit, and enemy bullets across the middle."
+      alt: "A dark starfield with the game's HUD in the corners, the player near the left edge with its jetpack flame lit, pink and cyan enemy bullets across the middle, and the boss bar reading WARLORD."
       credit: From the repository
     - src: /assets/repos/space-bullet-hell/guardian-data-ring-1200.webp
-      alt: "The first sector in play: a dark starfield, the player at the left edge, and obstacles scattered across the screen."
+      alt: "The first sector in play: a dark starfield, the player at the left edge with an orange jetpack flame, and obstacles and enemies scattered across the middle of the screen."
       credit: From the repository
 
 - slug: zig-wasm-webgpu-hallway-shooter
@@ -250,9 +280,12 @@
   logline: "One corridor streaming toward you, its simulation Zig compiled to WebAssembly, drawn with WebGPU."
   cast: [the corridor, the worker, the instanced draw]
   stills:
-    - src: /assets/art/galaxy/carina-1600.webp
-      alt: "The Cosmic Cliffs of the Carina Nebula: clouds of rust and blue gas rising against black space."
-      credit: NASA, ESA, CSA, STScI
+    - src: /assets/repos/zig-wasm-webgpu-hallway-shooter/corridor-moving-1440.webp
+      alt: "The same corridor twelve seconds later, obstacles in new positions and the score readout at 2822."
+      credit: From the repository
+    - src: /assets/repos/zig-wasm-webgpu-hallway-shooter/corridor-open-1440.webp
+      alt: "A dark vertical corridor with a green player box near the top, orange and blue obstacle rectangles climbing toward it, and a small monospace score readout."
+      credit: From the repository
 
 - slug: macos-metal-vslam
   title: macOS Metal vSLAM
@@ -262,9 +295,12 @@
   logline: "A webcam window that tracks motion as points and draws the sparse map it recovers."
   cast: [the feature point, the sparse map, the 4×4]
   stills:
-    - src: /assets/art/galaxy/andromeda-1280.webp
-      alt: "A panoramic field of stars in Andromeda."
-      credit: NASA/JPL-Caltech
+    - src: /assets/repos/macos-metal-vslam/frame-pipeline-1000.webp
+      alt: "A twelve-box diagram of one frame: camera capture, Metal luma kernel with a CPU fallback, ORB features, ratio test, optical flow, essential matrix, triangulation, keyframe gate, GTSAM iSAM2, pose and points, SceneKit viewport."
+      credit: From the repository
+    - src: /assets/repos/macos-metal-vslam/layers-1000.webp
+      alt: "A five-row diagram naming AppKit, Metal, OpenCV, GTSAM and SceneKit, each with the files that implement it and what it owns."
+      credit: From the repository
 
 - slug: cairo_vault
   title: Cairo Vault
@@ -274,9 +310,12 @@
   logline: "A Starknet contract of about a hundred lines: one deposit per caller, and the running total."
   cast: [the caller, the balance, the running total]
   stills:
-    - src: /assets/art/galaxy/sombrero-1200.webp
-      alt: "The Sombrero Galaxy seen edge-on, a bright core inside a dark dust lane."
-      credit: NASA/JPL-Caltech
+    - src: /assets/repos/cairo_vault/contract-shape-2000.webp
+      alt: "A diagram of the contract: deposit and withdraw write the balances map and total_deposits, three getters read storage, owner is written once and never required, and nothing calls a token."
+      credit: From the repository
+    - src: /assets/repos/cairo_vault/sepolia-probe-1196.webp
+      alt: "A terminal showing a Sepolia query: the class hash at the vault address, the IVault interface with five functions, and five external entry points."
+      credit: From the repository
 
 - slug: nanda-ts
   title: nanda-ts
@@ -289,3 +328,6 @@
     - src: /assets/art/galaxy/andromeda-960.webp
       alt: "A panoramic field of stars in Andromeda."
       credit: NASA/JPL-Caltech
+    - src: /assets/repos/nanda-ts/unit-tests-1500.webp
+      alt: "A terminal showing the end of a bun test run: coverage rows per file, then 371 pass, 0 fail, 820 expect() calls, and Ran 371 tests across 12 files in 638 milliseconds."
+      credit: From the repository

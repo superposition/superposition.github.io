@@ -13,7 +13,7 @@ const poster = `<article class="poster poster--still">
   <a class="poster-link" href="#storybook-root">
     <span class="poster-art">
       <img src="/assets/repos/mage/kernel-progression-1200.webp" alt="" width="1200" height="1200" loading="lazy" decoding="async">
-      <span class="poster-no decal">02 of 20</span>
+      <span class="poster-no">02 of 20</span>
     </span>
     <span class="poster-body">
       <span class="poster-genre">${film.genre}</span>

@@ -267,8 +267,8 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   display: inline-block;
   padding: 3px 7px 4px;
   border-radius: var(--radius-decal);
-  background: var(--decal-bg);
-  color: var(--decal-text);
+  background: var(--poster-plate);
+  color: var(--poster-plate-text);
   font: 600 var(--step-decal)/1.4 var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
 }
@@ -987,13 +987,21 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   opacity: .9;
 }
 
-/* The release number is a decal, like the repository head's eyebrow: it is the
-   only text on the key art, and it carries its own ground. */
+/* The release number is a decal, drawn with the decal tokens at poster scale.
+   It is not the .decal component: that one is an eyebrow on the page ground and
+   the poster identity turns its film off, which is exactly wrong for the one
+   label that sits on a photograph. This carries its own film in every
+   identity, so the only text over key art always has its own ground. */
 .poster-no {
   position: absolute;
   z-index: 2;
   top: var(--poster-pad); left: var(--poster-pad);
-  font-size: var(--poster-slate);
+  padding: 2px 6px 3px;
+  border-radius: var(--radius-decal);
+  background: var(--poster-plate);
+  color: var(--poster-plate-text);
+  font: 600 var(--poster-slate)/1.4 var(--font-mono);
+  letter-spacing: var(--track-label); text-transform: uppercase;
 }
 
 /* The series cast: the drawing stands at the foot of the key art, above the

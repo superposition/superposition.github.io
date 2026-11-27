@@ -149,6 +149,12 @@
   --poster-wash: rgba(143, 211, 255, .10);
   --poster-scrim: rgba(11, 10, 13, .96);
   --poster-metal: rgba(230, 220, 200, .26);
+  /* The film under the release number. It is deliberately not --decal-bg: the
+     poster identity turns the page's decals into plain labels, and the one
+     label that sits on a photograph has to keep its own ground in every
+     identity. Measured on its own film: --poster-plate-text 12.2:1. */
+  --poster-plate: rgba(5, 4, 8, .88);
+  --poster-plate-text: #efe6d3;
 
   --hero-scrim: linear-gradient(180deg,
       rgba(var(--void-rgb), .52) 0%,
