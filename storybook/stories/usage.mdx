@@ -6,51 +6,53 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 The workbench imports `assets/tokens.css` and `assets/notebook.css` directly. There is no Storybook-only stylesheet, so a story and the page it came from cannot disagree: if a component needs a new rule, the rule goes into the site's stylesheet and both places get it.
 
-The site is one dark ground, cream type, and one accent per job. Nothing here is decorative: every colour is a token, every edge is the one hairline or a measured border, and the only radius is `--radius: 0`.
+The site is one dark ground, warm cream type, and one accent per job — amber for the chrome, cyan for state, red for the single alert. Nothing here is decorative: every colour is a token, every edge is the one hairline or a measured border, and the only radius is `--radius: 0`.
 
 ## The rules the palette keeps
 
 | Job | Token | Measured |
 | --- | --- | --- |
-| Body and headings | `--star` | 16.9:1 on `--void` |
-| Secondary type | `--starlight` | 11.4:1 |
-| Meta, captions, disabled | `--dust` | 6.6:1 |
-| Chrome accent, links outside prose | `--rust-text` | 5.6:1 |
+| Body and headings | `--star` | 15.9:1 on `--void` |
+| Secondary type | `--starlight` | 13.4:1 |
+| Meta, captions, disabled | `--dust` | 7.1:1 |
+| Chrome accent, links outside prose | `--accent-text` | 12.3:1 |
 | Prose links only | `--nebula-text` | 6.3:1 |
-| State, focus rings | `--teal` (edges) / `--teal-text` (type) | 4.3:1 / 5.9:1 |
+| State, focus rings | `--state` (edges) / `--state-text` (type) | 12.2:1 / 13.5:1 |
+| The one alert | `--alert` (edge) / `--alert-text` (type) | 4.7:1 / 7.0:1 |
 | Quotation edge | `--plum-mark` | 4.0:1 |
-| Dividers | `--line` | hairline, not a control edge |
+| Decal type | `--decal-text` on `--decal-bg` | 16.7:1 |
+| Dividers, gauge rail | `--line`, `--rail` | not control edges |
 
-`npm run contrast` in `storybook/` prints all 38 pairs the components ship, text at a 4.5:1 floor and control edges at 3:1. Anything below the floor is a failure, not a judgement call. Dividers are printed for the record and carry no minimum, because they group content rather than identify a control.
+`npm run contrast` in `storybook/` prints all 120 pairs the components ship across the three identities, text at a 4.5:1 floor and control edges at 3:1. Anything below the floor is a failure, not a judgement call. Dividers are printed for the record and carry no minimum, because they group content rather than identify a control.
 
 ## Button
 
 **Use it** for an action: submit, toggle, follow. **Do not use it** for navigation between pages, which is a link, or for an action inside a sentence, which is the `btn-text` variant.
 
-- `btn-primary` — the one action on a view. Rust fill, void type at 4.57:1; hover lifts to `--rust-text` at 5.55:1. Two primaries side by side means neither is primary.
-- `btn-secondary` — the alternative in a pair, or an action beside a primary. Dust edge (6.6:1), hover edge and type in rust.
-- `btn-ghost` — chrome and dense rows, where a filled box is too loud. It has no boundary at rest by design; its starlight type (11.4:1) is the whole affordance, and hover brings a `--surface` fill with a dust edge (5.7:1).
+- `btn-primary` — the one action on a view. Amber fill, void type at 12.3:1, with the soft bloom; hover lifts to `--accent-peak`. Two primaries side by side means neither is primary.
+- `btn-secondary` — the alternative in a pair, or an action beside a primary. Dust edge (7.1:1), hover edge and type in amber.
+- `btn-ghost` — chrome and dense rows, where a filled box is too loud. It has no boundary at rest by design; its starlight type (13.4:1) is the whole affordance, and hover brings a `--surface` fill with a dust edge (6.5:1).
 - `btn-text` — an action that reads as a link, inside a sentence or a row of links.
 - Sizes: `btn-sm`, default, `btn-lg`. `btn-block` fills its container.
-- States: hover, focus-visible (2px `--teal` ring, 4.3:1), active, disabled. Disabled is dust type (6.6:1) inside a dashed dust edge, so it never falls below the text floor — the states are live in the story, not staged with fake classes.
+- States: hover, focus-visible (2px `--state` ring at 12.2:1 with its bloom), active, disabled. Disabled is dust type (7.1:1) inside a dashed dust edge, so it never falls below the text floor — the states are live in the story, not staged with fake classes.
 
 ## Link
 
 **Use a link** to go somewhere. Three forms, and the form is the meaning:
 
-- **Chrome link** (`text-link`, rust, underline drawn as a border) — nav rows, footers, "all entries".
+- **Chrome link** (`text-link`, amber, underline drawn as a border) — nav rows, footers, "all entries".
 - **Prose link** (nebula, inside `.prose` only) — so a link in an article is visibly a different thing from a link in the chrome.
 - **Bare link** — the default `a`, when no component owns the line.
 
-Never colour a heading rust to make it look clickable; make it a link or leave it.
+Never colour a heading amber to make it look clickable; make it a link or leave it.
 
 ## Badge
 
 **Use a badge** for a short label that is not a link: a language, a topic, a state. **Do not use it** as a button: a badge is not interactive, and a badge-shaped button is a trap.
 
 - Neutral (`badge`) — language, kind, anything without its own colour.
-- `badge-accent` — a topic, in the rust accent.
-- `badge-state` — progress and status, in teal. Not emphasis.
+- `badge-accent` — a topic, in the amber accent.
+- `badge-state` — progress and status, in cyan. Not emphasis.
 - `badge-solid` — a count or fact on the raised block, no edge.
 - The edge is `currentColor`, so a badge can never be less legible than its own type, and every edge clears 3:1 for free.
 
@@ -60,7 +62,7 @@ Never colour a heading rust to make it look clickable; make it a link or leave i
 
 - **Repository card** — thumbnail (`card-media`, 16:10 crop), `card-title` in the display face, `card-text` tagline, `card-meta` language and stars. The image is decorative (`alt=""`) because the title carries the name; a card without an image simply starts at the title.
 - **Entry card** — a kicker (topic · date) instead of a thumbnail, title, dek, and a topic badge in `card-foot`. No live page uses it yet: the journal index and home page use the entry list, which fits a reading list better. It exists for a journal grid.
-- The hairline is the top edge. Hover and focus-visible change the title to rust and strengthen the top edge; nothing moves.
+- The hairline is the top edge. Hover and focus-visible change the title to amber and bring the soft bloom; nothing moves.
 
 ## Entry list
 
@@ -72,7 +74,7 @@ The dek is optional — an entry with no `description` front matter ends at the 
 
 **Use the header** on every page: wordmark, four links, one line. It wraps instead of collapsing, so there is no menu button and no script. At 420px it is still one line at 12px; at 390px and below the links wrap onto a second line. Measured on the built site, not assumed.
 
-The current page is rust (`aria-current`), and hover is rust, so the marker is colour and never a new weight. Do not add a fifth link without removing one: four is what fits on a phone line with the wordmark.
+The current page is amber (`aria-current`), and hover is amber, so the marker is colour and never a new weight. Do not add a fifth link without removing one: four is what fits on a phone line with the wordmark.
 
 ## Hero
 
@@ -86,7 +88,7 @@ The type over the image is measured against the brightest pixel behind it with t
 
 - **h2** is the display face at `--step-4`; **h3** is a 13px mono label — a heading level, not a smaller title.
 - **Blockquote** (plum-mark edge, 4.0:1) is a quotation: someone else's words.
-- **Callout** (teal edge 3.8:1 on the raised block) is your own caveat or measurement sitting beside the argument. If it is not a warning and not a quotation, it is a callout; if it is neither of those, it is a paragraph.
+- **Callout** (cyan edge 10.6:1 on the raised block) is your own caveat or measurement sitting beside the argument. If it is not a warning and not a quotation, it is a callout; if it is neither of those, it is a paragraph.
 - **Code block with a caption** is a figure whose content is code — the caption is where the provenance or the command's result goes.
 - **Table** breaks out of the measure and scrolls sideways rather than squeezing, so numbers stay readable at 420.
 - **hr** is the one hairline weight, for a real change of subject.

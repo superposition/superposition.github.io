@@ -21,14 +21,14 @@ export const Language = {
 
 export const Topic = {
   args: {
-    note: 'Topic: the rust accent, matching a topic in the journal.',
+    note: 'Topic: the amber accent.',
     body: ['<span class="badge badge-accent">Matrices</span>', '<span class="badge badge-accent">Kinematics</span>', '<span class="badge badge-accent">AI</span>'].join(''),
   },
 };
 
 export const State = {
   args: {
-    note: 'State: teal, the site’s state colour. Use it for progress and status, never for emphasis.',
+    note: 'State: the cyan, the site’s state colour. Use it for progress and status, never for emphasis.',
     body: ['<span class="badge badge-state">In progress</span>', '<span class="badge badge-state">Archived</span>'].join(''),
   },
 };
@@ -44,8 +44,8 @@ export const WithDot = {
   args: {
     note: 'With a topic dot: the same five colours the topic row uses, for a compact topic label.',
     body: [
-      '<span class="badge badge-accent"><span class="dot dot-rust" aria-hidden="true"></span>Data informatics</span>',
-      '<span class="badge badge-accent"><span class="dot dot-teal" aria-hidden="true"></span>Matrices</span>',
+      '<span class="badge badge-accent"><span class="dot dot-accent" aria-hidden="true"></span>Data informatics</span>',
+      '<span class="badge badge-accent"><span class="dot dot-state" aria-hidden="true"></span>Matrices</span>',
       '<span class="badge badge-accent"><span class="dot dot-plum" aria-hidden="true"></span>Kinematics</span>',
     ].join(''),
   },

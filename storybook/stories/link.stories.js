@@ -28,7 +28,7 @@ export const Prose = {
 
 export const Default = {
   args: {
-    note: 'The bare link: rust, underlined, 1px. Used outside a component when nothing else fits.',
+    note: 'The bare link: amber, underlined, 1px. Used outside a component when nothing else fits.',
     body: '<p><a href="#storybook-root">A default link</a></p>',
   },
 };

@@ -22,3 +22,30 @@ export default {
     },
   },
 };
+
+// The three identities are switched by one attribute on the root element, which
+// a story cannot render inside its own fragment. This decorator sets it for the
+// whole workbench from the toolbar, so a story is seen in the identity it is
+// about. It is workbench code only: the site ships no JavaScript.
+export const globalTypes = {
+  identity: {
+    description: 'data-lab identity',
+    toolbar: {
+      title: 'Identity',
+      icon: 'paintbrush',
+      items: [
+        { value: 'c', title: 'c — shipped (hybrid)' },
+        { value: 'a', title: 'a — instrument' },
+        { value: 'b', title: 'b — poster' },
+      ],
+      dynamicTitle: true,
+    },
+  },
+};
+export const initialGlobals = { identity: 'c' };
+export const decorators = [
+  (story, context) => {
+    document.documentElement.setAttribute('data-lab', context.globals.identity ?? 'c');
+    return story();
+  },
+];

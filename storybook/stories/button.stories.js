@@ -19,7 +19,7 @@ export default {
 
 export const Primary = {
   args: {
-    note: 'Primary: one per view. The rust fill, void type.',
+    note: 'Primary: one per view. The amber fill, void type at 12.3:1.',
     body: '<a class="btn btn-primary" href="#storybook-root">Read the journal</a>',
   },
 };

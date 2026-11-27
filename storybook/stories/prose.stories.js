@@ -15,7 +15,7 @@ const article = `<div class="wrap">
     <blockquote>The plum-mark edge is the quotation, and the type steps back to starlight. It is not a callout: nothing in it is a warning.</blockquote>
     <div class="callout">
       <span class="callout-title">Where this number comes from</span>
-      Contrast is measured from a screenshot with the type hidden, so the photograph behind it is part of the measurement. The teal edge is the state colour, at 3.8:1 on the raised block.
+      Contrast is measured from a screenshot with the type hidden, so the photograph behind it is part of the measurement. The cyan edge is the state colour, at 10.6:1 on the raised block.
     </div>
     <figure class="code-block">
       <pre><code>curl -sI https://superposition.github.io/ | head -1</code></pre>
@@ -26,7 +26,7 @@ const article = `<div class="wrap">
       <tbody>
         <tr><td><code>--star</code></td><td>16.9:1</td><td>body and headings</td></tr>
         <tr><td><code>--dust</code></td><td>6.6:1</td><td>meta and captions</td></tr>
-        <tr><td><code>--teal</code></td><td>4.3:1</td><td>focus rings, edges</td></tr>
+        <tr><td><code>--state</code></td><td>12.2:1</td><td>focus rings, edges</td></tr>
       </tbody>
     </table>
     <hr>
@@ -58,7 +58,7 @@ export const Callout = {
       <p>Prose, then a callout: for the caveat or the measurement that belongs beside the argument but is not the argument.</p>
       <div class="callout">
         <span class="callout-title">Measured, not eyeballed</span>
-        The teal edge is 3.8:1 on --surface and 4.3:1 on --void. The type inside is starlight, 9.96:1 on the raised block.
+        The cyan edge is 10.6:1 on --surface and 12.2:1 on --void. The type inside is starlight, 11.7:1 on the raised block.
       </div>
       <p>A callout with no title is allowed; the title is the part that earns the block.</p>
     </div></div>`,
