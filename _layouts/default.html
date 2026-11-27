@@ -62,8 +62,15 @@
   <footer class="site-footer wide">
     <div class="wrap">
       <p>Superposition · {{ site.subtitle }}</p>
-      <p><a href="{{ '/feed.xml' | relative_url }}">RSS</a> <span aria-hidden="true">/</span> <a href="https://github.com/superposition">GitHub</a> <span aria-hidden="true">/</span> <a href="{{ '/credits/' | relative_url }}">Image credits</a> <span aria-hidden="true">/</span> <a href="{{ '/style/' | relative_url }}">Design system</a> <span aria-hidden="true">/</span> <a href="{{ '/series/' | relative_url }}">Series</a> <span aria-hidden="true">/</span> <a href="{{ '/now-showing/' | relative_url }}">Now showing</a> <span aria-hidden="true">/</span> <a href="https://t.me/SuprPosition">Say hello</a></p>
+      <p><button class="soundtrack-toggle" type="button" data-soundtrack-toggle aria-pressed="false" aria-label="Play the soundtrack" hidden><svg class="soundtrack-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path class="soundtrack-play" d="M1 0.5 11 6 1 11.5Z"/><path class="soundtrack-pause" d="M1 0.5h3.2v11H1Zm6.8 0H11v11H7.8Z"/></svg>Soundtrack</button> <span aria-hidden="true">/</span> <a href="{{ '/feed.xml' | relative_url }}">RSS</a> <span aria-hidden="true">/</span> <a href="https://github.com/superposition">GitHub</a> <span aria-hidden="true">/</span> <a href="{{ '/credits/' | relative_url }}">Credits</a> <span aria-hidden="true">/</span> <a href="{{ '/style/' | relative_url }}">Design system</a> <span aria-hidden="true">/</span> <a href="{{ '/series/' | relative_url }}">Series</a> <span aria-hidden="true">/</span> <a href="{{ '/now-showing/' | relative_url }}">Now showing</a> <span aria-hidden="true">/</span> <a href="https://t.me/SuprPosition">Say hello</a></p>
     </div>
+    {%- comment -%}
+      The track is fetched only when the footer control is pressed: the source
+      lives in data-src, the element preloads nothing, and the script sets src
+      on the first press. No page requests the audio until then.
+    {%- endcomment -%}
+    <audio preload="none" loop data-soundtrack-audio data-src="{{ '/assets/audio/superposition.m4a' | relative_url }}"></audio>
+    <script src="{{ '/assets/soundtrack.js' | relative_url }}"></script>
   </footer>
 </body>
 </html>
