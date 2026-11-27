@@ -148,12 +148,56 @@ Both families stop, in the two places they are declared:
 | Series masthead | `network`, `network-bug`, `network-title` | `/series/` |
 | Cast card | `cast`, `cast-card`, `cast-portrait`, `cast-unit`, `cast-name`, `cast-role`, `cast-front`, `cast-voice` | `/series/`, Storybook |
 | Ident | `ident-list`, `ident`, `ident-who`, `ident-line` | `/series/` |
+| Poster | `poster`, `poster--still`, `poster--field`, `poster--text`, `poster-link`, `poster-art`, `poster-no`, `poster-figure`, `poster-body`, `poster-genre`, `poster-title`, `poster-film`, `poster-logline`, `poster-cast`, `poster-slate` | home strip, `/now-showing/`, every repository page |
+| Campaign block | `campaign`, `campaign-poster`, `campaign-body`, `campaign-kicker`, `campaign-title`, `campaign-logline`, `campaign-voice`, `campaign-meta`, `campaign-stills` | `/projects/<slug>/` |
+| Now-showing strip | `now-showing`, `now-showing-head`, `strip`, `strip-track`, `strip-item`, `strip-toggle`, `strip-pause` | home |
 
 The cast's four portraits are hand-authored SVG in `assets/series/`, one file per character, each with its own `title` and `role`, and no raster or external reference anywhere in them. `_data/cast.yml` is the cast: name, role, the line the unit says, the library it fronts, and the tokens it is drawn in.
 
 `/style/` shows every one of them rendered live, which is the test that they are applied rather than described. The Storybook workbench in `storybook/` imports the same two stylesheets, has an identity switcher in its toolbar (it sets `data-lab` on the root element, in workbench code only), and adds the variants and states a page does not happen to be showing. `storybook/scripts/contrast.mjs` measures all 120 colour pairs over the three identities, and `/style/` prints the same numbers beside each swatch.
 
 **Never** add a component style to a Storybook-only file. A story that needs a new rule is a rule missing from `notebook.css`, and that is where it goes.
+
+## Campaigns
+
+Every repository is advertised as a film. The system is three components over one data file, and it reads the semantic tokens, so the three identities re-light it: the film line is `--accent-text`, the genre and labels `--state-text`, the title `--star`, the credits `--dust`. Only five values are the poster's own — `--poster-lamp`, `--poster-edge`, `--poster-wash`, `--poster-scrim`, `--poster-metal` — because a printed sheet needs a lamp, a scrim and a frame that the page does not.
+
+| Where | What it renders |
+|---|---|
+| `/` | the now-showing strip: the programme in one row, stepped in CSS |
+| `/projects/<slug>/` | the campaign block above the prose: poster, billing, the character's voice line, stills |
+| `/now-showing/` | the programme as a three-up gallery of posters |
+
+### The data
+
+`_data/campaigns.yml` holds one record per repository page, in programme order. `slug` is the join and every record needs both a `_repos/<slug>.md` and five written fields: `title` (the library's own name, set as the film title), `film` (the film-style subtitle), `genre`, `runtime`, and a `logline` of twenty words or fewer. `cast` is the list of parts in the film, in billing order. `stills` is one to three images that already exist on the site — the repository's own figures, or NASA photography already licensed — and the first one is the key art.
+
+`scripts/check-campaigns.mjs` enforces the shape: the slug join in both directions, the twenty-word logline, one to three stills, and every still present on disk with alt text and a credit. Run it before opening a pull request; it exits non-zero on any problem.
+
+**Never** write a logline for a capability the repository does not claim on its own page. The poster may be a joke about the genre; the logline is the library's actual behaviour in twenty words.
+
+### The cast
+
+`_data/cast.yml` is the series cast, one member per library. A campaign is fronted by the member whose `library.slug` is its slug: their drawing is printed at the foot of the key art, and their `name` and `role` take the credit line. Their `voice` line is printed in the campaign block as the pull quote. A library with no member keeps its `cast` list as the credit; a member whose drawing is missing keeps only their name. Either way there is never a hole where a portrait would be.
+
+### The poster
+
+`.poster` is the frame: 2:3, `container-type: inline-size`, key art at the top on `--deep`, type below on `--void`. Because the type band is the void ground, a poster's contrast does not depend on which photograph happens to be behind it — and the key art is only ever behind the `poster-no` decal, which carries `--decal-bg` and `--decal-text` at 16.7:1.
+
+Three variants: `poster--still` (a repository figure or a NASA photograph), `poster--field` (a ring, a warm core and a ruled grid drawn in gradients, for a repository with no figure), and `poster--text` (no art at all). The variant is chosen by whether the still's file is really in the build, so a renamed image falls back to the field rather than shipping a broken one.
+
+Every type size and pad is a poster token measured in `cqi`, so the same component holds at 160px in the strip and at 420px on a repository page. Reprints carry less:
+
+| Container width | Carries |
+|---|---|
+| over 340px | genre, title, film line, logline, cast credit, slate |
+| 261–340px | drops the cast credit |
+| 260px and under | drops the logline, and the type area grows to 58% of the frame |
+| 11 characters or more in the title | `poster--long` sets the title on its own smaller step |
+
+### The strip
+
+The track holds the programme twice and translates to `-50%` in `steps()` equal to the number of campaigns, so the loop closes without a seam and without JavaScript. The second copy is `aria-hidden` and `inert`, because a screen reader should hear each campaign once and a keyboard should not have to tab through it twice. The pause control is the same drawn box and label the crawl uses — one control language on the home page — and it is the mechanism WCAG 2.2.2 asks for. Under `prefers-reduced-motion: reduce` the track does not move, the control is not rendered, and the row is still a scrollable, snap-aligned list.
 
 ## Identities
 

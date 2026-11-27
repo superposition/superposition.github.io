@@ -123,6 +123,19 @@ const PAIRS = [
   ['series alert mark',    'alert',       'void',         'edge'],
   ['series alert block',   'alert',       'surface',      'edge'],
   ['series outline',       'void',        'cream',       'edge'],
+  // The campaign poster: every pair its type sets, on the void band, plus the
+  // decal's own film. The poster reads the semantic tokens, so each identity is
+  // measured here as it will render there.
+  ['poster title',         'star',        'void',         'text'],
+  ['poster film line',     'accent-text', 'void',         'text'],
+  ['poster genre',         'state-text',  'void',         'text'],
+  ['poster logline',       'starlight',   'void',         'text'],
+  ['poster credits',       'dust',        'void',         'text'],
+  ['poster slate link',    'accent-text', 'void',         'text'],
+  ['poster release film',  'poster-plate-text', 'poster-plate', 'text'],
+  ['poster focus ring',    'state',       'void',         'edge'],
+  ['poster lit edge',      'poster-edge', 'void',         'divider'],
+  ['poster frame',         'poster-metal','void',         'divider'],
   ['hairline rule',        'line',        'void',         'divider'],
   ['hairline in block',    'line',        'surface',      'divider'],
   ['ghost hover fill',     'surface',     'void',         'divider'],

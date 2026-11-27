@@ -122,8 +122,8 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
    the nav stays one row on a phone, and the footer carries the link instead.
    Hidden this way it also leaves the tab order, which is why the footer has to
    carry it — one reachable link at every width, never two. */
-.nav-series { display: none; }
-@media (min-width: 640px) { .nav-series { display: inline; } }
+.nav-series, .nav-showing { display: none; }
+@media (min-width: 640px) { .nav-series, .nav-showing { display: inline; } }
 
 /* Hero -------------------------------------------------------------------- */
 
@@ -268,8 +268,8 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   padding: 3px 7px 4px;
   border: 1px solid var(--decal-edge);
   border-radius: var(--radius-decal);
-  background: var(--decal-bg);
-  color: var(--decal-text);
+  background: var(--poster-plate);
+  color: var(--poster-plate-text);
   font: 600 var(--step-decal)/1.4 var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
 }
@@ -938,6 +938,349 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .series-note { margin-top: var(--space-section); padding-top: var(--space-2); border-top: var(--border-hair); }
 .series-note .prose { margin-top: var(--space-3); max-width: var(--measure); }
 
+/* Campaigns ---------------------------------------------------------------- */
+
+/* A library advertised as a film. One poster with three sources of key art — a
+   repository's own figure, a plotted field, or none — and one strip that runs
+   the programme without JavaScript. The poster reads the semantic tokens, so
+   an identity re-lights it: the film line is --accent-text, the genre and
+   labels --state-text, the title --star, the credits --dust. Only the five
+   poster light values are its own, because a printed sheet needs a lamp, a
+   scrim and a frame that the page does not. */
+
+.poster {
+  container-type: inline-size;
+  position: relative;
+  display: block;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background: var(--void);
+  border: 1px solid var(--poster-metal);
+  color: var(--star);
+  isolation: isolate;
+}
+.poster-link {
+  display: grid;
+  grid-template-rows: 56fr 44fr;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 0;
+}
+.poster:focus-within { outline: 2px solid var(--state); outline-offset: 3px; }
+.poster:hover,
+.poster:focus-within { border-color: var(--poster-edge); }
+.poster:hover .poster-title { color: var(--accent-text); }
+
+/* The print: a scanline at broadcast weight, a vignette, the warm wash of a
+   projector lamp over the top edge. */
+.poster-art { position: relative; min-height: 0; overflow: hidden; background: var(--deep); }
+.poster-art img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: saturate(.82) contrast(1.06) brightness(.86);
+}
+.poster-art::after {
+  content: "";
+  position: absolute; inset: 0;
+  z-index: 1;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 2px, var(--poster-scrim) 2px 3px),
+    radial-gradient(120% 90% at 50% 0%, var(--poster-wash), transparent 62%),
+    linear-gradient(to top, var(--poster-scrim) 0%, transparent 42%);
+  opacity: .9;
+}
+
+/* The release number is a decal, drawn with the decal tokens at poster scale.
+   It is not the .decal component: that one is an eyebrow on the page ground and
+   the poster identity turns its film off, which is exactly wrong for the one
+   label that sits on a photograph. This carries its own film in every
+   identity, so the only text over key art always has its own ground. */
+.poster-no {
+  position: absolute;
+  z-index: 2;
+  top: var(--poster-pad); left: var(--poster-pad);
+  padding: 2px 6px 3px;
+  border-radius: var(--radius-decal);
+  background: var(--poster-plate);
+  color: var(--poster-plate-text);
+  font: 600 var(--poster-slate)/1.4 var(--font-mono);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+}
+
+/* The series cast: the drawing stands at the foot of the key art, above the
+   scrim, so the figure reads against the dark band rather than the photograph. */
+.poster-art img.poster-figure {
+  position: absolute;
+  left: var(--poster-pad);
+  bottom: 0;
+  height: 42cqi;
+  width: auto;
+  object-fit: contain;
+  z-index: 2;
+  filter: drop-shadow(0 4px 14px var(--poster-scrim));
+}
+
+/* No figure to print: a plotted field, drawn in gradients. A ring, a warm core
+   and a ruled grid, the way a terminal draws an orbit. */
+.poster--field .poster-art {
+  background:
+    repeating-linear-gradient(to right, var(--line) 0 1px, transparent 1px 12.5%),
+    repeating-linear-gradient(to bottom, var(--line) 0 1px, transparent 1px 12.5%),
+    radial-gradient(circle at 50% 46%, var(--poster-lamp) 0 16%, transparent 58%),
+    radial-gradient(circle at 50% 46%,
+      transparent 0 33%, var(--poster-edge) 33% calc(33% + 2px),
+      transparent calc(33% + 2px) 54%, var(--poster-wash) 54% calc(54% + 1px),
+      transparent calc(54% + 1px)),
+    var(--deep);
+}
+.poster--field .poster-art::after {
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 2px, var(--poster-scrim) 2px 3px),
+    radial-gradient(120% 90% at 50% 0%, var(--poster-wash), transparent 62%);
+  opacity: .6;
+}
+
+/* Text only: the whole frame is type, and the film has no still at all. */
+.poster--text .poster-link { grid-template-rows: 1fr; }
+.poster--text .poster-art { display: none; }
+.poster--text .poster-body {
+  border-top: 0;
+  background:
+    radial-gradient(90% 60% at 78% 4%, var(--poster-wash), transparent 60%),
+    radial-gradient(70% 46% at 12% 98%, var(--poster-lamp), transparent 62%),
+    var(--void);
+}
+
+.poster-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--poster-gap);
+  min-height: 0;
+  overflow: hidden;
+  padding: var(--poster-pad);
+  background: var(--void);
+  border-top: 1px solid var(--poster-edge);
+}
+.poster-genre {
+  font: var(--poster-genre)/1.5 var(--font-mono);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--state-text);
+}
+.poster-title {
+  font: var(--poster-title)/var(--leading-poster) var(--font-display);
+  letter-spacing: var(--track-display); text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--star);
+  overflow: hidden;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+}
+.poster-film {
+  font: var(--poster-film)/1.3 var(--font-mono);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--accent-text);
+}
+.poster-logline {
+  font: italic var(--poster-logline)/1.45 var(--font-text);
+  color: var(--starlight);
+  overflow: hidden;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+}
+.poster-cast {
+  margin-top: auto;
+  padding-top: var(--poster-gap);
+  border-top: 1px solid var(--line);
+  font: var(--poster-cast)/1.55 var(--font-mono);
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--dust);
+}
+.poster-cast-label { display: block; color: var(--state-text); letter-spacing: var(--track-label); font-size: .88em; }
+.poster-cast-name { color: var(--accent-text); }
+.poster-slate {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--poster-gap);
+  font: var(--poster-slate)/1.4 var(--font-mono);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--dust);
+}
+.poster-now { color: var(--accent-text); }
+.poster-now::before {
+  content: "";
+  display: inline-block;
+  width: .5em; height: .5em;
+  margin-right: .55em;
+  background: var(--accent);
+  box-shadow: var(--glow-accent);
+  vertical-align: middle;
+}
+
+/* The smaller the reprint, the more of it is type: a poster at 160px in the
+   strip is mostly title, and a one-sheet at 380px is mostly picture. Long
+   titles drop to their own smaller step so a name never has to break. */
+.poster--long .poster-title {
+  font: var(--poster-title-long)/var(--leading-poster) var(--font-display);
+  letter-spacing: 0;
+}
+@container (max-width: 260px) {
+  .poster-link { grid-template-rows: 42fr 58fr; }
+}
+@container (min-width: 380px) {
+  .poster-link { grid-template-rows: 58fr 42fr; }
+}
+
+/* A reprint carries less: the logline goes, then the credits, both before
+   either could set below the smallest size the type system allows. */
+@container (max-width: 340px) {
+  .poster-cast { display: none; }
+}
+@container (max-width: 260px) {
+  .poster-logline { display: none; }
+  .poster-genre { letter-spacing: .08em; }
+}
+
+/* The now-showing strip. The track holds the programme twice, the second copy
+   aria-hidden and inert, and steps exactly one card per beat, so the loop
+   closes without JavaScript and without a seam. The pause control is the same
+   drawn box the crawl uses: one control language on the home page. */
+.now-showing { position: relative; margin-top: var(--space-6); }
+.now-showing-head {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+.now-showing-head .kicker { margin-top: 0; }
+.strip-toggle {
+  position: absolute;
+  width: 1px; height: 1px;
+  opacity: 0;
+  margin: 0;
+}
+.strip-pause {
+  display: inline-flex; align-items: center; gap: 9px;
+  cursor: pointer;
+  font: var(--step-1)/1.6 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+}
+.strip-pause::before {
+  content: ""; flex: none;
+  width: 9px; height: 9px;
+  border: 1px solid var(--dust);
+}
+.strip-toggle:checked ~ .now-showing-head .strip-pause::before { background: var(--state); border-color: var(--state); }
+.strip-toggle:checked ~ .now-showing-head .strip-pause { color: var(--star); }
+.strip-toggle:focus-visible ~ .now-showing-head .strip-pause { outline: 2px solid var(--state); outline-offset: 4px; color: var(--star); }
+.strip-pause:hover::before { border-color: var(--star); }
+.strip-pause-off { display: none; }
+.strip-toggle:checked ~ .now-showing-head .strip-pause-on { display: none; }
+.strip-toggle:checked ~ .now-showing-head .strip-pause-off { display: inline; }
+.strip-toggle:checked ~ .strip .strip-track { animation-play-state: paused; }
+
+.strip {
+  margin-top: var(--space-4);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+}
+.strip-track {
+  display: flex;
+  width: max-content;
+  margin: 0; padding: 0;
+  list-style: none;
+  animation: strip-run calc(var(--dur-card) * var(--strip-steps, 20)) steps(var(--strip-steps, 20)) infinite;
+}
+.strip-item {
+  flex: none;
+  width: var(--strip-card);
+  padding-right: var(--space-3);
+  scroll-snap-align: start;
+}
+.strip-item .poster { width: 100%; }
+@keyframes strip-run {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* The campaign block on a repository page: the poster, and what the film is.
+   The billing reuses the decal-and-label pair the repository head already uses,
+   so the two headers read as one system. */
+.campaign {
+  display: grid;
+  grid-template-columns: clamp(220px, 26vw, 360px) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: var(--border-hair);
+}
+.campaign-poster { width: 100%; }
+.campaign-body { max-width: var(--measure); }
+.campaign-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 8px var(--space-2); }
+.campaign-title { font-size: var(--step-4); line-height: 1.15; margin-top: var(--space-2); color: var(--star); }
+.campaign-logline {
+  margin-top: var(--space-2);
+  max-width: var(--measure-narrow);
+  font: italic var(--step-4)/1.45 var(--font-text);
+  color: var(--starlight);
+}
+.campaign-voice {
+  margin-top: var(--space-3);
+  max-width: var(--measure-narrow);
+  padding-left: var(--space-2);
+  border-left: 1px solid var(--poster-edge);
+}
+.campaign-voice blockquote {
+  font: italic var(--step-3)/1.5 var(--font-text);
+  color: var(--star);
+}
+.campaign-voice figcaption {
+  margin-top: var(--space-1);
+  font: var(--step-1)/1.6 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+}
+.campaign-voice .cast-name { color: var(--accent-text); }
+.campaign-meta {
+  margin-top: var(--space-3);
+  font: var(--step-1)/1.7 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+}
+.campaign-meta .text-link { color: var(--accent-text); }
+.campaign-stills-label { margin-top: var(--space-4); }
+.campaign-stills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+.campaign-stills img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+.campaign-stills figcaption {
+  margin-top: var(--space-1);
+  font: var(--step-1)/1.6 var(--font-mono);
+  color: var(--dust);
+}
+
+/* The showing: the index page over the same posters. */
+.showing-masthead { padding-block: var(--space-6) var(--space-2); }
+.showing-masthead h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
+.showing-masthead .lede { margin-top: var(--space-3); }
+.showing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-4) var(--space-3);
+  margin-top: var(--space-5);
+  padding: 0; list-style: none;
+}
+.showing-grid .poster { width: 100%; }
+.showing-note {
+  margin-top: var(--space-5);
+  max-width: var(--measure);
+  font: var(--step-1)/1.8 var(--font-mono);
+  color: var(--dust);
+}
+.showing-note a { color: var(--dust); }
+
 /* Identity A — instrument ------------------------------------------------ */
 
 /* Alien's screens, not Alien's assets: amber phosphor on carbon, one accent
@@ -1210,6 +1553,10 @@ html[data-lab="b"] .empty-title { color: var(--star); }
   .cast.cast-single { grid-template-columns: minmax(0, 1fr); }
   .cast-name { font-size: var(--step-3); }
   .ident { grid-template-columns: 1fr; gap: 0; }
+  .campaign { grid-template-columns: 1fr; gap: var(--space-4); }
+  .campaign-poster { max-width: 232px; }
+  .showing-grid { grid-template-columns: 1fr; gap: var(--space-4); }
+  .now-showing-head .strip-pause { font-size: 12px; }
   .ident-who { line-height: 1.6; }
   .ident-line { font-size: var(--step-3); }
 }
@@ -1242,4 +1589,6 @@ html[data-lab="b"] .empty-title { color: var(--star); }
   .cast-portrait { animation: none; opacity: 1; }
   .card:hover .card-media img,
   .card:focus-visible .card-media img { transform: none; }
+  .strip-track { animation: none; }
+  .strip-toggle, .strip-pause { display: none; }
 }

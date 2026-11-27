@@ -1,0 +1,23 @@
+---
+layout: default
+title: Now showing
+permalink: /now-showing/
+description: Twenty libraries, advertised as films. A poster, a cast and a still apiece.
+---
+{%- assign campaigns = site.data.campaigns -%}
+{%- assign total = campaigns.size -%}
+<div class="wide">
+  <header class="showing-masthead">
+    <p class="kicker">Superposition Pictures</p>
+    <h1>Now showing</h1>
+    <p class="lede">{{ total }} libraries, advertised the way a cinema advertises: one poster each, a cast of the parts inside them, and a still taken from the work. Every one is in libraries now, which is where software lives when nobody has to take it out.</p>
+  </header>
+
+  <ol class="showing-grid">
+    {%- for campaign in campaigns %}
+    <li>{% include campaign/poster.html campaign=campaign index=forloop.index total=total %}</li>
+    {%- endfor %}
+  </ol>
+
+  <p class="showing-note">Key art is each repository's own work — the chart, the diagram, the frame it produced. Two campaigns are fronted by the NASA photography the site already licenses, because their repositories hold only terminal captures, and those stills sit beside the poster on the page. Nothing here is a franchise: the titles are the libraries' own names, the cast is the parts they are made of, and the runtime is the only figure on a poster that is invented. <a href="{{ '/credits/' | relative_url }}">Image credits</a> <span aria-hidden="true">/</span> <a href="{{ '/projects/' | relative_url }}">Repositories</a></p>
+</div>

@@ -1,0 +1,333 @@
+# Superposition Pictures: one campaign per repository page, in programme order.
+#
+# `slug` is the join: it must match a document in the `repos` collection, which
+# is what the poster links to and what its cast is credited against. Nothing
+# here is a capability claim the repository does not make on its own page.
+#
+#   title    the library's own name, set as the film title (uppercase on the
+#            poster, so write it here the way a reader would say it)
+#   film     the film-style subtitle, the line under the title
+#   genre    one or two words, dry
+#   runtime  the trailer card's figure: how long the film runs, invented
+#   logline  twenty words or fewer, read off what the library actually does
+#            (`node scripts/check-campaigns.mjs` counts them and fails over 20)
+#   cast     the parts in the film, in billing order. These are roles, not
+#            characters: when _data/cast.yml lands, an entry whose `library`
+#            matches this slug and whose `role` matches one of these takes the
+#            credit and brings a portrait with it. Until then the role is the
+#            credit, which is how a one-sheet reads when the cast is unannounced.
+#   stills   one to three images that already exist on the site: the repository's
+#            own figures, or the NASA imagery the site already licenses. The
+#            first is the poster's key art.
+#
+- slug: bend-ml-lab
+  title: bend-ml-lab
+  film: The same loop, three runtimes
+  genre: Documentary
+  runtime: 1h 06m
+  logline: "Einsum, training epochs and weight diagnostics in Bend 2, measured against C and NumPy twins."
+  cast: [the einsum, the twin, the epoch]
+  stills:
+    - src: /assets/repos/bend-ml-lab/matmul-implementations-2000.webp
+      alt: "Horizontal bar chart on a log scale, one bar per implementation: Bend one lane 3,978 ms, Bend 256 lanes 213 ms, C sequential 4,048 ms, C with OpenMP 223 ms, Node sequential 4,503 ms, NumPy BLAS 24 ms."
+      credit: From the repository
+    - src: /assets/repos/bend-ml-lab/epoch-sweep-1800.webp
+      alt: "Line chart on log-log axes of final loss against epochs run: 0.2537 after one epoch in 6 ms, 0.0883 after two in 9 ms, 0.0293 after four in 16 ms, 0.0096 after eight in 30 ms."
+      credit: From the repository
+
+- slug: mage
+  title: Mage
+  film: Inside the kernel, or around it
+  genre: Technical thriller
+  runtime: 1h 32m
+  logline: "A terminal GPU profiler that makes the clock visible: inside the kernel, or around the call."
+  cast: [the profiler, the kernel, the wall clock]
+  stills:
+    - src: /assets/repos/mage/kernel-progression-1200.webp
+      alt: "Two step charts of GPU kernel time in microseconds: matrix multiplication falls from 343.99 to 68.62, LayerNorm from 18.64 to 8.97, each stage labelled with the change that produced it."
+      credit: From the repository
+    - src: /assets/repos/mage/comparison-views-1200.webp
+      alt: "Bar charts of GPU kernel time and of time around the call, per operation, for PyTorch, Triton and Rust."
+      credit: From the repository
+    - src: /assets/repos/mage/matmul-layouts-1200.webp
+      alt: "Two schematics of the same matmul: cuTile Rust on the left, where the compiler threads a 32 by 128 output tile, and cuda-oxide on the right, a 64 by 64 block with a 4 by 4 register tile per thread."
+      credit: From the repository
+
+- slug: qualia
+  title: Qualia
+  film: Twenty crates, one agent
+  genre: Science fiction
+  runtime: 2h 04m
+  logline: "Shared-memory arenas, crash-safe evidence logs, and a JEPA runtime whose promotion is gated on evidence."
+  cast: [the arena, the evidence log, the jepa runtime]
+  stills:
+    - src: /assets/repos/qualia/console-brain-panel-800.webp
+      alt: "The Qualia console's Brain panel: a point cloud of the fly connectome with the current tick's firing neurons lit, beside a panel of artifact counts."
+      credit: From the repository
+    - src: /assets/repos/qualia/dataset-gate-800.webp
+      alt: "A bar chart of two recorded sessions through the dataset's transition gates, with the promotion floor drawn above them far off the scale."
+      credit: From the repository
+    - src: /assets/repos/qualia/prior-path-800.webp
+      alt: "A flow diagram from the connectome dataset through the committed graph and manifest, a digest-checked load and a peak-normalised in-strength, into the coupling applied to belief slots, and out to the belief layer the console panel reads."
+      credit: From the repository
+
+- slug: divulge
+  title: DIVULGE
+  film: A model in the loop
+  genre: Investigation
+  runtime: 1h 47m
+  logline: "A native workbench that investigates a binary with a model in the loop, and the evidence beside it."
+  cast: [the binary, the model, the evidence graph]
+  stills:
+    - src: /assets/repos/divulge/first-screen-windows-1200.webp
+      alt: "The DIVULGE window on Windows: an investigation tree on the left, an evidence graph in the centre, and a Harness Insight panel on the right, with the built-in teaching example loaded."
+      credit: From the repository
+    - src: /assets/repos/divulge/synthetic-explanation-800.webp
+      alt: "Harness Insight showing a recorded explanation with its question, action, evidence, limitation and next probe."
+      credit: From the repository
+    - src: /assets/repos/divulge/v15-code-large-1200.webp
+      alt: "The Code view's instruction inspector on a saved V15 investigation, showing the bytes, the distinct source and image coordinates, and a candidate destination."
+      credit: From the repository
+
+- slug: "91"
+  title: NAIWAN 91
+  film: Three standards, one groovebox
+  genre: Musical
+  runtime: 1h 44m
+  logline: "Firmware that comps three jazz standards on one FM groovebox, drums and bass following the changes."
+  cast: [the chord circle, the comping bass, the drum machine]
+  stills:
+    - src: /assets/repos/91/hero-752.webp
+      alt: "Three instrument screens side by side: the home screen with its circular chord display, the master bus, and a kaleidoscope visualizer"
+      credit: From the repository
+    - src: /assets/repos/91/pages-752.webp
+      alt: "Six instrument pages in a grid: the FX page, the flex bank, the performance screen, the mixer, Synth Jam, and the sampler"
+      credit: From the repository
+    - src: /assets/repos/91/palettes-752.webp
+      alt: "Six instrument screens side by side: the home screen and the five theme screens the theme picker offers."
+      credit: From the repository
+
+- slug: quantum-superposition
+  title: Quantum Superposition
+  film: Two states at once
+  genre: Documentary
+  runtime: 0h 44m
+  logline: "Eight quantum models in one viewport, with sliders for balance and phase, and a basis select."
+  cast: [the basis, the phase, the measurement]
+  stills:
+    - src: /assets/repos/quantum-superposition/bloch-1200.webp
+      alt: "A dark sphere with three labelled measurement axes and a copper line pointing from its centre to the prepared state"
+      credit: From the repository
+    - src: /assets/repos/quantum-superposition/wave-1200.webp
+      alt: "A luminous field of points forming two interfering wave patterns on a dark ground"
+      credit: From the repository
+
+- slug: coatcheck
+  title: Coatcheck
+  film: One test per story
+  genre: Procedural
+  runtime: 0h 58m
+  logline: "Points at a Topcoat workbench and writes one Playwright test per story, then runs them."
+  cast: [the manifest, the story, the axe result]
+  stills:
+    - src: /assets/repos/coatcheck/flow-2000.webp
+      alt: "A diagram: the host app and Coatcheck.toml lead to a manifest, which produces generated Playwright and Axe tests, then story frames and screenshots, then axe results and an exit status."
+      credit: From the repository
+    - src: /assets/repos/coatcheck/init-session-1346.webp
+      alt: "A terminal: coatcheck init writes coatcheck/example.spec.ts and Coatcheck.toml, then the TOML's host and test sections and the first lines of the generated Playwright test."
+      credit: From the repository
+
+- slug: topcoat-blocks
+  title: Topcoat Blocks
+  film: Copy to own
+  genre: Anthology
+  runtime: 0h 37m
+  logline: "UI blocks copied into your application as its own source, with no dependency added."
+  cast: [the block, the registry, the copied source]
+  stills:
+    - src: /assets/repos/topcoat-blocks/sign-in-desktop-640.webp
+      alt: "The sign-in form on a light page at desktop width: a card holding an email field, a password field and a submit button"
+      credit: From the repository
+    - src: /assets/repos/topcoat-blocks/sign-in-mobile-393.webp
+      alt: "The same sign-in card on a narrow mobile viewport, fields and button stacked to the width of the screen"
+      credit: From the repository
+
+- slug: coldfront
+  title: Cold Front
+  film: Eyes only, 71°10′N
+  genre: Espionage
+  runtime: 1h 21m
+  logline: "A dark landing page for a fictional Arctic intercept: satellite cover, a one-time cipher, a courier."
+  cast: [the dossier, the cipher, the courier]
+  stills:
+    - src: /assets/repos/coldfront/landing.webp
+      alt: "The Cold Front landing page: an oversized COLD FRONT headline beside a live-intelligence rail showing satellite cover at 04 percent."
+      credit: From the repository
+    - src: /assets/repos/coldfront/mission-cards-1440.webp
+      alt: "The mission section of the deployed page: three numbered cards headed 01/BRIEFING, 02/COUNTERINTEL and 03/EXTRACTION, each with a headline and a short paragraph."
+      credit: From the repository
+
+- slug: cannoli-hell
+  title: Cannoli Hell
+  film: Four caves, one capsule
+  genre: Action
+  runtime: 0h 52m
+  logline: "A blue capsule, four caves, and cannolis that walk over, light a fuse, and explode."
+  cast: [the capsule, the fuse, the punch-back]
+  stills:
+    - src: /assets/repos/cannoli-hell/arena-play-1280.webp
+      alt: "The Cannoli Hell arena mid-run: a blue capsule player at the centre of a grey floor, golden cannoli bodies and red-orange bullets around it, and a stats line reading HP 4, Time 9s, Kills 2, Reflects 3, Caves 4."
+      credit: From the repository
+    - src: /assets/repos/cannoli-hell/arena-open-1280.webp
+      alt: "The arena four seconds into a run: a wide grey floor ringed by dark walls, the blue capsule at centre, a few golden cannolis scattered, and a stats line reading HP 5, Time 4s, Kills 0, Caves 4."
+      credit: From the repository
+
+- slug: kotoba-line
+  title: Kotoba Line
+  film: Kana over ssh
+  genre: Adventure
+  runtime: 0h 49m
+  logline: "A Japanese reading drill over SSH: one word, its kana, and the form skill tree."
+  cast: [the drill, the kana, the skill tree]
+  stills:
+    - src: /assets/repos/kotoba-line/drill-1200.webp
+      alt: "The Kotoba Line drill in a browser: a vocabulary panel showing 行く with its kana いく, and the form skill tree beside it."
+      credit: From the repository
+    - src: /assets/repos/kotoba-line/state-flow-1000.webp
+      alt: "A diagram: a keypress goes to a TUI mode, which emits one of nine event types, appends it to the event log, and a reducer replays the log in order into Progress — cards with streaks and hints, points, unlocked levels."
+      credit: From the repository
+
+- slug: scenelab
+  title: SceneLab
+  film: Arrangement by JSON
+  genre: Musical
+  runtime: 1h 15m
+  logline: "Ableton arrangements addressed as JSON, with writes behind a dry run and a confirmation gate."
+  cast: [the template, the planner, the confirmation gate]
+  stills:
+    - src: /assets/repos/scenelab/arrangement-grid-2000.webp
+      alt: "Timeline grid of a planned arrangement: seven tracks down the left, bars one to thirty-nine across the bottom, six shaded sections from Intro Hook to Outro Vamp, and a clip block for every track in every section, each labelled with its MIDI note count."
+      credit: From the repository
+    - src: /assets/repos/scenelab/cli-plan-1448.webp
+      alt: "A terminal showing the CLI invocation and the start of its JSON reply: ok true, dryRun true, summary Planned City Pop 6/8 Proof, then the plan's meter, 96 BPM, A major and the first scene."
+      credit: From the repository
+
+- slug: ml-kem-ml-dsa-lab
+  title: ML-KEM / ML-DSA Lab
+  film: From first principles
+  genre: Primer
+  runtime: 1h 56m
+  logline: "The NIST lattice standards derived from first principles in C++20 and Rust, with the derivation notes."
+  cast: [the lattice, the keygen, the test vector]
+  stills:
+    - src: /assets/art/galaxy/barred-1600.webp
+      alt: "A barred spiral galaxy: two bright arms sweeping out from a straight bar of stars."
+      credit: NASA/GSFC
+    - src: /assets/repos/ml-kem-ml-dsa-lab/audit-status-1000.webp
+      alt: "Horizontal stacked bars counting review statuses across eight modules for review status, secret-dependent branches, secret-dependent memory access and error paths, with five branch entries marked as open production blockers."
+      credit: From the repository
+
+- slug: marigraph
+  title: Marigraph
+  film: The shape of the risk
+  genre: Thriller
+  runtime: 1h 09m
+  logline: "A volatility surface drawn in block characters, with the SVI fit and the arbitrage check beside it."
+  cast: [the surface, the SVI fit, the arbitrage check]
+  stills:
+    - src: /assets/repos/marigraph/risk-oracle-1800.webp
+      alt: "A dark terminal filled by the risk oracle: a pinned block header with ETH at $2054 and risk at 92%, a shaded 3D volatility surface, a six-column oracle bar chart reading RV 222.6% to RISK 4%, and five panels for market, vol stats, Greeks, pool liquidity and term structure."
+      credit: From the repository
+    - src: /assets/repos/marigraph/cli-1346.webp
+      alt: "A terminal: marigraph --help lists template, risk-oracle, generate, headless, socket-dir, version and help, and --generate prints the head of a Sixcol YAML template with layout rows, cols, gap and a first column entry."
+      credit: From the repository
+
+- slug: 1brc-cpp
+  title: 1BRC in C++
+  film: Six cuts of one program
+  genre: Procedural
+  runtime: 1h 12m
+  logline: "One billion rows through six C++ parsers, one optimisation per cut, and a common header between them."
+  cast: [the naive pass, the wide sweep, the shared header]
+  stills:
+    - src: /assets/repos/1brc-cpp/version-ladder-2000.webp
+      alt: "Horizontal bar chart of six C++ versions of the same reducer over ten million rows: v1 naive 0.94 s, v2 mmap 0.32 s, v3 custom hash 0.27 s, v4 fast parse 0.20 s, v5 parallel 0.07 s, v6 optimized 0.08 s, with speedup labels 1.0x to 14x."
+      credit: From the repository
+    - src: /assets/repos/1brc-cpp/step-savings-1800.webp
+      alt: "Waterfall chart of the same six versions, each bar the time one step saved: 0.62 s for mmap, 0.05 s for the custom hashmap, 0.07 s for integer parsing, 0.13 s for threads, and a red 0.01 s bar where the branchless version added time back."
+      credit: From the repository
+
+- slug: space-bullet-hell
+  title: Guardian of the Spread
+  film: Five sectors, no build step
+  genre: Space opera
+  runtime: 1h 29m
+  logline: "A pixel-art space bullet hell in a 640×360 buffer that needs WebGPU and fetches nothing."
+  cast: [the guardian, the spread, the sector]
+  stills:
+    - src: /assets/repos/space-bullet-hell/guardian-warlord-1200.webp
+      alt: "A dark starfield with the game's HUD in the corners, the player near the left edge with its jetpack flame lit, pink and cyan enemy bullets across the middle, and the boss bar reading WARLORD."
+      credit: From the repository
+    - src: /assets/repos/space-bullet-hell/guardian-data-ring-1200.webp
+      alt: "The first sector in play: a dark starfield, the player at the left edge with an orange jetpack flame, and obstacles and enemies scattered across the middle of the screen."
+      credit: From the repository
+
+- slug: zig-wasm-webgpu-hallway-shooter
+  title: Hallway Shooter
+  film: Three hundred and twenty units
+  genre: Action
+  runtime: 0h 33m
+  logline: "One corridor streaming toward you, its simulation Zig compiled to WebAssembly, drawn with WebGPU."
+  cast: [the corridor, the worker, the instanced draw]
+  stills:
+    - src: /assets/repos/zig-wasm-webgpu-hallway-shooter/corridor-moving-1440.webp
+      alt: "The same corridor twelve seconds later, obstacles in new positions and the score readout at 2822."
+      credit: From the repository
+    - src: /assets/repos/zig-wasm-webgpu-hallway-shooter/corridor-open-1440.webp
+      alt: "A dark vertical corridor with a green player box near the top, orange and blue obstacle rectangles climbing toward it, and a small monospace score readout."
+      credit: From the repository
+
+- slug: macos-metal-vslam
+  title: macOS Metal vSLAM
+  film: Four views of one moment
+  genre: Field study
+  runtime: 1h 18m
+  logline: "A webcam window that tracks motion as points and draws the sparse map it recovers."
+  cast: [the feature point, the sparse map, the 4×4]
+  stills:
+    - src: /assets/repos/macos-metal-vslam/frame-pipeline-1000.webp
+      alt: "A twelve-box diagram of one frame: camera capture, Metal luma kernel with a CPU fallback, ORB features, ratio test, optical flow, essential matrix, triangulation, keyframe gate, GTSAM iSAM2, pose and points, SceneKit viewport."
+      credit: From the repository
+    - src: /assets/repos/macos-metal-vslam/layers-1000.webp
+      alt: "A five-row diagram naming AppKit, Metal, OpenCV, GTSAM and SceneKit, each with the files that implement it and what it owns."
+      credit: From the repository
+
+- slug: cairo_vault
+  title: Cairo Vault
+  film: A deposit, and the total
+  genre: Chamber piece
+  runtime: 0h 41m
+  logline: "A Starknet contract of about a hundred lines: one deposit per caller, and the running total."
+  cast: [the caller, the balance, the running total]
+  stills:
+    - src: /assets/repos/cairo_vault/contract-shape-2000.webp
+      alt: "A diagram of the contract: deposit and withdraw write the balances map and total_deposits, three getters read storage, owner is written once and never required, and nothing calls a token."
+      credit: From the repository
+    - src: /assets/repos/cairo_vault/sepolia-probe-1196.webp
+      alt: "A terminal showing a Sepolia query: the class hash at the vault address, the IVault interface with five functions, and five external entry points."
+      credit: From the repository
+
+- slug: nanda-ts
+  title: nanda-ts
+  film: The registry and its cache
+  genre: Espionage
+  runtime: 1h 23m
+  logline: "A Bun SDK for A2A agents: an agent card, a registry handle, and DID identity to check."
+  cast: [the agent card, the registry, the cache]
+  stills:
+    - src: /assets/art/galaxy/andromeda-960.webp
+      alt: "A panoramic field of stars in Andromeda."
+      credit: NASA/JPL-Caltech
+    - src: /assets/repos/nanda-ts/unit-tests-1500.webp
+      alt: "A terminal showing the end of a bun test run: coverage rows per file, then 371 pass, 0 fail, 820 expect() calls, and Ran 371 tests across 12 files in 638 milliseconds."
+      credit: From the repository

@@ -14,6 +14,8 @@ layout: default
     </p>
     {% if page.repo %}<p class="repo-links"><a class="text-link" href="https://github.com/{{ page.repo }}">View on GitHub</a>{% if page.site %} <a class="text-link" href="{{ page.site }}">Project site</a>{% endif %}</p>{% endif %}
   </header>
+  {%- assign campaign = site.data.campaigns | where: "slug", page.slug | first %}
+  {%- if campaign %}{% include campaign/block.html campaign=campaign %}{% endif %}
   <div class="prose repo-body">{{ content }}</div>
   <footer class="entry-foot">
     <a class="text-link" href="{{ '/projects/' | relative_url }}">All repositories</a>

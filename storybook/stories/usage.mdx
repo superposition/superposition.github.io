@@ -111,6 +111,21 @@ Two live uses: `/journal/` with no entries yet, and `/projects/` before the repo
 
 **Use the footer** on every page: the subtitle in the row, then the five ways out — RSS, GitHub, image credits, the design system, and how to say hello. 13px mono upper case in dust, links in starlight.
 
+## Poster
+
+**Use a poster** to advertise a library. It is 2:3, key art on top, type on the void band below, and it is the only component on the site whose type sizes are measured against its own width rather than the window — the same poster is a 160px thumbnail in the strip and a 380px one-sheet on `/now-showing/`.
+
+- **With a still** when the repository has a figure: the chart or screenshot is the key art, cropped to the frame.
+- **Without a still** when it has none: a plotted field — a ring, a warm core, a ruled grid — drawn in gradients, so the poster still reads as a poster.
+- **Text only** when there is no art at all: the frame is type, and the film has no still.
+- The **cast credit** is the poster's floor: with a member from `_data/cast.yml` it names them under the `.poster-figure` standing on the art; with no member it prints the parts of the film. Never leave the credit out when the poster is wide enough to carry it.
+
+**Do not** put text over the key art. Every word sits on `--void` and draws with the semantic tokens, which is what makes the contrast guarantee hold for all twenty campaigns, under all three identities, and for whichever photographs land next. Only the release number rides on the art, and it is a `.decal`: `--decal-text` on `--decal-bg`, 7.8:1 at worst.
+
+## Now showing strip
+
+**Use the strip** once, on the home page. It advances one poster per `--dur-card` in CSS and carries the same drawn-box pause control as the crawl, so a moving row can be stopped without a script. `prefers-reduced-motion` stops it and removes the control. **Do not** put a second strip anywhere: `/now-showing/` is the gallery, and it does not move.
+
 ## Pagination: not built, and why
 
 There is no pager and no previous/next pair, because the site does not need one yet:

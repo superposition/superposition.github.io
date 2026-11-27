@@ -1,0 +1,52 @@
+{%- comment -%}
+  The campaign block on a repository page: the poster beside what the film is
+  — genre, the film-style title, the logline — and, when the repository has more
+  than one figure, the rest of them as stills from the film. The prose below it
+  is untouched: this is a showing, not a replacement for the page.
+
+  The cast is credited once, on the poster. When _data/cast.yml gives this
+  library a member, their voice line is printed here as the pull quote — the
+  only place on the site a character speaks for the library they front.
+{%- endcomment -%}
+{%- assign campaign = include.campaign -%}
+{%- assign cast_list = site.data.cast.cast | default: site.data.cast -%}
+{%- assign star = nil -%}
+{%- for member in cast_list -%}
+  {%- assign member_library = member.library.slug | default: member.library | default: member.repo -%}
+  {%- if member_library == campaign.slug and star == nil -%}{%- assign star = member -%}{%- endif -%}
+{%- endfor -%}
+{%- assign first_still = nil -%}
+{%- assign extra = "" -%}
+{%- for candidate in campaign.stills -%}
+  {%- assign present = site.static_files | where: "path", candidate.src | first -%}
+  {%- unless present -%}{%- assign present = site.static_files | where: "relative_path", candidate.src | first -%}{%- endunless -%}
+  {%- if present -%}
+    {%- if first_still == nil -%}
+      {%- assign first_still = candidate -%}
+    {%- else -%}
+      {%- capture one -%}<figure class="campaign-still"><img src="{{ candidate.src | relative_url }}" alt="{{ candidate.alt | escape }}" width="1200" height="750" loading="lazy" decoding="async"><figcaption>{{ candidate.alt | escape }}{% if candidate.credit %} · {{ candidate.credit | escape }}{% endif %}</figcaption></figure>{%- endcapture -%}
+      {%- assign extra = extra | append: one -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}
+<section class="campaign" aria-labelledby="campaign-title">
+  <div class="campaign-poster">{% include campaign/poster.html campaign=campaign %}</div>
+  <div class="campaign-body">
+    <p class="campaign-kicker"><span class="decal">Superposition Pictures</span><span class="kicker">{{ campaign.genre | escape }}</span></p>
+    <h2 id="campaign-title" class="campaign-title">{{ campaign.film | escape }}</h2>
+    <p class="campaign-logline">{{ campaign.logline | escape }}</p>
+    <p class="campaign-meta">{{ campaign.runtime | escape }} · <a class="text-link" href="{{ '/now-showing/' | relative_url }}">In libraries now</a></p>
+    {%- if star and star.voice %}
+    <figure class="campaign-voice">
+      <blockquote>&ldquo;{{ star.voice | escape }}&rdquo;</blockquote>
+      <figcaption><span class="cast-name">{{ star.name | default: star.slug | escape }}</span>{% if star.role %} · {{ star.role | escape }}{% endif %}</figcaption>
+    </figure>
+    {%- endif %}
+    {%- if extra != "" %}
+    <p class="kicker campaign-stills-label">Stills</p>
+    <div class="campaign-stills">
+      {{ extra }}
+    </div>
+    {%- endif %}
+  </div>
+</section>

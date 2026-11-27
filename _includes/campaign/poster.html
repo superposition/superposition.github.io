@@ -1,0 +1,88 @@
+{%- comment -%}
+  One campaign poster, 2:3, with three ways to carry key art.
+
+    include.campaign  a row of _data/campaigns.yml (required)
+    include.index     its position in the programme, 1-based (optional)
+    include.total     the programme's length (optional, defaults to 20)
+    include.variant   "text" for a poster with no art at all, which is what a
+                      campaign gets before any still is licensed (optional)
+
+  A still is printed only if the file it names is really in the build: a path
+  that has been moved or renamed falls through to the plotted field rather than
+  shipping a broken image.
+
+  The cast follows _data/cast.yml when it exists. A campaign is fronted by the
+  member whose library is this slug: their drawing stands at the foot of the key
+  art, and their name carries the credit. A library with no member keeps the
+  parts of the film as its credit line, and a member whose drawing is missing
+  keeps only their name. Either way there is a credit where the cast would be,
+  never a hole.
+{%- endcomment -%}
+{%- assign campaign = include.campaign -%}
+{%- assign repo = site.repos | where: "slug", campaign.slug | first -%}
+{%- assign still = nil -%}
+{%- for candidate in campaign.stills -%}
+  {%- assign present = site.static_files | where: "path", candidate.src | first -%}
+  {%- unless present -%}{%- assign present = site.static_files | where: "relative_path", candidate.src | first -%}{%- endunless -%}
+  {%- if present and still == nil -%}{%- assign still = candidate -%}{%- endif -%}
+{%- endfor -%}
+{%- assign variant = "field" -%}
+{%- if include.variant == "text" -%}{%- assign variant = "text" -%}
+{%- elsif include.variant == "field" -%}{%- assign variant = "field" -%}
+{%- elsif still -%}{%- assign variant = "still" -%}
+{%- endif -%}
+{%- assign number = include.index | default: 0 -%}
+{%- assign programme = include.total | default: 20 -%}
+{%- assign cast_list = site.data.cast.cast | default: site.data.cast -%}
+{%- assign star = nil -%}
+{%- for member in cast_list -%}
+  {%- assign member_library = member.library.slug | default: member.library | default: member.repo -%}
+  {%- if member_library == campaign.slug and star == nil -%}{%- assign star = member -%}{%- endif -%}
+{%- endfor -%}
+{%- assign star_drawing = nil -%}
+{%- if star -%}
+  {%- assign drawing_path = star.svg | default: star.portrait -%}
+  {%- if drawing_path -%}{%- assign star_drawing = site.static_files | where: "path", drawing_path | first -%}{%- endif -%}
+  {%- unless star_drawing -%}
+    {%- assign guess = "/assets/series/" | append: star.slug | append: ".svg" -%}
+    {%- assign star_drawing = site.static_files | where: "path", guess | first -%}
+  {%- endunless -%}
+{%- endif -%}
+{%- assign parts = "" -%}
+{%- for role in campaign.cast -%}
+  {%- assign parts = parts | append: role -%}
+  {%- unless forloop.last -%}{%- assign parts = parts | append: " · " -%}{%- endunless -%}
+{%- endfor -%}
+{%- assign long_title = false -%}
+{%- if campaign.title.size > 11 -%}{%- assign long_title = true -%}{%- endif -%}
+<article class="poster poster--{{ variant }}{% if long_title %} poster--long{% endif %}">
+  <a class="poster-link" href="{{ repo.url | relative_url }}">
+    {%- if variant != "text" %}
+    <span class="poster-art">
+      {%- if still and variant == "still" %}
+      <img src="{{ still.src | relative_url }}" alt="" loading="lazy" decoding="async">
+      {%- endif %}
+      {%- if star_drawing %}
+      <img class="poster-figure" src="{{ star_drawing.path | relative_url }}" alt="{{ star.alt | default: star.name | default: star.slug | escape }}" width="320" height="400" loading="lazy" decoding="async">
+      {%- endif %}
+      <span class="poster-no">{% if number > 0 %}{{ number }} of {{ programme }}{% else %}Superposition Pictures{% endif %}</span>
+    </span>
+    {%- endif %}
+    <span class="poster-body">
+      <span class="poster-genre">{{ campaign.genre | escape }}</span>
+      <span class="poster-title">{{ campaign.title | escape }}</span>
+      <span class="poster-film">{{ campaign.film | escape }}</span>
+      <span class="poster-logline">{{ campaign.logline | escape }}</span>
+      <span class="poster-cast">
+        <span class="poster-cast-label">Starring</span>
+        {%- if star %}
+        <span class="poster-credit"><span class="poster-cast-name">{{ star.name | default: star.slug | escape }}</span>{% if star.role %} · {{ star.role | escape }}{% endif %}</span>
+        <span class="poster-credit">{{ parts | escape }}</span>
+        {%- else %}
+        <span class="poster-credit">{{ parts | escape }}</span>
+        {%- endif %}
+      </span>
+      <span class="poster-slate"><span class="poster-now">In libraries now</span><span class="poster-run">{{ campaign.runtime | escape }}</span></span>
+    </span>
+  </a>
+</article>
