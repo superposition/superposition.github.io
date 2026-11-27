@@ -44,6 +44,9 @@
      --chip-text 16.9 on --chip-bg     an eyebrow chip on its own film
      --film-text 16.9 on --film-bg     the release plate over a photograph
      --plum-mark   4.2 /  3.8 /  3.5   the quotation mark, at edge contrast
+    --flora-bloom 9.71 /  8.66 /  7.97  a petal, and a label for its species
+    --flora-spore 14.25 / 12.71 / 11.70 spores and the seed capsule
+    --flora-leaf  3.35 /  2.98 /  2.75  every leaf, under a --cream outline
 
    Instrument (data-lab="a"), ground #0a0a0b:
      --star       16.0 / 15.2 / 14.6
@@ -121,6 +124,29 @@
   --nebula-text: #6f93c9;
   --plum-mark: #9a5e72;
 
+  /* Flora (GALA-88): the garden. Five species, and these four are the only
+     colours any of them needs beyond the chrome above. They are not a fourth
+     identity and not a rainbow: a reader tells the species apart by silhouette
+     first, and these carry what a plant cannot say in shape — the hue of a
+     petal, the hue of a spore, the depth of a leaf, and the light behind a
+     plot. The bloom, the spore and the leaf are baked into the SVG assets as
+     well, because an <img> cannot read a custom property: scripts/flora/grow.py
+     carries the same three values and has to change with them.
+
+     Measured on the three grounds, and printed by `npm run contrast`:
+       --flora-bloom  9.71 /  8.66 /  7.97  petal fill, and bright enough to
+                                            label
+       --flora-spore 14.25 / 12.71 / 11.70  spores and the seed capsule
+       --flora-leaf   3.35 /  2.98 /  2.75  every stem and leaf. Measured as a
+                                        divider because it is a fill and never
+                                        an edge: each leaf carries a --cream
+                                        outline, which is 4.6:1 against it and
+                                        15.4:1 against the ground.
+       --flora-glow                     a bloom of light, not type, not an edge */
+  --flora-bloom: #ff8fa3;
+  --flora-spore: #9fe870;
+  --flora-leaf: #2f6b52;
+
   /* A chip: an eyebrow label is a piece of hardware, so it sits on its own
      film. On an absolute-black ground a black film has nothing to sit on, so
      the film is a warm charcoal with a hairline edge. Two trios, because they
@@ -141,6 +167,13 @@
   --glow-alert: 0 0 2px rgba(226, 64, 47, .55), 0 0 16px rgba(226, 64, 47, .22);
   --text-glow: 0 0 10px rgba(255, 194, 74, .32);
   --glow-soft: 0 0 18px rgba(255, 194, 74, .18);
+
+  /* A plot's atmosphere. Two layers, and neither is a wash: the strata are
+     hairlines on a 16px pitch, so a plot reads as a horizon rather than as a
+     card, and the glow is one bloom behind the specimen, cool enough that the
+     plant's own bloom still carries the colour. */
+  --strata: repeating-linear-gradient(to bottom, var(--line) 0 var(--hair), transparent var(--hair) var(--space-3));
+  --flora-glow: radial-gradient(58% 54% at 50% 44%, rgba(255, 143, 163, .17) 0%, rgba(255, 143, 163, 0) 72%);
 
   /* The gauge: 4px bars on a 12px pitch, one hairline tall, over a hairline
      track. One cluster per section title, never a background. */
@@ -344,6 +377,13 @@
   --swatch-min: 180px;
   --showing-min: 320px;
   --campaign-col: clamp(220px, 26vw, 360px);
+  /* The garden's three measures. A plot holds a specimen big enough to read the
+     bloom at; the twenty are a catalogue, so their cells are small and the
+     label does the naming; a repository page keeps its specimen in the rail,
+     because the page's subject is the writing. */
+  --flora-plot: clamp(150px, 17vw, 236px);
+  --flora-cell: 132px;
+  --flora-rail: clamp(88px, 11vw, 120px);
   --skip-offset: -100px;
 
   /* Heights and one-off measures. A hero is measured against the screen it
