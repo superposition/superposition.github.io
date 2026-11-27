@@ -1,0 +1,114 @@
+# The Superposition Network — series one.
+#
+# Four original characters, each fronting one library. The drawings are hand
+# authored SVG in /assets/series/; every colour a character uses is a token in
+# assets/tokens.css. Nothing here quotes a film: the register is the broadcast
+# ident, the language is ours.
+
+channel: "06:17"
+series: "Series one"
+
+cast:
+  - slug: vellum
+    name: "Vellum-6"
+    short: "Vellum"
+    role: "Shipboard intelligence"
+    job: "Keeps the record"
+    voice: "I keep the record. You keep tuning in. One of those is archival."
+    library:
+      name: "Qualia"
+      slug: "qualia"
+      url: "https://github.com/superposition/qualia"
+    palette:
+      body: "--cream"
+      primary: "--amber"
+      secondary: "--cyan"
+      line: "--void"
+    svg: "/assets/series/vellum.svg"
+    alt: "Vellum-6: a wide flat cream lamp head with an amber light bar and a small cyan indicator, over a narrow cream body whose chest panel carries four amber rules, a loop of paper tape hanging from one arm."
+
+  - slug: gauge
+    name: "Gauge-3"
+    short: "Gauge"
+    role: "Engine mechanic"
+    job: "Reads heat and pressure"
+    voice: "It's not broken. It's running hot, and hot is a number before it's a problem."
+    library:
+      name: "Mage"
+      slug: "mage"
+      url: "https://github.com/superposition/mage"
+    palette:
+      body: "--amber"
+      primary: "--amber"
+      secondary: "--cyan"
+      line: "--void"
+    svg: "/assets/series/gauge.svg"
+    alt: "Gauge-3: a squat figure in amber work armour under a cream diving-bell helmet whose round face is a pressure dial with an amber scale and a cream needle, and oversized cream fists banded in cyan."
+
+  - slug: dray
+    name: "Dray-8"
+    short: "Dray"
+    role: "Lane courier"
+    job: "Runs the manifests"
+    voice: "Sealed, manifested, and already late. That's not a complaint, it's a schedule."
+    library:
+      name: "Reeldeal"
+      slug: "reeldeal"
+      url: "https://github.com/superposition/reeldeal"
+    palette:
+      body: "--cyan"
+      primary: "--cyan"
+      secondary: "--amber"
+      line: "--void"
+    svg: "/assets/series/dray.svg"
+    alt: "Dray-8: a lean figure mid-stride in a flaring cyan coat, an arrow-shaped helmet with a cream visor slit, a cream strap and amber satchel across the chest, and a flat cream crate carried out to one side."
+
+  - slug: sextant
+    name: "Sextant-2"
+    short: "Sextant"
+    role: "Navigator"
+    job: "Holds every course at once"
+    voice: "Every course is open until the screen looks at it."
+    library:
+      name: "Quantum Superposition"
+      slug: "quantum-superposition"
+      url: "https://github.com/superposition/quantum-superposition"
+    palette:
+      body: "--cream"
+      primary: "--cyan"
+      secondary: "--amber"
+      line: "--void"
+    svg: "/assets/series/sextant.svg"
+    alt: "Sextant-2: a tall cream-robed figure with a narrow helmet split by one vertical cyan slit, standing inside a broken cyan orbit marked with two amber points, one arm out to a small cream sighting ring."
+
+idents:
+  - who: "Vellum"
+    slug: "vellum"
+    line: "Every frame you're about to see was archived before it aired. Nothing on this network is live. Nothing on this network is lost."
+  - who: "Vellum"
+    slug: "vellum"
+    line: "Engines next. Gauge will explain the noise. I've filed it under expected, which is where the noise lives."
+  - who: "Gauge"
+    slug: "gauge"
+    line: "Heat, pressure, and one kernel that's been lying to me since Tuesday. Gauge. Engines. The hood's already open."
+  - who: "Gauge"
+    slug: "gauge"
+    line: "That's the machine. Dray has the crates. Try to look like you didn't know."
+  - who: "Dray"
+    slug: "dray"
+    line: "Thirty-one lanes out, four of them legal. Taking the short one. Manifest's on my chest, questions go to the navigator."
+  - who: "Dray"
+    slug: "dray"
+    line: "Sextant plotted it. If we arrive, thank her. If we don't, she already knew."
+  - who: "Sextant"
+    slug: "sextant"
+    line: "Nine ways to the drop. I'm holding all nine. One of them survives contact with the screen."
+  - who: "Sextant"
+    slug: "sextant"
+    line: "Course observed. Vellum, file it before the wavefront settles."
+  - who: "Vellum"
+    slug: "vellum"
+    line: "Filed. This has been The Superposition Network. We were here before you tuned in, and the record agrees with us."
+  - who: "Gauge"
+    slug: "gauge"
+    line: "And that's a red light. Not mine. Somebody's been reading the receipts again."

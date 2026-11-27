@@ -31,6 +31,15 @@ Most introductions to superposition start with a vector and a probability rule, 
 
 The physics is one small module. `src/quantum.js` is 63 lines and holds every equation the site uses: `blochVector` maps a balance and a phase to the three components of a pure state, `dephasedVector` scales the two transverse components by a coherence factor, `purity` returns half of one plus the squared length of the vector, `sectionRadius` gives the radius of the equal-population disk, `collapse` returns a fresh preparation for each measurement basis, and `waveAt` evaluates two plane-wave modes under a shared Gaussian envelope. Everything on screen is drawn from those return values.
 
+<figure>
+  <img src="/assets/repos/quantum-superposition/dephase-600.webp"
+       srcset="/assets/repos/quantum-superposition/dephase-600.webp 600w, /assets/repos/quantum-superposition/dephase-600.webp 600w"
+       sizes="(max-width: 640px) 100vw, 600px"
+       width="600" height="380" style="height:auto" loading="lazy" decoding="async"
+       alt="A dark sphere with a blue line and a shorter copper line inside it, the copper line closer to the vertical axis.">
+  <figcaption>Pure and mixed states, the fourth of the eight committed previews: the blue line is the pure input, the copper line the state after dephasing. As coherence falls the copper line shortens toward the vertical axis while the chances of zero and one stay unchanged — which is what <code>dephasedVector</code> does to the two transverse components and leaves the third alone. The repository's own caveat for this view: the coherence slider is not a clock.</figcaption>
+</figure>
+
 Drawing is WebGPU through the `vgpu` library. `src/pipeline.js` builds one scene out of three passes — a background effect, a single instanced draw of 32,768 points with additive blending, and a fullscreen phase shader — and picks between them by model number. The shaders are string constants in `src/shaders.js`. `src/catalog.js` holds the eight entries as data: id, title, group, an equation line, and paragraphs for coordinates, boundary and encoding, which the page renders as the explanation beside the canvas.
 
 Quantum logic is modelled exactly rather than numerically. `src/clifford.js` stores each gate as a signed permutation of the Pauli axes — Hadamard is `[3, -2, 1]` — and `transformVector` applies them to the Bloch vector, so a sequence never accumulates rotation error. The 24 proper orientations are generated from Hadamard and phase, with overall phase ignored.

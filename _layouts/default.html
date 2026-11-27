@@ -52,6 +52,7 @@
     <nav aria-label="Main navigation">
       <a href="{{ '/projects/' | relative_url }}" {% if page.url == '/projects/' or page.collection == 'repos' %}aria-current="page"{% endif %}>Repositories</a>
       <a href="{{ '/journal/' | relative_url }}" {% if page.url == '/journal/' or page.collection == 'posts' %}aria-current="page"{% endif %}>Journal</a>
+      <a class="nav-series" href="{{ '/series/' | relative_url }}" {% if page.url == '/series/' %}aria-current="page"{% endif %}>Series</a>
       <a href="{{ '/topics/' | relative_url }}" {% if page.url == '/topics/' %}aria-current="page"{% endif %}>Topics</a>
       <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>About</a>
     </nav>
@@ -60,7 +61,7 @@
   <footer class="site-footer wide">
     <div class="wrap">
       <p>Superposition · {{ site.subtitle }}</p>
-      <p><a href="{{ '/feed.xml' | relative_url }}">RSS</a> <span aria-hidden="true">/</span> <a href="https://github.com/superposition">GitHub</a> <span aria-hidden="true">/</span> <a href="{{ '/credits/' | relative_url }}">Image credits</a> <span aria-hidden="true">/</span> <a href="{{ '/style/' | relative_url }}">Design system</a> <span aria-hidden="true">/</span> <a href="https://t.me/SuprPosition">Say hello</a></p>
+      <p><a href="{{ '/feed.xml' | relative_url }}">RSS</a> <span aria-hidden="true">/</span> <a href="https://github.com/superposition">GitHub</a> <span aria-hidden="true">/</span> <a href="{{ '/credits/' | relative_url }}">Image credits</a> <span aria-hidden="true">/</span> <a href="{{ '/style/' | relative_url }}">Design system</a> <span aria-hidden="true">/</span> <a href="{{ '/series/' | relative_url }}">Series</a> <span aria-hidden="true">/</span> <a href="https://t.me/SuprPosition">Say hello</a></p>
     </div>
   </footer>
 </body>

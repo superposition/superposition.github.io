@@ -114,6 +114,13 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 .site-header nav a:hover { color: var(--accent-text); }
 .site-header nav [aria-current] { color: var(--accent-text); text-shadow: var(--text-glow); }
 
+/* Series is a section for a large screen: below 640px it leaves the header so
+   the nav stays one row on a phone, and the footer carries the link instead.
+   Hidden this way it also leaves the tab order, which is why the footer has to
+   carry it — one reachable link at every width, never two. */
+.nav-series { display: none; }
+@media (min-width: 640px) { .nav-series { display: inline; } }
+
 /* Hero -------------------------------------------------------------------- */
 
 .hero {
@@ -324,12 +331,14 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 
 /* Button ----------------------------------------------------------------- */
 
-/* Measured: --accent fill carries --void type at 12.3:1; the secondary and
-   ghost-hover edge is --dust (7.1:1 on void), the secondary hover edge
-   --accent-text (12.3:1); the --state focus ring is 12.2:1 on void, far over
-   the 3:1 edge minimum. A ghost button has no boundary by design, so its
-   --starlight type (13.4:1) is the whole affordance. Disabled is --dust type
-   (7.1:1) inside a dashed --dust edge, which is why it never drops below the
+/* Measured: the primary fill is --accent, which carries --void type at
+   12.3:1; hover lifts to --accent-peak and puts a --star edge on it (15.9:1
+   against the ground), and active adds a 1px press. Secondary and ghost-hover
+   edges are --dust (7.1:1 on void), the secondary hover edge --accent-text
+   (12.3:1), and the --state focus ring is 12.2:1 on void, far over the 3:1
+   edge minimum. A ghost button has no boundary by design, so its --starlight
+   type (14.5:1) is the whole affordance. Disabled is --dust type (7.1:1)
+   inside a dashed --dust edge, which is why it never drops below the
    text minimum. */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -349,8 +358,8 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 .btn:focus-visible { outline: 2px solid var(--state); outline-offset: 3px; box-shadow: var(--glow-state); }
 
 .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--void); box-shadow: var(--glow-soft); }
-.btn-primary:hover { background: var(--accent-peak); border-color: var(--accent-peak); }
-.btn-primary:active { background: var(--accent); border-color: var(--accent-peak); }
+.btn-primary:hover { background: var(--accent-peak); border-color: var(--star); }
+.btn-primary:active { background: var(--accent); border-color: var(--star); transform: translateY(1px); }
 
 .btn-secondary { border-color: var(--dust); color: var(--star); }
 .btn-secondary:hover { border-color: var(--accent-text); color: var(--accent-text); box-shadow: var(--glow-soft); }
@@ -767,6 +776,94 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .sg-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .sg-stack > * + * { margin-top: var(--space-2); }
 
+/* Series ------------------------------------------------------------------ */
+
+/* The Network masthead is a title card: an amber rule over the raised ground,
+   cream display type, one hairline under it. It is the only place --amber,
+   --cyan and --cream are used as chrome, and it does not animate. */
+.network {
+  padding-block: var(--space-6) var(--space-4);
+  background: var(--deep);
+  border-top: 4px solid var(--amber);
+  border-bottom: var(--border-hair);
+}
+.network-bug {
+  display: flex; flex-wrap: wrap;
+  gap: 4px var(--space-3);
+  font: var(--step-1)/1.6 var(--font-mono);
+  text-transform: uppercase; letter-spacing: .1em;
+  color: var(--dust);
+}
+.network-bug span:first-child { color: var(--amber); }
+.network-title {
+  margin-top: var(--space-2);
+  font: var(--step-5)/1 var(--font-display);
+  text-transform: uppercase; letter-spacing: .01em;
+  color: var(--cream);
+}
+.network-title em { font-style: normal; color: var(--amber); }
+.network .lede { margin-top: var(--space-3); }
+
+/* The line-up is a toy shelf: four portrait plates on the grid, name and job
+   under each, one hairline before the line the unit says. */
+.cast-section { padding-top: var(--space-5); }
+.cast {
+  list-style: none; margin-top: var(--space-3); padding: 0;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-3);
+}
+.cast-card { display: flex; flex-direction: column; }
+.cast-single { grid-template-columns: minmax(0, 300px); }
+.cast-portrait {
+  width: 100%; aspect-ratio: 4 / 5; height: auto;
+  object-fit: contain;
+  background: var(--deep);
+  border: var(--border-hair);
+}
+.cast-unit {
+  margin-top: var(--space-2);
+  font: var(--step-1)/1.6 var(--font-mono);
+  text-transform: uppercase; letter-spacing: .08em;
+  color: var(--dust);
+}
+.cast-name { margin-top: 4px; font-size: var(--step-4); line-height: 1.1; color: var(--cream); }
+.cast-role { margin-top: 4px; font-size: var(--step-2); line-height: 1.5; color: var(--starlight); }
+.cast-front {
+  margin-top: var(--space-1);
+  font: var(--step-1)/1.6 var(--font-mono);
+  text-transform: uppercase; letter-spacing: .07em;
+  color: var(--dust);
+}
+.cast-front a { color: var(--amber); text-decoration: none; border-bottom: 1px solid currentColor; }
+.cast-front a:hover { color: var(--cream); border-bottom-width: 2px; }
+.cast-voice {
+  margin-top: auto; padding-top: var(--space-2);
+  border-top: var(--border-hair);
+  font-size: var(--step-2); line-height: 1.6;
+  color: var(--starlight);
+}
+
+/* Idents are a script: who on the left, the line at display size on the
+   right, one hairline per speech. */
+.idents { margin-top: var(--space-6); }
+.idents .lede { margin-top: var(--space-2); }
+.ident-list { list-style: none; margin-top: var(--space-3); padding: 0; }
+.ident {
+  display: grid; grid-template-columns: 120px minmax(0, 1fr);
+  gap: var(--space-2) var(--space-3);
+  padding-block: var(--space-2);
+  border-top: var(--border-hair);
+}
+.ident-who {
+  font: var(--step-1)/1.9 var(--font-mono);
+  text-transform: uppercase; letter-spacing: .08em;
+  color: var(--amber);
+}
+.ident-line { font-size: var(--step-4); line-height: 1.45; color: var(--star); max-width: var(--measure); }
+
+.series-note { margin-top: var(--space-6); padding-top: var(--space-2); border-top: var(--border-hair); }
+.series-note .prose { margin-top: var(--space-3); max-width: var(--measure); }
+
 /* Identity A — instrument ------------------------------------------------ */
 
 /* Alien's screens, not Alien's assets: amber phosphor on carbon, one accent
@@ -995,7 +1092,7 @@ html[data-lab="b"] .empty-title { color: var(--star); }
   }
   .sg-table td:first-child::before { content: none; }
   .sg-table td:first-child { font: 500 var(--step-1)/1.6 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); color: var(--accent-text); }
-  .site-header { font-size: 12px; letter-spacing: var(--track-label); }
+  .site-header { font-size: 12px; letter-spacing: var(--track-label); column-gap: 12px; }
   .site-header nav { gap: 10px; }
   .hero { min-height: 92svh; }
   .hero h1 { font-size: clamp(40px, 12.4vw, 76px); }
@@ -1009,6 +1106,12 @@ html[data-lab="b"] .empty-title { color: var(--star); }
   .entry-dek { grid-column: 1; }
   .crawl { padding-block: 26px; }
   html[data-lab="b"] .crawl { padding-block: 30px; }
+  .cast { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3) var(--space-2); }
+  .cast.cast-single { grid-template-columns: minmax(0, 1fr); }
+  .cast-name { font-size: var(--step-3); }
+  .ident { grid-template-columns: 1fr; gap: 0; }
+  .ident-who { line-height: 1.6; }
+  .ident-line { font-size: var(--step-3); }
 }
 
 @media (prefers-reduced-motion: reduce) {

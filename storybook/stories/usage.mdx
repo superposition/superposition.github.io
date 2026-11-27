@@ -20,18 +20,20 @@ The site is one dark ground, warm cream type, and one accent per job — amber f
 | State, focus rings | `--state` (edges) / `--state-text` (type) | 12.2:1 / 13.5:1 |
 | The one alert | `--alert` (edge) / `--alert-text` (type) | 4.7:1 / 7.0:1 |
 | Quotation edge | `--plum-mark` | 4.0:1 |
+| Divider, gauge rail | `--line`, `--rail` | not a control edge |
+| The signal | `--amber` | 12.3:1 |
+| The second signal | `--cyan` | 12.2:1 |
+| Body type | `--cream` | 14.5:1 |
+| Alert | `--alert` (marks) / `--alert-text` (type) | 4.7:1 / 6.1:1 on `--surface` |
 | Decal type | `--decal-text` on `--decal-bg` | 16.7:1 |
-| Dividers, gauge rail | `--line`, `--rail` | not control edges |
-
-`npm run contrast` in `storybook/` prints all 120 pairs the components ship across the three identities, text at a 4.5:1 floor and control edges at 3:1. Anything below the floor is a failure, not a judgement call. Dividers are printed for the record and carry no minimum, because they group content rather than identify a control.
 
 ## Button
 
 **Use it** for an action: submit, toggle, follow. **Do not use it** for navigation between pages, which is a link, or for an action inside a sentence, which is the `btn-text` variant.
 
-- `btn-primary` — the one action on a view. Amber fill, void type at 12.3:1, with the soft bloom; hover lifts to `--accent-peak`. Two primaries side by side means neither is primary.
+- `btn-primary` — the one action on a view. Amber fill carrying void type at 12.3:1, with the soft bloom; hover lifts to `--accent-peak` and puts a `--star` edge on it, and active adds a 1px press. Two primaries side by side means neither is primary.
 - `btn-secondary` — the alternative in a pair, or an action beside a primary. Dust edge (7.1:1), hover edge and type in amber.
-- `btn-ghost` — chrome and dense rows, where a filled box is too loud. It has no boundary at rest by design; its starlight type (13.4:1) is the whole affordance, and hover brings a `--surface` fill with a dust edge (6.5:1).
+- `btn-ghost` — chrome and dense rows, where a filled box is too loud. It has no boundary at rest by design; its starlight type (14.5:1) is the whole affordance, and hover brings a `--surface` fill with a dust edge (6.5:1).
 - `btn-text` — an action that reads as a link, inside a sentence or a row of links.
 - Sizes: `btn-sm`, default, `btn-lg`. `btn-block` fills its container.
 - States: hover, focus-visible (2px `--state` ring at 12.2:1 with its bloom), active, disabled. Disabled is dust type (7.1:1) inside a dashed dust edge, so it never falls below the text floor — the states are live in the story, not staged with fake classes.

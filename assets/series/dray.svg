@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="400" viewBox="0 0 320 400" role="img" aria-labelledby="series-dray-title">
+  <title id="series-dray-title">Dray-8, the lane courier: a lean cyan-coated figure mid-stride, an arrow-shaped helmet with a cream visor slit, a cream strap and amber satchel across the chest, carrying a cream crate out to the right.</title>
+  <g transform="translate(-23 -26)">
+  <g stroke="#0b0a0d" stroke-width="7" stroke-linejoin="miter">
+    <!-- legs -->
+    <path d="M116 316 L144 316 L140 350 L112 350 Z" fill="#E6DCC8"/>
+    <path d="M166 316 L194 316 L198 350 L170 350 Z" fill="#E6DCC8"/>
+    <!-- boots -->
+    <path d="M102 350 L146 350 L148 372 L100 372 Z" fill="#E6DCC8"/>
+    <path d="M162 350 L206 350 L208 372 L160 372 Z" fill="#E6DCC8"/>
+    <!-- coat -->
+    <path d="M118 178 L202 178 L216 204 L238 304 L94 318 L104 204 Z" fill="#8FD3FF"/>
+    <!-- collar -->
+    <path d="M112 178 L208 178 L212 194 L108 194 Z" fill="#E6DCC8"/>
+    <!-- satchel -->
+    <path d="M104 254 L142 254 L142 290 L104 290 Z" fill="#FFC24A"/>
+    <!-- crate -->
+    <path d="M212 206 L278 206 L278 262 L212 262 Z" fill="#E6DCC8"/>
+    <g stroke="none">
+      <rect x="212" y="228" width="66" height="10" fill="#FFC24A"/>
+      <rect x="238" y="196" width="14" height="12" fill="#0b0a0d"/>
+    </g>
+    <!-- arm to the crate -->
+    <path d="M196 200 L226 224" stroke="#E6DCC8" stroke-width="18" stroke-linecap="butt"/>
+    <!-- neck -->
+    <rect x="150" y="156" width="20" height="24" fill="#0b0a0d" stroke="none"/>
+    <!-- arrow helmet -->
+    <path d="M120 100 L194 100 L216 128 L194 156 L120 156 Z" fill="#8FD3FF"/>
+    <rect x="132" y="117" width="58" height="22" fill="#0b0a0d"/>
+    <rect x="138" y="123" width="44" height="10" fill="#E6DCC8" stroke="none"/>
+  </g>
+  <!-- strap over the coat -->
+  <path d="M200 194 L130 286" fill="none" stroke="#0b0a0d" stroke-width="23"/>
+  <path d="M200 194 L130 286" fill="none" stroke="#E6DCC8" stroke-width="11"/>
+  </g>
+</svg>

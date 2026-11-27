@@ -8,7 +8,7 @@ stars: 0
 pushed: 2026-07-18
 url: https://github.com/superposition/cannoli-hell
 order: 10
-image: /assets/repos/cannoli-hell/arena.webp
+image: /assets/repos/cannoli-hell/arena-play-1280.webp
 ---
 
 ## What it is
@@ -18,12 +18,22 @@ Cannoli Hell is a small 3D arena shooter. The player controls a blue capsule in 
 The game ships twice from one Cargo package: a native Bevy window, and a WebAssembly bundle committed to `docs/` that a browser loads. What makes it worth reading is the loop: a complete arcade loop — state machine, physics, spawning, difficulty ramp, audio, HUD — with no texture pipeline at all. Every model is a Bevy primitive assembled at runtime, so the only binary art assets are `.ogg` sound files.
 
 <figure>
-  <img src="/assets/repos/cannoli-hell/arena.webp"
-       srcset="/assets/repos/cannoli-hell/arena-1200.webp 1200w, /assets/repos/cannoli-hell/arena-2400.webp 2400w"
+  <img src="/assets/repos/cannoli-hell/arena-open-1280.webp"
+       srcset="/assets/repos/cannoli-hell/arena-open-640.webp 640w, /assets/repos/cannoli-hell/arena-open-1280.webp 1280w"
        sizes="(min-width: 1040px) 1000px, 100vw"
-       width="1200" height="750" loading="lazy" style="height:auto"
-       alt="The Cannoli Hell arena mid-run, with the HP counter in the top-left corner and the walled floor stretching into a pale background.">
-  <figcaption>The WebAssembly build from <code>docs/</code> in a 1280×800 window, about twenty seconds into a run: arena floor and walls, with the HP counter from <code>src/game/hud.rs</code> in the corner.</figcaption>
+       width="1280" height="720" style="height:auto" loading="lazy" decoding="async"
+       alt="The arena four seconds into a run: a wide grey floor ringed by dark walls, the blue capsule at centre, a few golden cannolis scattered, and a stats line reading HP 5, Time 4s, Kills 0, Caves 4.">
+  <figcaption>The opening of a run, four seconds in: HP 5, Kills 0, Caves 4. The four corner caves are the bosses, each with ten hit points and three firing patterns, and destroying the last one ends the run on the victory screen. Same build, same window, a few seconds earlier.</figcaption>
+</figure>
+
+
+<figure>
+  <img src="/assets/repos/cannoli-hell/arena-play-1280.webp"
+       srcset="/assets/repos/cannoli-hell/arena-play-640.webp 640w, /assets/repos/cannoli-hell/arena-play-1280.webp 1280w"
+       sizes="(min-width: 1040px) 1000px, 100vw"
+       width="1280" height="720" style="height:auto" loading="lazy" decoding="async"
+       alt="The Cannoli Hell arena mid-run: a blue capsule player at the centre of a grey floor, golden cannoli bodies and red-orange bullets around it, and a stats line reading HP 4, Time 9s, Kills 2, Reflects 3, Caves 4.">
+  <figcaption>A 1280×720 native window about nine seconds into a run: the blue capsule at the centre, cannolis and their bullets around it, and the stats line from <code>src/game/hud.rs</code> reading HP 4, Time 9 s, Kills 2, Reflects 3, Caves 4. The build came from this tree with <code>cargo build --release</code>; the frame was taken with <code>PrintWindow</code> from the game's own window, not from a screen grab.</figcaption>
 </figure>
 
 ## How it works

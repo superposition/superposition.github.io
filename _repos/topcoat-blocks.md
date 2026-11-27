@@ -24,6 +24,15 @@ Topcoat Blocks is a custom component registry for Topcoat, a server-rendered Rus
   <figcaption>The <code>sign_in_form</code> block at desktop width on the light surface, captured by Coatcheck during the review recorded in <code>reviews/sign-in-form/</code>.</figcaption>
 </figure>
 
+<figure>
+  <img src="/assets/repos/topcoat-blocks/sign-in-desktop-dark-1280.webp"
+       srcset="/assets/repos/topcoat-blocks/sign-in-desktop-dark-640.webp 640w, /assets/repos/topcoat-blocks/sign-in-desktop-dark-1280.webp 1280w"
+       sizes="(max-width: 1040px) 100vw, 1000px"
+       width="1280" height="900" style="height:auto" loading="lazy" decoding="async"
+       alt="The same sign-in block on a dark surface: a card with an email field, a password field, a forgotten-password link and a Sign in button.">
+  <figcaption>The same block on the dark surface, from the same Coatcheck review run that produced the light capture: one component, two surfaces, and the same three-element card in both.</figcaption>
+</figure>
+
 The problem is the one that follows from copy-in components. A published component library can be versioned and patched; source copied into an application is frozen the moment it lands, so the interesting question becomes whether the copy still renders, still passes an accessibility scan, and still composes with the primitives in the host. Topcoat Blocks answers that with a loop rather than a promise: every block is developed in a real Topcoat host, checked in Coatcheck, and only then offered to the registry.
 
 ## How it works

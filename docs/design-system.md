@@ -21,20 +21,24 @@ Each value was sampled from the imagery, not chosen.
 
 ### Emitted
 
-Not sampled from anything on the site. These are the light of a control panel in a 90s frame: warm, bright, and always on a near-black ground.
+Not sampled from anything on the site. These are the light of a control panel in a 90s frame: warm, bright, and always on a near-black ground. They arrived with the Network series — the cast drawings in `assets/series/` — and they are now the chrome of the whole site: the same values light the masthead, an ident line, a gauge rail and the tick on a figure.
 
 | Token | Value | Job |
 |---|---|---|
-| `--accent` | `#ffc24a` | amber: the primary accent — chrome links, the wordmark, gauge bars, HUD ticks |
+| `--amber` | `#ffc24a` | the signal: chrome links, the wordmark, gauge bars, HUD ticks, idents, cast names |
+| `--cyan` | `#8fd3ff` | the second signal; state and focus |
+| `--cream` | `#e6dcc8` | body type; series display type |
+| `--alert` | `#e2402f` | one alert on the whole site. Marks and edges only; 4.1:1 on `--surface` |
+| `--alert-text` | `#f4735f` | the same alert where it is small type, 6.1:1 on `--surface` |
+| `--accent`, `--accent-text` | `var(--amber)` | the semantic name a component uses for the accent |
 | `--accent-peak` | `#ffd966` | amber at its peak, hover only |
 | `--accent-warm` | `#e98e5b` | amber warming out, stamps and secondary marks |
-| `--state` | `#8fd3ff` | cyan: focus rings, state edges |
-| `--state-text` | `#a9dcff` | the same cyan as text |
-| `--alert` | `#e2402f` | red: one alert on the whole site |
-| `--alert-text` | `#ff6b56` | the same red as text |
+| `--state`, `--state-text` | `var(--cyan)` / `#a9dcff` | state edges and state type |
 | `--star` | `#efe6d3` | warm cream for headings — never a clipped white |
-| `--starlight` | `#dfd4bd` | warm cream for body and secondary text |
+| `--starlight` | `var(--cream)` | warm cream for body and secondary text (14.5:1) |
 | `--dust` | `#a99884` | warm grey for meta, captions, stamps |
+
+The five emitted values are the source; `--accent`, `--accent-text`, `--state`, `--state-text`, `--starlight` are aliases onto them. A new series drawing, a new component and a new identity all read the same five.
 
 ### The rule
 
@@ -42,23 +46,10 @@ Not sampled from anything on the site. These are the light of a control panel in
 - **`--accent-text`** is the site accent: chrome links, the wordmark, gauge bars, HUD ticks, entry titles.
 - **`--nebula-text`** is the prose link colour only, so a link inside an article reads as a different thing from a link in the chrome. It is sampled, which keeps the writing in the photographs' own colour while the chrome is emitted light.
 - **`--state`** is focus rings and state edges; `--state-text` where that state is written.
-- **`--alert`** appears exactly once: the 404. Red is 4.7:1 on the ground and 4.1:1 on a raised block, so it is an edge, or text on the ground, or `--alert-text` (7.0:1) on a block.
+- **`--alert`** appears exactly once on the site: the 404. Red is 4.7:1 on the ground and 4.1:1 on a raised block, so it is an edge, or text on the ground, or `--alert-text` (7.0:1) on a block.
 - **`--plum-mark`** never carries body text. It fills the blockquote edge.
-- **Never** introduce a colour that is not in `tokens.css`. The contrast block at the top of that file carries every measured pair; `/style/` prints the same numbers beside each swatch; `storybook/scripts/contrast.mjs` prints all 120 pairs over all three identities and exits non-zero on a failure.
-
-### Light
-
-Anything emissive carries a two-layer bloom, never a hard 1px accent border on its own:
-
-| Token | Value | Where |
-|---|---|---|
-| `--glow-accent` | `0 0 2px rgba(255,194,74,.55), 0 0 20px rgba(255,194,74,.30)` | HUD ticks, the wordmark bracket, the hero ticks in the instrument identity |
-| `--glow-state` | `0 0 2px rgba(143,211,255,.55), 0 0 18px rgba(143,211,255,.28)` | focus rings, state marks |
-| `--glow-alert` | `0 0 2px rgba(226,64,47,.55), 0 0 16px rgba(226,64,47,.22)` | the alert |
-| `--text-glow` | `0 0 10px rgba(255,194,74,.32)` | amber text and the hero title |
-| `--glow-soft` | `0 0 18px rgba(255,194,74,.18)` | card hover, HUD ticks in the shipped identity |
-
-The poster identity sets every one of these to `none`, because a poster is printed.
+- **`--amber`**, **`--cyan`** and **`--cream`** name the light itself, for the series drawings and the chrome. A component names its job — `--accent-text`, `--state` — and not its colour, so an identity can move the light without touching a rule.
+- **Never** introduce a colour that is not in `tokens.css`. The contrast block at the top of that file carries every measured pair; `/style/` prints the same numbers beside each swatch; `storybook/scripts/contrast.mjs` prints every pair over all three identities and exits non-zero on a failure.
 
 ## Type
 
@@ -116,6 +107,11 @@ Motion is one thing: the home page's opening statement drifts 26px up and back o
 | Prose | `prose`, `callout`, `callout-title` | entries, repository pages, About, credits |
 | Empty state | `empty-state`, `empty-title`, `empty-text` | `/journal/`, `/projects/` |
 | Footer | `site-footer` | every page |
+| Series masthead | `network`, `network-bug`, `network-title` | `/series/` |
+| Cast card | `cast`, `cast-card`, `cast-portrait`, `cast-unit`, `cast-name`, `cast-role`, `cast-front`, `cast-voice` | `/series/`, Storybook |
+| Ident | `ident-list`, `ident`, `ident-who`, `ident-line` | `/series/` |
+
+The cast's four portraits are hand-authored SVG in `assets/series/`, one file per character, each with its own `title` and `role`, and no raster or external reference anywhere in them. `_data/cast.yml` is the cast: name, role, the line the unit says, the library it fronts, and the tokens it is drawn in.
 
 `/style/` shows every one of them rendered live, which is the test that they are applied rather than described. The Storybook workbench in `storybook/` imports the same two stylesheets, has an identity switcher in its toolbar (it sets `data-lab` on the root element, in workbench code only), and adds the variants and states a page does not happen to be showing. `storybook/scripts/contrast.mjs` measures all 120 colour pairs over the three identities, and `/style/` prints the same numbers beside each swatch.
 

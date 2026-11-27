@@ -19,7 +19,7 @@ export default {
 
 export const Primary = {
   args: {
-    note: 'Primary: one per view. The amber fill, void type at 12.3:1.',
+    note: 'Primary: one per view. The amber fill, void type at 12.3:1, with the soft bloom; hover lifts to the peak and puts a cream edge on it.',
     body: '<a class="btn btn-primary" href="#storybook-root">Read the journal</a>',
   },
 };

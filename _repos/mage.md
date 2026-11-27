@@ -60,6 +60,15 @@ the balance point in FLOPs/byte, and reports whether a kernel is memory-bound or
   32-bit ones.</figcaption>
 </figure>
 
+<figure>
+  <img src="/assets/repos/mage/layernorm-row-split-1800.webp"
+       srcset="/assets/repos/mage/layernorm-row-split-900.webp 900w, /assets/repos/mage/layernorm-row-split-1800.webp 1800w"
+       sizes="(min-width: 1040px) 1000px, 100vw"
+       width="1800" height="744" style="height:auto" loading="lazy" decoding="async"
+       alt="Two schematics of the same LayerNorm row: on the left one warp reads all 768 floats, on the right two warps each read half of it.">
+  <figcaption>A schematic, in the figure's own words, not a measurement: the same 768-float row and the same 128-bit loads, read by one warp and then by two. <code>layer_norm_warp</code> puts 4096 rows in 512 blocks of 256 threads; <code>layer_norm_pair</code> puts the same rows in 1024 blocks. It is the change the kernel progression measured at 1.37× for LayerNorm at 4096×4096, drawn before it was timed.</figcaption>
+</figure>
+
 The kernels themselves are `@triton.jit` functions in `src/mage/kernels.py` and the operation
 modules beside it (`matmul.py`, `normalization.py`, `attention.py`, `rope.py`, `fused_mlp.py`).
 `examples/oxide/` is the separate Rust track: the same five operations built with pinned cuda-oxide

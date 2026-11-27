@@ -8,7 +8,7 @@ sitemap: false
 <div class="wrap">
   <header class="page-heading">
     <h1>Design system</h1>
-    <p class="lede">Every token and component on the site, rendered from the same stylesheets the pages use. The numbers beside each colour are measured contrast against the void ground; <code>npm run contrast</code> in <code>storybook/</code> prints all 120 pairs over all three identities and fails under 4.5:1 for text, 3:1 for a control edge.</p>
+    <p class="lede">Every token and component on the site, rendered from the same stylesheets the pages use. The numbers beside each colour are measured contrast against the void ground; <code>npm run contrast</code> in <code>storybook/</code> prints every pair over all three identities and fails under 4.5:1 for text, 3:1 for a control edge.</p>
   </header>
 
   <section class="sg-section" aria-labelledby="sg-colour">
@@ -18,7 +18,7 @@ sitemap: false
       <li class="swatch"><div class="chip" style="background: var(--deep)"></div><div class="label"><b>--deep</b>#131118 · section ground</div></li>
       <li class="swatch"><div class="chip" style="background: var(--surface)"></div><div class="label"><b>--surface</b>#1c1a20 · raised block</div></li>
       <li class="swatch"><div class="chip" style="background: var(--star)"></div><div class="label"><b>--star</b>#efe6d3 · 15.9:1</div></li>
-      <li class="swatch"><div class="chip" style="background: var(--starlight)"></div><div class="label"><b>--starlight</b>#dfd4bd · 13.4:1</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--starlight)"></div><div class="label"><b>--starlight</b>#e6dcc8 · 14.5:1</div></li>
       <li class="swatch"><div class="chip" style="background: var(--dust)"></div><div class="label"><b>--dust</b>#a99884 · 7.1:1</div></li>
       <li class="swatch"><div class="chip" style="background: var(--accent)"></div><div class="label"><b>--accent</b>#ffc24a · 12.3:1</div></li>
       <li class="swatch"><div class="chip" style="background: var(--accent-peak)"></div><div class="label"><b>--accent-peak</b>#ffd966 · hover</div></li>
@@ -26,12 +26,14 @@ sitemap: false
       <li class="swatch"><div class="chip" style="background: var(--state)"></div><div class="label"><b>--state</b>#8fd3ff · 12.2:1 · focus and state</div></li>
       <li class="swatch"><div class="chip" style="background: var(--state-text)"></div><div class="label"><b>--state-text</b>#a9dcff · 13.5:1</div></li>
       <li class="swatch"><div class="chip" style="background: var(--alert)"></div><div class="label"><b>--alert</b>#e2402f · 4.7:1 edge only</div></li>
-      <li class="swatch"><div class="chip" style="background: var(--alert-text)"></div><div class="label"><b>--alert-text</b>#ff6b56 · 7.0:1</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--alert-text)"></div><div class="label"><b>--alert-text</b>#f4735f · 7.0:1</div></li>
       <li class="swatch"><div class="chip" style="background: var(--nebula-text)"></div><div class="label"><b>--nebula-text</b>#6f93c9 · 6.3:1 · prose links</div></li>
       <li class="swatch"><div class="chip" style="background: var(--plum)"></div><div class="label"><b>--plum</b>#6b3f4d · fill only</div></li>
       <li class="swatch"><div class="chip" style="background: var(--plum-mark)"></div><div class="label"><b>--plum-mark</b>#9a5e72 · 4.0:1 edge</div></li>
-      <li class="swatch"><div class="chip" style="background: var(--decal-bg)"></div><div class="label"><b>--decal-bg</b>rgba(0,0,0,.85) · decal film</div></li>
-    </ul>
+      <li class="swatch"><div class="chip" style="background: var(--amber)"></div><div class="label"><b>--amber</b>#ffc24a · 12.3:1 · the signal</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--cyan)"></div><div class="label"><b>--cyan</b>#8fd3ff · 12.2:1 · the second signal</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--cream)"></div><div class="label"><b>--cream</b>#e6dcc8 · 14.5:1 · body type</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--decal-bg)"></div><div class="label"><b>--decal-bg</b>rgba(0,0,0,.85) · decal film</div></li>    </ul>
   </section>
 
   <section class="sg-section" aria-labelledby="sg-type">

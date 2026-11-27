@@ -34,6 +34,16 @@ The loop lives in `internal/tui/app/model.go`: four modes (drill, boss, stations
 
 State gets the most care. `internal/state/events.go` defines the event log; `reducer.go` replays events into a `Progress` value of per-card streaks, masteries, unlocked levels, and points, granting mastery once a streak crosses `MasteryCleanHitStreak`; `snapshot.go`, `sqlite.go`, and `postgres.go` persist it. `internal/skilltree/tree.go` turns cards and prerequisites into levels and requirement states, and `internal/boss/model.go` models bosses as HP phases over text chunks. Transitions are deterministic frame sequences from `internal/transition/scene.go`, seven scenes rendered by `internal/tui/transition/render.go` with pieces from `internal/tui/atoms`. `internal/sshapp/web.go` exposes the same model as HTML through login, `/play`, and `/api/key`.
 
+<figure>
+  <img src="/assets/repos/kotoba-line/state-flow-2000.webp"
+       srcset="/assets/repos/kotoba-line/state-flow-1000.webp 1000w, /assets/repos/kotoba-line/state-flow-2000.webp 2000w"
+       sizes="(min-width: 1040px) 1000px, 100vw"
+       width="2000" height="779" style="height:auto" loading="lazy" decoding="async"
+       alt="A diagram: a keypress goes to a TUI mode, which emits one of nine event types, appends it to the event log, and a reducer replays the log in order into Progress — cards with streaks and hints, points, unlocked levels.">
+  <figcaption>The state path, drawn from <code>internal/state/events.go</code> and <code>internal/state/reducer.go</code>: the log is the state and the screen is a reading of it. Nine event types go in — <code>enemy_hit</code>, <code>enemy_missed</code>, <code>hint_revealed</code>, <code>card_mastered</code>, <code>level_unlocked</code>, <code>points</code>, and the three boss events — and <code>ReplayEvents</code> folds them from an empty <code>Progress</code> every time, so a mastery flag is a rule over the log rather than something the view sets.</figcaption>
+</figure>
+
+
 ## Run it
 
 ```sh

@@ -14,11 +14,31 @@ order: 19
 
 One Starknet contract written in Cairo, about a hundred lines long, in `src/vault.cairo`. It stores an owner address, a balance for every address that has deposited, and a running total. Three getters read that state back, and two events record the calls that changed it. `src/lib.cairo` is a single line declaring the module.
 
+<figure>
+  <img src="/assets/repos/cairo_vault/sepolia-probe-1196.webp"
+       srcset="/assets/repos/cairo_vault/sepolia-probe-598.webp 598w, /assets/repos/cairo_vault/sepolia-probe-1196.webp 1196w"
+       sizes="(min-width: 1000px) 1000px, 100vw"
+       width="1196" height="770" style="height:auto" loading="lazy" decoding="async"
+       alt="A terminal showing a Sepolia query: the class hash at the vault address, the IVault interface with five functions, and five external entry points.">
+  <figcaption>The deployed contract, asked a question: <code>starknet_getClassHashAt</code> at the address in the README returns <code>0xb22d…a1c</code>, the class hash the README lists, and the class at that address is the <code>hello_world::vault::IVault</code> interface with five entry points — <code>deposit</code>, <code>withdraw</code>, <code>get_balance</code>, <code>get_total_deposits</code>, <code>get_owner</code>. Read at Sepolia block 18,774,823 through a public node.</figcaption>
+</figure>
+
+
 The repository works one small stateful Starknet contract end to end: a trait for the interface, a storage struct, a constructor, an implementation block marked `#[abi(embed_v0)]` so the trait becomes the contract's ABI, and a README carrying the deployment it produced — the Sepolia contract address, class hash and owner, with a Starkscan link — followed by the exact `sncast` commands that got there. Its subject is the shape of a contract and the toolchain around it, not a financial design.
 
 ## How it works
 
 The storage struct in `src/vault.cairo` holds `owner: ContractAddress`, `balances: Map<ContractAddress, u256>`, and `total_deposits: u256`. `deposit` asserts that the amount is positive with the message `'Amount must be positive'`, reads the caller from `get_caller_address()`, adds the amount to that caller's entry and to the total, then emits `Deposit { user, amount }` with `user` marked `#[key]` so it can be filtered. `withdraw` reads the current balance, asserts the same positivity, asserts `current_balance >= amount` with `'Insufficient balance'`, subtracts from both the balance and the total, and emits `Withdrawal`.
+
+<figure>
+  <img src="/assets/repos/cairo_vault/contract-shape-2000.webp"
+       srcset="/assets/repos/cairo_vault/contract-shape-1000.webp 1000w, /assets/repos/cairo_vault/contract-shape-2000.webp 2000w"
+       sizes="(min-width: 1040px) 1000px, 100vw"
+       width="2000" height="933" style="height:auto" loading="lazy" decoding="async"
+       alt="A diagram of the contract: deposit and withdraw write the balances map and total_deposits, three getters read storage, owner is written once and never required, and nothing calls a token.">
+  <figcaption>The whole state of the contract, drawn from <code>src/vault.cairo</code>: two write paths, three read paths, three storage members. What is missing from the drawing is the finding — there is no token address, no dispatcher and no transfer, so a deposit changes two numbers and emits an event, and <code>owner</code> is stored and returned but never required by any function.</figcaption>
+</figure>
+
 
 The three getters — `get_balance(account)`, `get_total_deposits()`, `get_owner()` — are read-only storage reads. The constructor takes the owner address and writes it alongside a zeroed total, so the contract's owner is fixed at deploy time and cannot be changed afterwards.
 
