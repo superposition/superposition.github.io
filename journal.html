@@ -6,22 +6,29 @@ description: Entries in data informatics, AI, matrices, kinematics and cryptogra
 image: /assets/art/orbits.png
 ---
 
-<div class="wrap">
-<header class="page-heading">
+<header class="page-heading wide">
   <h1>Journal</h1>
 </header>
+<div class="wide">
 {% if site.posts.size == 0 %}
-<div class="empty-state">
-  <p class="empty-title">No entries yet</p>
-  <p class="empty-text">The first one is being written. <a href="{{ '/feed.xml' | relative_url }}">Follow by RSS</a> and it will arrive.</p>
-</div>
+<section class="band" aria-labelledby="entries-title">
+  <h2 id="entries-title" class="section-title">Entries <span class="count">0</span></h2>
+  <div class="band-body">
+    <div class="empty-state">
+      <p class="empty-title">No entries yet</p>
+      <p class="empty-text">The first one is being written. <a href="{{ '/feed.xml' | relative_url }}">Follow by RSS</a> and it will arrive.</p>
+    </div>
+  </div>
+</section>
 {% else %}
 {% for topic in site.data.topics %}{% assign posts = site.posts | where: "topic", topic.slug %}{% if posts.size > 0 %}
-<section class="journal-topic" id="{{ topic.slug }}">
-  <h2>{{ topic.name }}</h2>
-  <ul class="entry-list">
-    {% for post in posts %}<li><a class="entry" href="{{ post.url | relative_url }}"><span class="entry-date"><time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: "%Y-%m-%d" }}</time></span><span class="entry-title">{{ post.title }}</span>{% if post.description %}<span class="entry-dek">{{ post.description }}</span>{% endif %}</a></li>{% endfor %}
-  </ul>
+<section class="band journal-topic" id="{{ topic.slug }}">
+  <h2 class="section-title">{{ topic.name }} <span class="count">{{ posts.size }}</span></h2>
+  <div class="band-body">
+    <ul class="entry-list">
+      {% for post in posts %}<li><a class="entry" href="{{ post.url | relative_url }}"><span class="entry-date"><time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: "%Y-%m-%d" }}</time></span><span class="entry-title">{{ post.title }}</span>{% if post.description %}<span class="entry-dek">{{ post.description }}</span>{% endif %}</a></li>{% endfor %}
+    </ul>
+  </div>
 </section>
 {% endif %}{% endfor %}
 {% endif %}

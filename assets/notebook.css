@@ -1518,7 +1518,103 @@ html[data-lab="b"] .empty-title { color: var(--star); }
 
 @keyframes figure-in { from { opacity: 0; } }
 
+/* Composition -------------------------------------------------------------
+
+   The catalogue pages read on one grid: twelve columns across --max-wide, the
+   heading alone on its line, the body below it. Prose never runs wider than
+   --measure; a catalogue uses the whole 1200; a repository page opens the grid
+   so its prose can sit two columns in and a figure can break right across ten. */
+
+.band { margin-top: var(--space-5); }
+.band > .section-title {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--space-3);
+}
+/* The count is a register's value against its name, at the far end of the
+   same line. */
+.section-title .count { font: 400 var(--step-1)/1.6 var(--font-mono); letter-spacing: var(--track-label); color: var(--dust); }
+.band > .band-body { display: block; }
+.band > .band-body > .repo-list { max-width: var(--measure); }
+
+/* The lead register: the front page opens on writing, not on a list. */
+.lead-body { display: grid; grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr)); column-gap: var(--grid-gap); }
+.lead-text { grid-column: 1 / span 8; }
+.lead-text .lede { margin-top: var(--space-2); }
+.lead-extract {
+  margin-top: var(--space-3);
+  max-width: var(--measure);
+  font-size: var(--step-3);
+  line-height: var(--leading-body);
+  color: var(--star);
+}
+.lead-text .kicker:last-child { margin-top: var(--space-3); }
+.lead-figure { grid-column: 9 / -1; padding: 10px; border: var(--border-hair); }
+.lead-figure img { width: 100%; }
+.lead-figure figcaption {
+  margin-top: var(--space-1);
+  font: 11px/1.6 var(--font-mono);
+  letter-spacing: .04em;
+  color: var(--dust);
+}
+
+/* The repository index: two columns of numbered rows instead of a card wall.
+   The number holds its own cell, so every row starts on the same line whether
+   or not the repository shipped a screenshot. */
+.repo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--grid-gap); }
+.repo-grid .card {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr);
+  column-gap: var(--space-1);
+}
+.repo-grid .card > .card-kicker { grid-row: 1 / span 3; margin-bottom: 0; }
+.repo-grid .card > .card-title,
+.repo-grid .card > .card-text,
+.repo-grid .card > .card-meta { grid-column: 2; }
+.repo-grid .card > .card-media { display: none; }
+
+.repo-all { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--grid-gap); }
+.repo-line { margin: 0; padding-block: var(--space-2); border-top: var(--border-hair); }
+
+/* The closing register: three fields of view, edge to edge. */
+.plates-band { margin-top: var(--space-6); counter-reset: fig; }
+.plates { gap: var(--space-1); margin-top: 0; }
+.plate img { height: auto; aspect-ratio: 3 / 2; }
+.plate figcaption { padding: var(--space-1) var(--space-2) var(--space-2); }
+
+/* Figures are numbered like a technical report, so a caption can be cited. */
+.prose { counter-reset: fig; }
+.prose figcaption::before,
+.plate figcaption::before { counter-increment: fig; content: "Fig. " counter(fig, decimal-leading-zero) " · "; }
+
+/* A repository page holds the grid open: title across eight columns, the facts
+   and links in the right rail on the title's baseline, prose two columns in. */
+/* Any child that is not named below spans the full grid, so an include — a
+   campaign block, an audio figure — can never be auto-placed into one column. */
+.repo-page, .entry-page { display: grid; grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr)); column-gap: var(--grid-gap); }
+.repo-page > *, .entry-page > * { grid-column: 1 / -1; }
+.repo-page > .repo-head { grid-column: 1 / span 8; }
+.repo-aside { grid-column: 10 / -1; align-self: end; padding-bottom: var(--space-2); }
+.repo-aside .meta { flex-direction: column; align-items: flex-start; gap: 2px; }
+.repo-page > .repo-body, .repo-page > .entry-foot { grid-column: 3 / -1; }
+.repo-body figure { max-width: min(100%, var(--measure-figure)); }
+.entry-page > .entry-head { grid-column: 1 / span 9; }
+.entry-page > .prose, .entry-page > .audio, .entry-page > .entry-foot { grid-column: 3 / -1; }
+
+@media (max-width: 1000px) {
+  .lead-body, .repo-page, .entry-page { grid-template-columns: minmax(0, 1fr); }
+  .lead-text, .lead-figure,
+  .repo-page > .repo-head, .repo-aside, .repo-page > .repo-body, .repo-page > .entry-foot,
+  .entry-page > .entry-head, .entry-page > .prose, .entry-page > .audio, .entry-page > .entry-foot { grid-column: 1 / -1; }
+  .repo-aside { align-self: start; padding-bottom: 0; margin-top: var(--space-2); }
+  .repo-aside .meta { flex-direction: row; flex-wrap: wrap; gap: 4px 18px; }
+  .repo-links .text-link { display: inline; }
+  .repo-links .text-link + .text-link { margin-left: var(--space-3); margin-top: 0; }
+  .lead-figure { margin-top: var(--space-3); }
+  .repo-grid, .repo-all { grid-template-columns: minmax(0, 1fr); }
+}
+
 /* Narrow ----------------------------------------------------------------- */
+
 
 @media (max-width: 700px) {
   /* The identity table stacks rather than scrolling sideways: a doc table a
@@ -1540,8 +1636,7 @@ html[data-lab="b"] .empty-title { color: var(--star); }
   .hero { min-height: 92svh; }
   .hero h1 { font-size: clamp(40px, 12.4vw, 76px); }
   .topic-list { font-size: var(--step-2); }
-  .plates { grid-template-columns: 1fr; }
-  .plate img { aspect-ratio: 3 / 2; }
+  .plates { grid-template-columns: minmax(0, 1fr); }
   .entry { grid-template-columns: 1fr; column-gap: 0; }
   .repo-row { grid-template-columns: 1fr; gap: 2px; padding-block: 9px; }
   .repo-name { font-size: 12px; }

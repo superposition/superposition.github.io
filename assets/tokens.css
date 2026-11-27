@@ -264,6 +264,15 @@
   /* Layout. */
   --gutter: 24px;
   --max-wide: 1200px;
+
+  /* Composition. Twelve columns across --max-wide with --grid-gap between
+     them: at 1440 that measures (1200 - 11 x 32) / 12 = 70.67px a column.
+     Prose keeps --measure whatever the identity sets it to; a catalogue reads
+     across all twelve; a figure may run ten columns of a repository page's
+     body, 995px, capped at the --measure-figure the pages are written to. */
+  --grid-cols: 12;
+  --grid-gap: var(--space-4);
+  --measure-figure: 1000px;
   --max-crawl: 34rem;
 }
 
