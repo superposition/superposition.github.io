@@ -162,13 +162,15 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 
 /* Button ----------------------------------------------------------------- */
 
-/* Measured: --rust fill carries --void type at 4.53:1, --rust-text at 5.55:1;
-   the secondary and ghost-hover edge is --dust (6.6:1 on void), the secondary
-   hover edge --rust-text (5.6:1);
-   --teal focus ring is 4.3:1 on void, over the 3:1 edge minimum. A ghost
-   button has no boundary by design, so its --starlight type (11.4:1) is the
-   whole affordance. Disabled is --dust type (6.6:1) inside a dashed --dust
-   edge, which is why it never drops below the text minimum. */
+/* Measured: the primary fill is --rust-text, which carries --void type at
+   5.55:1; hover and active keep that fill and put a --star edge on it
+   (16.9:1 against the void ground), and active adds a 1px press. Secondary
+   and ghost-hover edges are --dust (6.6:1 on void), the secondary hover edge
+   --rust-text (5.6:1), and the --teal focus ring is 4.3:1 on void, over the
+   3:1 edge minimum. A ghost button has no boundary by design, so its
+   --starlight type (11.4:1) is the whole affordance. Disabled is --dust type
+   (6.6:1) inside a dashed --dust edge, which is why it never drops below the
+   text minimum. */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   gap: var(--space-1);
@@ -186,9 +188,9 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 .btn:hover { text-decoration: none; }
 .btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
 
-.btn-primary { background: var(--rust); border-color: var(--rust); color: var(--void); }
-.btn-primary:hover { background: var(--rust-text); border-color: var(--rust-text); }
-.btn-primary:active { background: var(--rust); border-color: var(--rust-text); }
+.btn-primary { background: var(--rust-text); border-color: var(--rust-text); color: var(--void); }
+.btn-primary:hover { border-color: var(--star); }
+.btn-primary:active { border-color: var(--star); transform: translateY(1px); }
 
 .btn-secondary { border-color: var(--dust); color: var(--star); }
 .btn-secondary:hover { border-color: var(--rust-text); color: var(--rust-text); }

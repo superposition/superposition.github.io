@@ -19,7 +19,7 @@ export default {
 
 export const Primary = {
   args: {
-    note: 'Primary: one per view. The rust fill, void type.',
+    note: 'Primary: one per view. The --rust-text fill, void type at 5.55:1; hover puts a cream edge on it.',
     body: '<a class="btn btn-primary" href="#storybook-root">Read the journal</a>',
   },
 };
