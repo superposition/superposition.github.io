@@ -35,7 +35,7 @@
     <p class="campaign-kicker"><span class="decal">Superposition Pictures</span><span class="kicker">{{ campaign.genre | escape }}</span></p>
     <h2 id="campaign-title" class="campaign-title">{{ campaign.film | escape }}</h2>
     <p class="campaign-logline">{{ campaign.logline | escape }}</p>
-    <p class="campaign-meta">{{ campaign.genre | escape }} · {{ campaign.runtime | escape }} · <a class="text-link" href="{{ '/now-showing/' | relative_url }}">In libraries now</a></p>
+    <p class="campaign-meta">{{ campaign.runtime | escape }} · <a class="text-link" href="{{ '/now-showing/' | relative_url }}">In libraries now</a></p>
     {%- if star and star.voice %}
     <figure class="campaign-voice">
       <blockquote>&ldquo;{{ star.voice | escape }}&rdquo;</blockquote>

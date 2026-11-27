@@ -60,7 +60,7 @@
     {%- if variant != "text" %}
     <span class="poster-art">
       {%- if still and variant == "still" %}
-      <img src="{{ still.src | relative_url }}" alt="" width="1200" height="1200" loading="lazy" decoding="async">
+      <img src="{{ still.src | relative_url }}" alt="" loading="lazy" decoding="async">
       {%- endif %}
       {%- if star_drawing %}
       <img class="poster-figure" src="{{ star_drawing.path | relative_url }}" alt="{{ star.alt | default: star.name | default: star.slug | escape }}" width="320" height="400" loading="lazy" decoding="async">
