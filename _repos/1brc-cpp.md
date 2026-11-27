@@ -16,6 +16,16 @@ A Bazel workspace holding one data generator and six complete answers to the sam
 
 The problem is the One Billion Row Challenge. A file of `station;temperature` lines — thirteen gigabytes for a billion rows — has to be reduced to the minimum, mean and maximum temperature for each of the 160 station names, printed in one sorted line. The cost is turning text into integers a billion times without touching the heap more often than necessary. The repository's arrangement turns that into a ladder: six versions, each changing one thing, labelled by the README's own diagram — mmap 3×, custom hashmap 1.2×, integer parsing 1.4×, threads 3×.
 
+<figure>
+  <img src="/assets/repos/1brc-cpp/version-ladder-2000.webp"
+       srcset="/assets/repos/1brc-cpp/version-ladder-1000.webp 1000w, /assets/repos/1brc-cpp/version-ladder-2000.webp 2000w"
+       sizes="(min-width: 1040px) 1000px, 100vw"
+       width="2000" height="871" style="height:auto" loading="lazy" decoding="async"
+       alt="Horizontal bar chart of six C++ versions of the same reducer over ten million rows: v1 naive 0.94 s, v2 mmap 0.32 s, v3 custom hash 0.27 s, v4 fast parse 0.20 s, v5 parallel 0.07 s, v6 optimized 0.08 s, with speedup labels 1.0x to 14x.">
+  <figcaption>The README's benchmark table, ten million rows on sixteen cores, drawn as the ladder the repository is arranged around: one change per version. <code>run_benchmark.sh</code> produced these numbers with <code>time -p</code> and they are not reproduced in CI. The last bar is the interesting one — <code>v6_optimized</code> is slower than the <code>v5_parallel</code> it was meant to improve on.</figcaption>
+</figure>
+
+
 ## How it works
 
 `src/common.hpp` fixes the data model for every version. `brc::Stats` holds `min`, `max`, `sum` and `count` as `int64_t`, and a temperature is stored as the integer tenths of a degree — `-12.3` is `-123` — so the hot loop never calls `stod` and never sees a float. `update` and `merge` are the only two mutations. `output_results` does the conversion back to one decimal place via `format_temp` and walks the stations in sorted order.
@@ -44,6 +54,16 @@ The toolchain is pinned in `.bazelrc`: C++20, and a default `--config=opt` of `-
 ## Caveats
 
 The code is POSIX-only. Every version past the first includes `sys/mman.h` and `unistd.h`, and `open`/`fstat`/`mmap`/`munmap` are called directly, so the workspace does not build on Windows.
+
+
+<figure>
+  <img src="/assets/repos/1brc-cpp/step-savings-1800.webp"
+       srcset="/assets/repos/1brc-cpp/step-savings-900.webp 900w, /assets/repos/1brc-cpp/step-savings-1800.webp 1800w"
+       sizes="(min-width: 1040px) 1000px, 100vw"
+       width="1800" height="870" style="height:auto" loading="lazy" decoding="async"
+       alt="Waterfall chart of the same six versions, each bar the time one step saved: 0.62 s for mmap, 0.05 s for the custom hashmap, 0.07 s for integer parsing, 0.13 s for threads, and a red 0.01 s bar where the branchless version added time back.">
+  <figcaption>The same table read as marginal savings rather than totals. Almost all of the win sits in two steps — mapping the file instead of streaming it, and splitting it across threads — and the sixth step gives back a hundredth of a second. That last bar is why the caveats here treat the ordering as the claim and the numbers as an anecdote.</figcaption>
+</figure>
 
 The README's benchmark table is one set of numbers from one machine — 10M rows, 16 cores — never reproduced in CI, because there is none. Treat the ordering as the claim and the figures as an anecdote. The table also undercuts its own ending: `v6_optimized` comes in at 0.08s against `v5_parallel` at 0.07s, so the last version is the slowest of the two parallel ones, and the two headers disagree about the machine they were measured on — `v6_optimized.cpp` predicts "~2s for 1B rows on 8 cores" while the README table says 16.
 

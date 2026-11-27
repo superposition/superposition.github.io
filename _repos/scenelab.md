@@ -14,6 +14,16 @@ order: 12
 
 SceneLab is a control layer for Ableton Live that takes its orders as JSON. A request goes in on standard input — an action, a dry-run flag, and a params object — and a normalized response comes back on standard output, with logs kept on standard error. An MCP server exposes seven of those requests as agent tools, and a Max for Live device is the only component touching Ableton itself. Arrangements are described by template files, and a planner turns a template into scenes, tracks, clips, MIDI notes, and automation intent without touching the Live set.
 
+<figure>
+  <img src="/assets/repos/scenelab/arrangement-grid-2000.webp"
+       srcset="/assets/repos/scenelab/arrangement-grid-1000.webp 1000w, /assets/repos/scenelab/arrangement-grid-2000.webp 2000w"
+       sizes="(min-width: 1040px) 1000px, 100vw"
+       width="2000" height="850" style="height:auto" loading="lazy" decoding="async"
+       alt="Timeline grid of a planned arrangement: seven tracks down the left, bars one to thirty-nine across the bottom, six shaded sections from Intro Hook to Outro Vamp, and a clip block for every track in every section, each labelled with its MIDI note count.">
+  <figcaption>The plan <code>plan_arrangement</code> returns for the <code>city-pop-6-8</code> template, drawn from the JSON it printed: six scenes from Intro Hook to Outro Vamp, seven tracks, forty-two clips, at 96 BPM in A major with a 6/8 meter. The tint of each section follows its energy value, printed under its name, and the number inside a block is how many MIDI notes that clip carries — forty-two clips, no Live set touched.</figcaption>
+</figure>
+
+
 The problem is that an AI agent editing a real DAW session has no stable contract to work against. Every client would otherwise reimplement clip creation, and none of them would be safe. SceneLab puts a single CLI in the middle: it owns the schemas, the dry-run default, and the confirmation gate, so an MCP client, a shell script, and a test all drive the same code. Writes are opt-in twice over — a request must carry `"dryRun": false` and `"confirm": "apply"` before anything mutates, and the request set contains no destructive operations.
 
 ## How it works
