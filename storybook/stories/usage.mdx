@@ -4,134 +4,106 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # When to use what
 
-The workbench imports `assets/tokens.css` and `assets/notebook.css` directly. There is no Storybook-only stylesheet, so a story and the page it came from cannot disagree: if a component needs a new rule, the rule goes into the site's stylesheet and both places get it.
-
-The site is one dark ground, warm cream type, and one accent per job — amber for the chrome, cyan for state, red for the single alert. Nothing here is decorative: every colour is a token, every edge is the one hairline or a measured border, and the only radius is `--radius: 0`.
-
-## The rules the palette keeps
-
-| Job | Token | Measured |
-| --- | --- | --- |
-| Body and headings | `--star` | 15.9:1 on `--void` |
-| Secondary type | `--starlight` | 13.4:1 |
-| Meta, captions, disabled | `--dust` | 7.1:1 |
-| Chrome accent, links outside prose | `--accent-text` | 12.3:1 |
-| Prose links only | `--nebula-text` | 6.3:1 |
-| State, focus rings | `--state` (edges) / `--state-text` (type) | 12.2:1 / 13.5:1 |
-| The one alert | `--alert` (edge) / `--alert-text` (type) | 4.7:1 / 7.0:1 |
-| Quotation edge | `--plum-mark` | 4.0:1 |
-| Divider, gauge rail | `--line`, `--rail` | not a control edge |
-| The signal | `--amber` | 12.3:1 |
-| The second signal | `--cyan` | 12.2:1 |
-| Body type | `--cream` | 14.5:1 |
-| Alert | `--alert` (marks) / `--alert-text` (type) | 4.7:1 / 6.1:1 on `--surface` |
-| Decal type | `--decal-text` on `--decal-bg` | 16.7:1 |
+Pick the component by the job you are doing, not by the look. Everything below draws with the tokens in `assets/tokens.css`, and the workbench imports the site's own stylesheets, so what you see here is what ships.
 
 ## Button
 
-**Use it** for an action: submit, toggle, follow. **Do not use it** for navigation between pages, which is a link, or for an action inside a sentence, which is the `btn-text` variant.
+Use a button for an action: submit, follow, copy, toggle. If it goes somewhere, use a link. If it reads inside a sentence, use the text variant.
 
-- `btn-primary` — the one action on a view. Amber fill carrying void type at 12.3:1, with the soft bloom; hover lifts to `--accent-peak` and puts a `--star` edge on it, and active adds a 1px press. Two primaries side by side means neither is primary.
-- `btn-secondary` — the alternative in a pair, or an action beside a primary. Dust edge (7.1:1), hover edge and type in amber.
-- `btn-ghost` — chrome and dense rows, where a filled box is too loud. It has no boundary at rest by design; its starlight type (14.5:1) is the whole affordance, and hover brings a `--surface` fill with a dust edge (6.5:1).
-- `btn-text` — an action that reads as a link, inside a sentence or a row of links.
-- Sizes: `btn-sm`, default, `btn-lg`. `btn-block` fills its container.
-- States: hover, focus-visible (2px `--state` ring at 12.2:1 with its bloom), active, disabled. Disabled is dust type (7.1:1) inside a dashed dust edge, so it never falls below the text floor — the states are live in the story, not staged with fake classes.
+**Primary** is the one action on a view. If two sit side by side, neither is primary. **Secondary** is the alternative beside it. **Ghost** is for rows and chrome, where a filled box is too loud — it has no boundary at rest, so check it on a photograph as well as on the ground. **Text** is an action that reads as a link, inside a sentence or a row of them.
+
+Sizes are `btn-sm` for dense rows and `btn-lg` for the one action on a page; `btn-block` fills its container. Hover, focus, active and disabled are live states, not classes you apply — tab to a button and look at it before you call it done.
 
 ## Link
 
-**Use a link** to go somewhere. Three forms, and the form is the meaning:
+Use a link to go somewhere, and let the form say where it is: a **chrome link** for the nav and footers, a **prose link** inside an article, and the bare `a` when nothing else owns the line.
 
-- **Chrome link** (`text-link`, amber, underline drawn as a border) — nav rows, footers, "all entries".
-- **Prose link** (nebula, inside `.prose` only) — so a link in an article is visibly a different thing from a link in the chrome.
-- **Bare link** — the default `a`, when no component owns the line.
-
-Never colour a heading amber to make it look clickable; make it a link or leave it.
+The two colours are not decoration. A link in the chrome and a link inside a piece of writing are different things, and they are meant to look different. Never colour a heading amber to make it look clickable — make it a link or leave it alone.
 
 ## Badge
 
-**Use a badge** for a short label that is not a link: a language, a topic, a state. **Do not use it** as a button: a badge is not interactive, and a badge-shaped button is a trap.
+Use a badge for a short label that is not a link: a language, a topic, a state. Never use one as a button; a badge-shaped button is a trap.
 
-- Neutral (`badge`) — language, kind, anything without its own colour.
-- `badge-accent` — a topic, in the amber accent.
-- `badge-state` — progress and status, in cyan. Not emphasis.
-- `badge-solid` — a count or fact on the raised block, no edge.
-- The edge is `currentColor`, so a badge can never be less legible than its own type, and every edge clears 3:1 for free.
+Neutral is for anything without its own colour, `badge-accent` is a topic, `badge-state` is progress or status — not emphasis — and `badge-solid` is a count on the raised block. The edge is drawn in the badge's own type colour, so a badge can never become less legible than the word in it.
 
 ## Card
 
-**Use a card** for an item in a grid of peer items: a repository in `/projects/`, an entry in a journal grid. **Do not use it** for a single item — a lone card is a page with a box drawn round it.
+Use a card for an item in a grid of peers: a repository in `/projects/`, an entry in a journal grid. A single card is a page with a box drawn round it — if there is one item, write the page instead.
 
-- **Repository card** — thumbnail (`card-media`, 16:10 crop), `card-title` in the display face, `card-text` tagline, `card-meta` language and stars. The image is decorative (`alt=""`) because the title carries the name; a card without an image simply starts at the title.
-- **Entry card** — a kicker (topic · date) instead of a thumbnail, title, dek, and a topic badge in `card-foot`. No live page uses it yet: the journal index and home page use the entry list, which fits a reading list better. It exists for a journal grid.
-- The hairline is the top edge. Hover and focus-visible change the title to amber and bring the soft bloom; nothing moves.
+The repository card carries a thumbnail, a title in the display face, a tagline and a line of meta; the entry card carries a kicker, title, dek and a topic badge. Hover changes the title to amber and adds the bloom. Nothing moves.
 
 ## Entry list
 
-**Use the entry list** for a reading list: date, title, dek on one line, grouped by topic on `/journal/`. It is the site's default for entries because a list of dates scans faster than a grid of cards, and the site has one author.
+The entry list is the site's default for a reading list: date, title, dek on one line, grouped by topic on `/journal/`. A list of dates scans faster than a grid of cards, and the site has one author, so it gets one list. The dek is optional — an entry with no description ends at its title.
 
-The dek is optional — an entry with no `description` front matter ends at the title. `Empty` in the story is the same list with nothing in it; the block that replaces an empty list is the Empty state component.
+Nothing in the list is the empty state's job. When there are no entries, use the empty state; do not ship an empty list.
 
 ## Nav
 
-**Use the header** on every page: wordmark, four links, one line. It wraps instead of collapsing, so there is no menu button and no script. At 420px it is still one line at 12px; at 390px and below the links wrap onto a second line. Measured on the built site, not assumed.
+The header is on every page: wordmark, four links, one line. It wraps rather than collapsing, so there is no menu button and no script, and Series moves to the footer below 640px rather than making a fifth link fit on a phone.
 
-The current page is amber (`aria-current`), and hover is amber, so the marker is colour and never a new weight. Do not add a fifth link without removing one: four is what fits on a phone line with the wordmark.
+The current page is amber, and hover is amber, so the marker is colour and never a new weight. Do not add a fifth link without removing one: four is what fits beside the wordmark.
 
 ## Hero
 
-**Use the hero** once, at the top of the home page: one photograph full bleed, the wordmark, two sentences, the topic row. **Do not use it** on inner pages — a photograph that fills the viewport on a page someone came to read pushes the answer below the fold.
+Use the hero once, at the top of the home page: one photograph, the wordmark, two sentences, the topic row. Do not use it on an inner page — a photograph that fills the viewport on a page someone came to read pushes the answer below the fold.
 
-The type over the image is measured against the brightest pixel behind it with the type hidden (wordmark 10.4:1, body 15.3:1), not against the image's average. The drift is the site's only motion and stops under `prefers-reduced-motion: reduce`.
+The type over the image sits on a scrim and is measured against the brightest pixel behind it. The drift is the site's only motion at that scale, and it stops when the reader asks for reduced motion.
 
 ## Prose
 
-**Use prose** for anything someone reads: an entry, a repository page, About, credits.
+Use prose for anything someone reads: an entry, a repository page, About, credits.
 
-- **h2** is the display face at `--step-4`; **h3** is a 13px mono label — a heading level, not a smaller title.
-- **Blockquote** (plum-mark edge, 4.0:1) is a quotation: someone else's words.
-- **Callout** (cyan edge 10.6:1 on the raised block) is your own caveat or measurement sitting beside the argument. If it is not a warning and not a quotation, it is a callout; if it is neither of those, it is a paragraph.
-- **Code block with a caption** is a figure whose content is code — the caption is where the provenance or the command's result goes.
-- **Table** breaks out of the measure and scrolls sideways rather than squeezing, so numbers stay readable at 420.
-- **hr** is the one hairline weight, for a real change of subject.
+Say what you mean with the right block. A **blockquote** is someone else's words. A **callout** is your own caveat or measurement sitting beside the argument. If it is neither of those, it is a paragraph. A **code block with a caption** is a figure whose content is code, and the caption is where the provenance goes. A **table** breaks out of the measure and scrolls sideways rather than squeezing.
+
+Inside a column, `h2` is a mono label and `h3` is one rung below it. Anton starts at the section title, not at a heading inside a column: at 22px in a 544px measure the condensed face reads as a shout.
 
 ## Figure
 
-**Use a figure** for a picture that is evidence. The `width` and `height` attributes are the file's real ones so the browser reserves the box, but the drawn height always comes from the ratio — `width: 100%`, `height: auto` — which is why a photograph cannot arrive stretched. `srcset` with `sizes` when more than one width exists; the caption goes under a hairline in 13px mono.
+Use a figure for a picture that is evidence, and give it the file's real width and height so the browser can reserve the box. The drawn height always comes from the ratio, which is why a photograph cannot arrive stretched. Add `srcset` with `sizes` when more than one width exists, and put the provenance in the caption.
 
-Inside prose a figure is capped at `min(100%, 1000px)`; outside prose the same cap applies, so nothing runs the full 1200px column.
+A figure is capped at 1000px inside prose and outside it, so nothing runs the full 1200px column.
 
 ## Empty state
 
-**Use the empty state** when a collection has nothing in it: a title that names the absence, one line on what happens next, a link out. **Do not** ship five empty headings, a spinner, or a zero-count table.
+Use the empty state when a collection has nothing in it: a title that names the absence, one line on what happens next, a link out.
 
-Two live uses: `/journal/` with no entries yet, and `/projects/` before the repository pages land.
+Do not ship five empty headings, a spinner, or a zero-count table. Two places use it today: `/journal/` before entries exist and `/projects/` before the repository pages landed.
 
 ## Footer
 
-**Use the footer** on every page: the subtitle in the row, then the five ways out — RSS, GitHub, image credits, the design system, and how to say hello. 13px mono upper case in dust, links in starlight.
+The footer is on every page: the subtitle, then the five ways out — RSS, GitHub, image credits, the design system, and how to say hello. It is 13px mono in dust, and its links are starlight.
 
 ## Poster
 
-**Use a poster** to advertise a library. It is 2:3, key art on top, type on the void band below, and it is the only component on the site whose type sizes are measured against its own width rather than the window — the same poster is a 160px thumbnail in the strip and a 380px one-sheet on `/now-showing/`.
+A poster advertises a library: 2:3, key art on top, type on the void band below. It is the only component measured against its own width rather than the window, so the same poster is a 160px thumbnail in the strip and a 380px one-sheet on `/now-showing/`.
 
-- **With a still** when the repository has a figure: the chart or screenshot is the key art, cropped to the frame.
-- **Without a still** when it has none: a plotted field — a ring, a warm core, a ruled grid — drawn in gradients, so the poster still reads as a poster.
-- **Text only** when there is no art at all: the frame is type, and the film has no still.
-- The **cast credit** is the poster's floor: with a member from `_data/cast.yml` it names them under the `.poster-figure` standing on the art; with no member it prints the parts of the film. Never leave the credit out when the poster is wide enough to carry it.
+Three variants, and the content chooses: **with a still** when the repository has a figure, **without one** when it does not, and **text only** when there is no art at all. Never put text over the key art — every word sits on the void band, which is what keeps the contrast guarantee true for all twenty campaigns under all three identities. The release number is the one exception and it carries its own film.
 
-**Do not** put text over the key art. Every word sits on `--void` and draws with the semantic tokens, which is what makes the contrast guarantee hold for all twenty campaigns, under all three identities, and for whichever photographs land next. Only the release number rides on the art, and it is a `.decal`: `--decal-text` on `--decal-bg`, 7.8:1 at worst.
+The cast credit is the poster's floor. With a member from `_data/cast.yml` it names them; with no member it prints the parts of the film. Do not leave it out when the poster is wide enough to carry it.
 
 ## Now showing strip
 
-**Use the strip** once, on the home page. It advances one poster per `--dur-card` in CSS and carries the same drawn-box pause control as the crawl, so a moving row can be stopped without a script. `prefers-reduced-motion` stops it and removes the control. **Do not** put a second strip anywhere: `/now-showing/` is the gallery, and it does not move.
+Use the strip once, on the home page. It advances one poster per beat in CSS and carries the same drawn-box pause control as the crawl, so a moving row can always be stopped. Reduced motion stops it and removes the control.
+
+Do not put a second strip anywhere: `/now-showing/` is the gallery, and it does not move.
 
 ## Pagination: not built, and why
 
-There is no pager and no previous/next pair, because the site does not need one yet:
+There is no pager and no previous/next pair, because the site does not need one yet. `/journal/` renders every entry grouped by topic in one document, and an entry ends with one link back to the journal — entries are grouped by subject rather than ordered as a series, so "next" would be a different subject, not the next step in an argument.
 
-- `_config.yml` declares no `paginate`, and `/journal/` renders every entry grouped by five topics in one document. With zero published entries there is nothing to page, and a topic-grouped list stops being scannable long before a pager would save the reader anything.
-- An entry page ends with one link back to the journal (`entry-foot`), not previous/next: entries are grouped by topic rather than ordered as a series, so "next" would be a different subject, not the next step in an argument.
-- A repository page ends the same way, with a link to all repositories.
+If the journal ever passes a few hundred entries, the cheapest honest change is a `paginate` block on a generated `/journal/page:N/` path that reuses the entry list and the same `text-link` row. Build it then, not now.
 
-If the journal ever passes a few hundred entries, the cheapest honest change is a `paginate` block on a generated `/journal/page:N/` path, reusing the entry list and the same `text-link` row — no new visual component. Build it then, not now.
+## Contrast
+
+Every colour on the site is measured, and a component author needs five of them. The rest of the pairs — the alert, the plum mark, the decal film, the poster plate — belong to one component each and are in `docs/design-system.md`, beside the reasoning for why they exist.
+
+| Job | Token | On the ground |
+| --- | --- | --- |
+| Body and headings | `--star` | 16.9:1 |
+| Secondary type | `--starlight` | 15.4:1 |
+| Meta, captions, disabled | `--dust` | 7.5:1 |
+| Chrome accent, links outside prose | `--accent-text` | 13.1:1 |
+| State and focus rings | `--state` | 12.9:1 |
+
+Text clears 4.5:1 and a control edge 3:1; nothing on the site sits below either. `npm run contrast` prints every pair over all three identities and exits non-zero on a failure, so the numbers here cannot drift from the stylesheets without the build saying so. `/style/` prints the same numbers beside each swatch on the live site.

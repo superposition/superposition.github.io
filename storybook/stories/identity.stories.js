@@ -2,6 +2,8 @@
 // renders; the identity itself comes from the workbench toolbar, which sets
 // data-lab on <html>, because the identity's rules are scoped to that attribute.
 
+import { expect } from 'storybook/test';
+
 const decal = `<div class="wrap" style="padding: 24px 0;">
   <p><span class="decal">Repository</span> <span class="kicker">Rust · 41 stars</span></p>
   <p style="margin-top: 16px;"><span class="decal">Matrices</span> <span class="kicker">2026-11-20</span></p>
@@ -78,7 +80,48 @@ export default {
 
 export const Decal = {
   args: { body: decal },
+  // Pinned to the shipped identity so the assertion cannot depend on where the
+  // toolbar happens to be. The two stories below pin the other two.
+  globals: { identity: 'c' },
   parameters: doc('The eyebrow as a hardware chip: near-white on film, the one 3px radius on the site. In the poster identity it becomes a plain tracked label, because a poster has no hardware.'),
+  play: async ({ canvasElement }) => {
+    const chip = getComputedStyle(canvasElement.querySelector('.decal'));
+    await expect(document.documentElement.getAttribute('data-lab')).toBe('c');
+    await expect(chip.borderTopWidth).toBe('1px');
+    await expect(chip.borderTopLeftRadius).toBe('3px');
+    await expect(chip.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+  },
+};
+
+// The toolbar's identity switch and the identity-specific rules under it. A
+// play function cannot press a toolbar button from inside the preview, so these
+// two pin the global the toolbar sets: if the decorator stops applying it, or
+// the scoped rules stop reading it, both fail.
+export const DecalInstrument = {
+  name: 'Decal — instrument',
+  globals: { identity: 'a' },
+  args: { body: decal },
+  parameters: doc('Identity a cuts the chip from condensed display type at 12px, tracked .06em: hardware, not a label.'),
+  play: async ({ canvasElement }) => {
+    const chip = getComputedStyle(canvasElement.querySelector('.decal'));
+    await expect(document.documentElement.getAttribute('data-lab')).toBe('a');
+    await expect(chip.fontFamily).toContain('Anton');
+    await expect(chip.letterSpacing).toBe('0.72px');
+  },
+};
+
+export const DecalPoster = {
+  name: 'Decal — poster',
+  globals: { identity: 'b' },
+  args: { body: decal },
+  parameters: doc('Identity b has no chip: the film and the hairline are gone, the radius is back to 0, and the eyebrow is a plain tracked label.'),
+  play: async ({ canvasElement }) => {
+    const chip = getComputedStyle(canvasElement.querySelector('.decal'));
+    await expect(document.documentElement.getAttribute('data-lab')).toBe('b');
+    await expect(chip.borderTopWidth).toBe('0px');
+    await expect(chip.borderTopLeftRadius).toBe('0px');
+    await expect(chip.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+  },
 };
 
 export const GaugeRail = {

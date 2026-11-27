@@ -1,9 +1,12 @@
 // The workbench loads the two stylesheets the site ships, in the same order
 // its <head> loads them. There is no Storybook-only CSS: if a component needs
 // a new rule, it goes into assets/notebook.css and both places get it.
-import { themes } from 'storybook/theming';
 import '../../assets/tokens.css';
 import '../../assets/notebook.css';
+// The docs page is the one surface inside the preview that is not a story: it
+// is Storybook's own document, so it is drawn in the workbench theme, whose
+// values are copied from the same tokens. See .storybook/theme.ts.
+import { workbenchTheme } from './theme';
 
 /** @type { import('@storybook/html-vite').Preview } */
 export default {
@@ -11,13 +14,66 @@ export default {
     // Stories supply their own page shell (.wrap / .wide / full-bleed hero) so
     // what you measure in the workbench is what the site lays out.
     layout: 'fullscreen',
-    // Storybook's own dark chrome for the docs page, so the workbench never
-    // invents a colour of its own: site tokens live in the stylesheets only.
-    docs: { theme: themes.dark },
+    docs: { theme: workbenchTheme },
     controls: { expanded: false },
+
+    // The three widths this site is designed and judged at: the full column,
+    // the width the header holds one line, and the narrowest phone it supports.
+    viewport: {
+      defaultViewport: 'desktop-1440',
+      options: {
+        'desktop-1440': { name: 'desktop 1440', styles: { width: '1440px', height: '900px' }, type: 'desktop' },
+        'phone-420': { name: 'phone 420', styles: { width: '420px', height: '900px' }, type: 'mobile' },
+        'phone-375': { name: 'phone 375', styles: { width: '375px', height: '812px' }, type: 'mobile' },
+      },
+    },
+
+    // A component has two grounds on this site: the page's own black, and a
+    // photograph behind the hero. Judge a component on both — a translucent
+    // edge or a dust label reads differently on a lit image.
+    backgrounds: {
+      default: 'ground',
+      options: {
+        ground: { name: 'ground', value: '#000000' }, // --void
+        photograph: {
+          name: 'photograph',
+          value: "url('/assets/art/galaxy/carina-1600.webp') center / cover no-repeat",
+        },
+      },
+    },
+
+    // The accessibility panel reports on every story; the gate is the command,
+    // `npm run a11y`, which runs axe over the whole build and exits non-zero.
+    // Set to "error" here and every story would fail the interaction run too,
+    // which would make one violation report twice.
+    a11y: { test: 'todo' },
+
     options: {
       storySort: {
-        order: ['When to use what', 'Components', ['Button', 'Link', 'Badge', 'Card', 'Poster', 'Campaign block', 'Now showing strip', 'Entry list', 'Nav', 'Hero', 'Prose', 'Figure', 'Empty state', 'Footer', 'Pagination']],
+        order: [
+          'The workbench',
+          'When to use what',
+          'Components',
+          [
+            'Button',
+            'Link',
+            'Badge',
+            'Card',
+            'Poster',
+            'Campaign block',
+            'Now showing strip',
+            'Entry list',
+            'Nav',
+            'Hero',
+            'Prose',
+            'Figure',
+            'Empty state',
+            'Footer',
+            'Identity parts',
+            'Pagination',
+          ],
+          'Series',
+        ],
       },
     },
   },

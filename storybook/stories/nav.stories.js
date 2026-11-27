@@ -1,3 +1,5 @@
+import { expect } from 'storybook/test';
+
 const nav = `<header class="site-header wide">
   <a class="home-link" href="#storybook-root">Superposition</a>
   <nav aria-label="Main navigation">
@@ -45,6 +47,22 @@ export const Narrow = {
     note: 'On a phone the header is one line and every link carries 5px of padding so its target is 25px or more: four links at 12px and 59px tall down to 420, then 10.5px with tighter gaps and 57px below that. Series is in the footer at both.',
     body: nav,
   },
-  globals: { viewport: { value: 'mobile1' } },
-  parameters: { viewport: { defaultViewport: 'mobile1' } },
+  globals: { viewport: { value: 'phone-375' } },
+  parameters: { viewport: { defaultViewport: 'phone-375' } },
+  // Below 420 the header drops a step of type rather than stacking, and it has
+  // no menu button to fall back on: those two facts are the whole reason the
+  // nav is allowed to ship without a script.
+  play: async ({ canvasElement }) => {
+    const header = canvasElement.querySelector('.site-header');
+    await expect(getComputedStyle(header).fontSize).toBe('10.5px');
+    // Series is in the footer at this width, not in the header.
+    await expect(canvasElement.querySelector('.nav-series')).not.toBeVisible();
+    // One line: every link that is drawn shares a top edge. A header that
+    // stacked instead would need the menu button the site does not have.
+    const tops = [...header.querySelectorAll('nav a')]
+      .filter((a) => a.getBoundingClientRect().width > 0)
+      .map((a) => Math.round(a.getBoundingClientRect().top));
+    await expect(new Set(tops).size).toBe(1);
+    await expect(header.querySelector('button')).toBeNull();
+  },
 };
