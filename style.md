@@ -46,6 +46,9 @@ sitemap: false
       <li class="swatch"><div class="chip" style="background: var(--alert-text)"></div><div class="label"><b>--alert-text</b>#f4735f · 7.46:1</div></li>
       <li class="swatch"><div class="chip" style="background: var(--nebula-text)"></div><div class="label"><b>--nebula-text</b>#6f93c9 · 6.69:1 · prose links</div></li>
       <li class="swatch"><div class="chip" style="background: var(--plum-mark)"></div><div class="label"><b>--plum-mark</b>#9a5e72 · 4.22:1 as an edge</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--flora-bloom)"></div><div class="label"><b>--flora-bloom</b>#ff8fa3 · 9.71:1 · every petal</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--flora-spore)"></div><div class="label"><b>--flora-spore</b>#9fe870 · 14.25:1 · spores and the capsule</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--flora-leaf)"></div><div class="label"><b>--flora-leaf</b>#2f6b52 · 3.35:1 · a leaf fill, never an edge</div></li>
       <li class="swatch"><div class="chip" style="background: var(--chip-bg)"></div><div class="label"><b>--chip-bg</b>rgba(58,52,44,.92) · the chip film</div></li>
       <li class="swatch"><div class="chip" style="background: var(--chip-text)"></div><div class="label"><b>--chip-text</b>#efe6d3 · 10.55:1 on the film</div></li>
       <li class="swatch"><div class="chip" style="background: var(--film-bg)"></div><div class="label"><b>--film-bg</b>rgba(0,0,0,.88) · the release plate</div></li>
