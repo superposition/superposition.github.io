@@ -21,7 +21,7 @@ The game ships twice from one Cargo package: a native Bevy window, and a WebAsse
   <img src="/assets/repos/cannoli-hell/arena.webp"
        srcset="/assets/repos/cannoli-hell/arena-1200.webp 1200w, /assets/repos/cannoli-hell/arena-2400.webp 2400w"
        sizes="(min-width: 1040px) 1000px, 100vw"
-       width="1200" height="750" loading="lazy"
+       width="1200" height="750" loading="lazy" style="height:auto"
        alt="The Cannoli Hell arena mid-run, with the HP counter in the top-left corner and the walled floor stretching into a pale background.">
   <figcaption>The WebAssembly build from <code>docs/</code> in a 1280×800 window, about twenty seconds into a run: arena floor and walls, with the HP counter from <code>src/game/hud.rs</code> in the corner.</figcaption>
 </figure>
