@@ -265,7 +265,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 .prose th, .prose td { border-bottom: var(--border-hair); padding: 8px 14px 8px 0; text-align: left; }
 .prose th { font: var(--step-1)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: .07em; color: var(--dust); }
 .prose figure { margin-block: 1.8em 1.9em; }
-.prose figure img { width: 100%; }
+.prose figure img { width: 100%; height: auto; }
 .prose figcaption {
   margin-top: var(--space-1); padding-top: var(--space-1);
   border-top: var(--border-hair);
@@ -321,7 +321,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 .repo-body { padding-top: var(--space-3); }
 .repo-body > :not(figure) { max-width: var(--measure); }
 .repo-body figure { max-width: min(100%, 1000px); }
-.repo-body figure img { width: 100%; }
+.repo-body figure img { width: 100%; height: auto; }
 
 .repo-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-4) var(--space-3); }
 .repo-card a { display: flex; flex-direction: column; gap: 6px; text-decoration: none; border-top: var(--border-hair); padding-top: var(--space-2); }
