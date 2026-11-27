@@ -38,6 +38,17 @@ Audio renders only when an entry declares it, either self-hosted (`audio: {title
 
 Run `bundle install`, then `bundle exec jekyll build --strict_front_matter` or `bundle exec jekyll serve`. Pull requests build a downloadable preview artifact. Pushes to main deploy through .github/workflows/pages.yml.
 
+## Components and the Storybook
+
+`assets/tokens.css` holds every token and `assets/notebook.css` the components built from them; `/style/` renders both live. The Storybook workbench imports those same two stylesheets, so a story and a page cannot diverge.
+
+From `storybook/`:
+
+    npm ci
+    npm run storybook
+
+It serves on **http://localhost:6017/**. One story file per component in `storybook/stories/`, and the "When to use what" page states which variant belongs where. `npm run contrast` measures every colour pair the components ship: 4.5:1 for text, 3:1 for control edges. Jekyll ignores the folder (`storybook` is in `exclude` in `_config.yml`), so nothing in it is published.
+
 ## Repositories page
 
 `/projects/` lists the public repositories, most recent push first, from `_data/repos.yml`. Regenerate that file after a repository is created, renamed, or pushed:
