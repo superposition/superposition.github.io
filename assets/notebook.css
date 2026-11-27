@@ -146,18 +146,18 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
    leave the header so the nav stays one row on a phone, and the footer carries
    them instead. Hidden this way they also leave the tab order, which is why the
    footer has to carry them — one reachable link at every width, never two. */
-.nav-series, .nav-showing { display: none; }
-@media (min-width: 640px) { .nav-series, .nav-showing { display: inline; } }
+.nav-series, .nav-showing, .nav-garden { display: none; }
+@media (min-width: 640px) { .nav-series, .nav-showing, .nav-garden { display: inline; } }
 
 /* The command sweep: the shared hover, focus and current-page signal for chrome
    links and for the rows that behave like them, written once here rather than
    per component. A hairline in currentColor scales out of the left edge; it is
    a transform on a pseudo-element, so it composites instead of repainting the
    text above it, and it carries whatever colour the component is set in. */
-:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .entry, .range-link) {
+:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .plant-row, .entry, .range-link) {
   position: relative; --sweep: 0;
 }
-:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .entry, .range-link)::after {
+:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .plant-row, .entry, .range-link)::after {
   content: "";
   position: absolute;
   inset: auto 0 calc(-1 * var(--hair)) 0;
@@ -168,7 +168,7 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
   transition: transform var(--dur-sweep) var(--ease-out);
   pointer-events: none;
 }
-:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .entry, .range-link):is(:hover, :focus-visible),
+:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .plant-row, .entry, .range-link):is(:hover, :focus-visible),
 .site-header nav [aria-current],
 .card:hover .card-title,
 .card:focus-visible .card-title { --sweep: 1; }
@@ -936,7 +936,13 @@ mjx-container[display="true"] { margin-block: var(--space-3) !important; }
 /* Repository pages -------------------------------------------------------- */
 
 .repo-page { padding-bottom: var(--space-section); }
-.repo-head { padding-block: var(--space-open) var(--space-2); }
+/* One column below 700: the specimen sits under the title, where a phone
+   reader meets it before the prose. From 700 it takes the rail, and the
+   heading text keeps the measure it had. */
+.repo-head {
+  display: grid; grid-template-columns: minmax(0, 1fr); align-items: start;
+  padding-block: var(--space-open) var(--space-2);
+}
 .repo-head h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
 .repo-head .lede { margin-top: var(--space-2); }
 .repo-head .def { margin-top: var(--space-3); }
@@ -1378,6 +1384,71 @@ mjx-container[display="true"] { margin-block: var(--space-3) !important; }
 .showing-note a { color: var(--dust); }
 .showing-note a:hover { color: var(--star); }
 
+/* Flora — the garden ------------------------------------------------------ */
+
+/* Five species, one per topic, and one plant per repository (GALA-88). The
+   plots are bands of atmosphere rather than cards: hairlines on a pitch over
+   the ground, with one bloom of light behind the specimen, so a plot reads as
+   a horizon and the plant stands on it. These are the only illustrations on
+   the site that are not photographs, which is why they get the ground to
+   themselves and no frame around them. */
+
+.plots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--flora-plot), 1fr));
+  gap: var(--space-4) var(--space-3);
+  margin-top: var(--space-section);
+}
+.plot {
+  position: relative; isolation: isolate;
+  display: grid; align-content: start; justify-items: center;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-2) var(--space-5);
+  border-top: var(--border-hair);
+  background: var(--strata);
+  text-align: center;
+}
+.plot::before {
+  content: "";
+  position: absolute; inset: 0; z-index: -1;
+  background: var(--flora-glow);
+  pointer-events: none;
+}
+.plot .plant { width: var(--flora-plot); }
+.plot-title { font: var(--step-3)/var(--leading-tight) var(--font-display); text-transform: uppercase; color: var(--star); }
+.plot-topic { font: var(--step-1)/var(--leading-body) var(--font-mono); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--accent-text); }
+.plot-note, .garden-note { max-width: var(--measure-narrow); font: var(--step-1)/var(--leading-body) var(--font-text); color: var(--dust); }
+.garden-specimens { margin-top: var(--space-section); }
+.garden-note { margin-top: var(--space-2); }
+
+/* A specimen: the drawing is 600 by 900 and has no width or height of its own,
+   so the cell sets the width and the ratio keeps it true. */
+.plant { display: block; margin: 0; }
+.plant img { display: block; width: 100%; height: auto; }
+
+.plants {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--flora-cell), 1fr));
+  gap: var(--space-4) var(--space-2);
+  list-style: none; margin: var(--space-4) 0 0; padding: 0;
+}
+.plant-row { display: grid; align-content: start; gap: var(--space-1); padding-block: var(--space-2); color: var(--starlight); text-decoration: none; }
+.plant-row .plant { padding-inline: var(--space-2); border-top: var(--border-hair); background: var(--strata); }
+.plant-row:active .plant-name { color: var(--accent-peak); }
+.plant-name { font: var(--step-1)/var(--leading-tight) var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); }
+.plant-meta { font: var(--step-decal)/var(--leading-body) var(--font-mono); color: var(--dust); }
+
+/* The repository page's specimen, in the rail. It is small on purpose: the
+   plant names the species, and the writing is what the page is for. */
+.repo-plant { margin: 0; }
+.repo-plant img { display: block; width: 100%; height: auto; }
+.repo-plant figcaption {
+  margin-top: var(--space-1); padding-top: var(--space-1);
+  border-top: var(--border-hair);
+  font: var(--step-decal)/var(--leading-body) var(--font-mono);
+  letter-spacing: var(--track-label); color: var(--dust);
+}
+
 /* Identity A — instrument ------------------------------------------------ */
 
 /* Alien's screens, not Alien's assets: amber phosphor on carbon, one accent
@@ -1595,6 +1666,10 @@ html[data-lab="b"] .empty-title { color: var(--star); }
 
 /* Narrow ----------------------------------------------------------------- */
 
+@media (min-width: 700px) {
+  .repo-head { grid-template-columns: minmax(0, 1fr) var(--flora-rail); column-gap: var(--space-4); }
+}
+
 @media (max-width: 700px) {
   .site-header { font-size: var(--step-0); letter-spacing: var(--track-label); column-gap: var(--space-2); }
   .site-header nav { gap: var(--space-1); }
@@ -1618,6 +1693,9 @@ html[data-lab="b"] .empty-title { color: var(--star); }
   .ident-who { line-height: var(--leading-body); }
   .ident-line { font-size: var(--step-3); }
   .table-note { max-width: none; }
+  .plots { grid-template-columns: repeat(auto-fill, minmax(var(--flora-plot), 1fr)); gap: var(--space-3) var(--space-2); }
+  .plot { padding: var(--space-3) var(--space-1) var(--space-4); }
+  .plants { grid-template-columns: repeat(auto-fill, minmax(var(--flora-cell), 1fr)); }
 }
 
 /* Between 420 and 480 the four links fit at --step-0 only with their tracking

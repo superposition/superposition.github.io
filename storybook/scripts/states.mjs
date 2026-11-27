@@ -129,6 +129,7 @@ const CONTROLS = [
   { name: 'Topic link', selector: '.topic-list a', type: ['--step-2', 1.6] },
   { name: 'Card', selector: '.card', type: ['--step-2', 1.5] },
   { name: 'Repository row', selector: '.repo-row', type: ['--step-2', 1.55] },
+  { name: 'Plant row', selector: '.plant-row', type: ['--step-1', 1.1] },
   { name: 'Entry row', selector: '.entry', type: ['--step-2', 1.7] },
   { name: 'Table link', selector: '.table td a', type: ['--step-2', 1.5] },
   { name: 'Range link', selector: '.range-link', type: ['--step-1', 1.6] },
