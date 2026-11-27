@@ -4,3 +4,7 @@ _site-drafts/
 .jekyll-cache/
 .bundle/
 vendor/
+# Bundler's vendor/bundle is a build artefact; assets/vendor/ is source. The
+# pattern above has no leading slash, so it catches both, and the vendored
+# library the forest loads would otherwise never reach the repository.
+!assets/vendor/

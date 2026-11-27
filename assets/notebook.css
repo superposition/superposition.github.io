@@ -149,6 +149,13 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 .nav-series, .nav-showing { display: none; }
 @media (min-width: 640px) { .nav-series, .nav-showing { display: inline; } }
 
+/* The forest is the one place on the site with a canvas, and it joins the header
+   only where the header has room: a seventh link at 640 would need 610px of a
+   608px row. The home page links it at every width, so nothing is unreachable
+   on a phone. */
+.nav-forest { display: none; }
+@media (min-width: 1000px) { .nav-forest { display: inline; } }
+
 /* The command sweep: the shared hover, focus and current-page signal for chrome
    links and for the rows that behave like them, written once here rather than
    per component. A hairline in currentColor scales out of the left edge; it is
@@ -1657,4 +1664,167 @@ html[data-lab="b"] .empty-title { color: var(--star); }
   .card:focus-visible .card-media img { transform: none; }
   .strip-track { animation: none; }
   .strip-toggle, .strip-pause { display: none; }
+}
+
+/* Forest ------------------------------------------------------------------ */
+
+/* The one canvas on the site. The stage is a 4:3 box the size of the console's
+   own frame, never the window's, and the canvas inside it fills that box
+   exactly: the picture is 320 × 240 and the browser stretches it with nearest
+   neighbour, so what a reader sees is the framebuffer's own pixels at three
+   times their size rather than a filtered photograph of them.
+
+   Without JavaScript there is no stage at all — the twenty sentences below are
+   the whole page, and the poster's only control would be a button that does
+   nothing — so the section is hidden until the inline script in the page's
+   first line puts `js` on <html>. Nothing else on the site does this, and the
+   reason it does here is that this is the only section that is inert without a
+   renderer. */
+.forest-stage {
+  display: none;
+  position: relative;
+  width: min(100%, var(--forest-stage));
+  aspect-ratio: var(--forest-aspect);
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--void);
+  /* An outline, not a border: a border would take two of the box's pixels out
+     of the picture and leave the upscale at 2.99× instead of 3×. */
+  outline: var(--hair) solid var(--line);
+}
+.js .forest-stage { display: block; }
+
+.forest-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--void);
+  image-rendering: pixelated;
+}
+
+/* The poster: the picture's own proportions held open before it is drawn, so
+   the page never moves when the bear arrives. Its type is the page's type —
+   there is no separate voice for a poster. */
+.forest-poster {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  text-align: center;
+  background-image: var(--rim);
+  background-repeat: no-repeat;
+}
+.forest-poster-title {
+  font: 400 var(--step-5)/var(--leading-tight) var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: var(--track-display);
+  color: var(--star);
+}
+.forest-poster-line {
+  max-width: var(--measure);
+  font: var(--step-2)/var(--leading-body) var(--font-text);
+  color: var(--starlight);
+}
+.forest-fallback {
+  max-width: var(--measure);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  color: var(--dust);
+}
+
+/* What the frame costs, printed from the live renderer rather than written
+   down: a number in this line is a number the scene measured. */
+.forest-spec {
+  min-height: calc(var(--step-0) * var(--leading-body));
+  margin-top: var(--space-2);
+  font: var(--step-0)/var(--leading-body) var(--font-mono);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--dust);
+  text-align: center;
+}
+
+/* The picture and the sentence, side by side from 1000px: the bear talking is
+   the point, and a 720px stage with the words underneath puts the words below
+   the fold on the laptop the page is most likely to be read on. Below 1000
+   they stack, and the panel is held to the reading measure. */
+.forest-body { display: grid; gap: var(--space-4); }
+@media (min-width: 1000px) {
+  .forest-body {
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-5);
+  }
+}
+
+/* The panel: one sentence, who said it, and the two controls. Its sentence row
+   is three lines tall at the narrow width and four on a phone, so a short
+   sentence and a long one put the controls in the same place. */
+.forest-panel {
+  display: none;
+  max-width: var(--measure);
+  margin-inline: auto;
+  gap: var(--space-2);
+}
+.forest-panel:not([hidden]) { display: grid; }
+.forest-count {
+  font: var(--step-1)/var(--leading-tight) var(--font-mono);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--dust);
+}
+.forest-sentence {
+  min-height: calc(var(--step-3) * var(--leading-body) * 3);
+  font: var(--step-3)/var(--leading-body) var(--font-text);
+  color: var(--star);
+}
+.forest-where { font: var(--step-2)/var(--leading-body) var(--font-mono); }
+.forest-controls { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* The twenty sentences, present in the document before any script runs. Same
+   rows as the repository index, in the same order, so the list is the page's
+   spine rather than a fallback. */
+.forest-lines {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  border-top: var(--border-hair);
+}
+.forest-lines li {
+  display: grid;
+  /* The name column is the repository index's 15ch until a name is longer than
+     that, which two of them are: the column grows for that row rather than
+     pushing its sentence sideways. */
+  grid-template-columns: minmax(var(--col-name), max-content) 1fr;
+  gap: var(--space-3);
+  padding-block: var(--space-2);
+  border-bottom: var(--border-hair);
+}
+.forest-lines a {
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  color: var(--star);
+  text-decoration: none;
+}
+.forest-lines a:hover { color: var(--accent-text); }
+.forest-lines a:active { color: var(--accent-peak); }
+.forest-line-sentence {
+  font: var(--step-2)/var(--leading-body) var(--font-text);
+  color: var(--starlight);
+}
+.forest-note {
+  max-width: var(--measure);
+  margin-top: var(--space-3);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  color: var(--dust);
+}
+.forest-note-end { margin-top: var(--space-5); }
+
+@media (max-width: 700px) {
+  .forest-lines li { grid-template-columns: 1fr; gap: var(--space-half); }
+  .forest-poster { padding: var(--space-3); gap: var(--space-2); }
+  .forest-poster-title { font-size: var(--step-4); }
+  .forest-poster-line { font-size: var(--step-1); }
+  .forest-sentence { font-size: var(--step-2); min-height: calc(var(--step-2) * var(--leading-body) * 4); }
 }
