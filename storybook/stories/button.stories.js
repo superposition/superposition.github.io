@@ -1,3 +1,5 @@
+import { expect, userEvent, waitFor } from 'storybook/test';
+
 const shell = (inner) => `<div class="wide">${inner}</div>`;
 
 export default {
@@ -72,6 +74,46 @@ export const States = {
   args: {
     note: 'Hover it, tab to it, hold it down: the hover, focus-visible and active states are the live ones — no staged classes.',
     body: '<a class="btn btn-primary" href="#storybook-root">Primary, all states</a><a class="btn btn-secondary" href="#storybook-root">Secondary, all states</a>',
+  },
+  // The states are declared as transitions on the element, so the only honest
+  // test is to point at it and to tab to it and read what the browser computed.
+  play: async ({ canvasElement, step }) => {
+    const button = canvasElement.querySelector('.btn-primary');
+    const style = () => getComputedStyle(button);
+
+    await step('at rest the fill is amber and nothing else is drawn', async () => {
+      await expect(style().backgroundColor).toBe('rgb(255, 194, 74)');
+      await expect(style().boxShadow).toContain('255, 194, 74');
+      await expect(style().outlineStyle).toBe('none');
+    });
+
+    await step('hover is declared: the fill lifts to the peak, the edge goes cream', async () => {
+      // A synthetic pointer does not set :hover in a real browser, and the real
+      // mouse is only reachable from the test runner, so the hover state is read
+      // where it is written: the rule this element's class matches.
+      const hover = [...document.styleSheets]
+        .flatMap((sheet) => [...sheet.cssRules])
+        .find((rule) => rule.selectorText === '.btn-primary:hover');
+      await expect(hover, '.btn-primary:hover is missing from notebook.css').toBeDefined();
+      await expect(hover.style.background).toBe('var(--accent-peak)');
+      await expect(hover.style.borderColor).toBe('var(--star)');
+    });
+
+    await step('the keyboard ring is state cyan, 2px, held off the edge', async () => {
+      await userEvent.tab();
+      await expect(document.activeElement).toBe(button);
+      await expect(button.matches(':focus-visible')).toBe(true);
+      await expect(style().outlineColor).toBe('rgb(143, 211, 255)');
+      await expect(style().outlineWidth).toBe('2px');
+      await expect(style().outlineOffset).toBe('3px');
+      await waitFor(() => expect(style().boxShadow).toContain('143, 211, 255'));
+    });
+
+    await step('the ring follows the keyboard and leaves with it', async () => {
+      await userEvent.tab();
+      await expect(document.activeElement).not.toBe(button);
+      await expect(style().outlineStyle).toBe('none');
+    });
   },
 };
 

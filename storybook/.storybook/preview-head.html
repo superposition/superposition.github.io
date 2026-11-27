@@ -1,0 +1,15 @@
+<!-- Everything in this file goes into the <head> of the preview iframe, which is
+     the document the stories and the docs pages both render into.
+
+     The two self-hosted faces are declared in assets/notebook.css with
+     font-display: swap, which means they are fetched only once something asks
+     for them, and a docs page asks late: a code block or a story preview. The
+     preloads below fetch them with the document, so a docs page never shows a
+     fallback face first and then reflow.
+
+     Fonts are fetched in CORS mode even from the same origin, so the preload
+     has to say crossorigin or the browser downloads the file twice. -->
+
+<link rel="preload" href="/assets/fonts/anton-regular.ttf" as="font" type="font/ttf" crossorigin="anonymous" />
+<link rel="preload" href="/assets/fonts/ibm-plex-mono-regular.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+<link rel="preload" href="/assets/fonts/ibm-plex-mono-semibold.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
