@@ -2,13 +2,14 @@
 /* The map's layout, its data and its still.
 
      node --experimental-default-type=module scripts/scene/map.mjs
+     node --experimental-default-type=module scripts/scene/map.mjs --check
 
    One pass, two outputs and a report:
 
      _data/scene-map.yml     where every node sits in the world, what it is
                              called and what it links to, plus the camera
-     _includes/scene/map.svg the same scene projected once, depth-faded, for
-                             the no-JavaScript and no-WebGL hero
+     _includes/scene/map.svg the same scene projected once, cut, lit and
+                             depth-ramped, for the no-JavaScript hero
 
    The renderer in assets/scene/map.js reads the YAML through the page and draws
    the same geometry with the same lib/ modules, so there is one layout and two
@@ -17,23 +18,59 @@
    the unit that fronts one, the journal's arm) and out of the seed, so a
    re-run is byte-identical and a new repository moves into its topic's fan.
 
+   The pass itself -- what makes the plate read as objects in space rather than
+   as a graph diagram -- is four rules, all of them computed:
+
+     occlusion  a nearer form's silhouette hides the edge behind it, and an
+                edge stops at the silhouette of the form it lands on. The cut
+                is `span()` in lib/camera.js, so the canvas cuts it in the same
+                place. Nothing is faked with a darker stroke.
+     depth      every stroke takes the value of the depth role it sits in
+                (`DEPTH` in lib/camera.js): highlight, near, mid, far, with a
+                step between the roles and pure light spent on the nearest
+                sliver only. An edge is cut where it crosses a role boundary,
+                so it steps down as it recedes instead of being evenly dimmed,
+                and the haze lifts its pen at the far end.
+     light      one azimuth, in lib/forms.js. Every form segment is lit or in
+                shadow by its own outward normal, so a diamond has two faces
+                and a triangle loses its base.
+     grid       every label's baseline sits on `LABEL_GRID`'s rows.
+
    The report is the gate. It fails the run, with a non-zero exit, when
 
      * a node would leave the frame at any pose the camera can reach,
      * a node would fall into the band the hero's type occupies,
      * two forms would overlap, or two labels would,
-     * an edge names a node that is not there.
+     * an edge names a node that is not there,
+     * an edge sample falls inside a nearer diamond and still has ink on it,
+     * a label's baseline is off its row, or a label leaves the frame,
+     * a form has no lit face or no shadowed one.
 
    Checked at 1440 and at 420, because the plate is the same plate at both and
-   the type band is not. */
+   the type band is not. `--check` writes nothing: it exits 1 when either
+   committed file differs from what this seed draws. */
 
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { rng, seedOf, jitter } from '../../assets/scene/lib/seeded.js';
-import { ASPECT, state, view, scales, project, fade, toPixel } from '../../assets/scene/lib/camera.js';
-import { form, place } from '../../assets/scene/lib/forms.js';
+import {
+  ASPECT,
+  DEPTH,
+  HAZE,
+  state,
+  view,
+  scales,
+  project,
+  depthAt,
+  valueAt,
+  pieces,
+  unproject,
+  toPixel,
+} from '../../assets/scene/lib/camera.js';
+import { form, place, hull, faceOf, normalOf, run, dash, RUNG, DASH, LABEL_GRID, labelRow } from '../../assets/scene/lib/forms.js';
 import { stars, blobs, falloff } from '../../assets/scene/lib/field.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -43,6 +80,7 @@ const OUT_SVG = join(ROOT, '_includes', 'scene', 'map.svg');
 /* ------------------------------------------------------------------ config */
 
 const SEED = 1977;
+const CHECK = process.argv.includes('--check');
 
 const E = process.env;
 let CAMERA = {
@@ -55,7 +93,7 @@ let CAMERA = {
   yaw: 4.5,
   pitch: 1.5,
   dolly: [1, 1.14],
-  fade: { near: 0.62, far: 1.62, floor: 0.32 },
+  depth: DEPTH,
 };
 
 /* The band the hero's type stands in, in normalised device coordinates. The
@@ -68,6 +106,10 @@ const TYPE_BAND = { 1.82: 0.02, PORTRAIT: -0.12 };
 /* Nothing may sit closer than this to the frame edge. */
 const MARGIN = 0.035;
 
+/* Where the plate's mass sits across the frame: left of centre, so the right
+   of the frame carries the deliberate empty the journal's arm crosses. */
+const AXIS = -0.07;
+
 const SIZES = {
   datum: 0.32,
   topic: 0.19,
@@ -75,6 +117,11 @@ const SIZES = {
   unit: 0.1,
   journal: 0.16,
 };
+
+/* The arm off the frame: the open edge past the journal's bracket continues to
+   the frame's edge and through it. The one line on the plate with no form at
+   its end, because there is nothing on the other end of a journal yet. */
+const CROP = { reach: 2.2 };
 
 /* --------------------------------------------------------------- the content */
 
@@ -349,7 +396,11 @@ function relax(nodes) {
 /* Aim the camera so the map sits in the band the hero leaves for it, instead of
    making the layout depend on hand-tuned offsets that a re-seeded jitter would
    invalidate. The projection is close enough to linear in the target for this to
-   converge in four passes. */
+   converge in six passes.
+
+   The box is aimed at AXIS rather than at 0: the plate's mass sits left of
+   centre, the right of the frame is the deliberate empty, and the journal's arm
+   crosses it and leaves. */
 function settle(nodes) {
   const cam = { ...CAMERA, target: [...CAMERA.target] };
   const top = 1 - MARGIN - 0.012;
@@ -369,7 +420,7 @@ function settle(nodes) {
       }
     }
     const sc = scales(v, ASPECT);
-    const want = { x: 0, y: (TYPE_BAND[1.82] + top) / 2 };
+    const want = { x: AXIS, y: (TYPE_BAND[1.82] + top) / 2 };
     const dx = (x0 + x1) / 2 - want.x;
     const dy = (y0 + y1) / 2 - want.y;
     if (Math.abs(dx) < 0.002 && Math.abs(dy) < 0.002) break;
@@ -380,7 +431,356 @@ function settle(nodes) {
   return cam;
 }
 
-function inspect(nodes, edges, base) {
+/* Pixels per world unit at 1440 x 792, on the plane through the camera target:
+   the frame's half width is tanX * radius world units. */
+const PER_UNIT = 1440 / (2 * Math.tan((CAMERA.fov * Math.PI) / 360) * ASPECT * CAMERA.radius);
+const pxRadius = (n) => n.size * PER_UNIT;
+
+/* ------------------------------------------------------------------- the drawing */
+
+const VB_W = 1820;
+const VB_H = 1000;
+const TINTS = { star: '--star', cream: '--cream', dust: '--dust', amber: '--amber', cyan: '--cyan' };
+
+const round = (n) => Math.round(n * 10) / 10;
+
+/* What a form hides, projected: a convex polygon in normalised device
+   coordinates and the distance in front of the camera it sits at. */
+function occludersFor(nodes, v) {
+  const out = [];
+  for (const n of nodes) {
+    const q = project(v, ASPECT, n.p);
+    if (!q) continue;
+    const poly = hull(n.kind, n.size)
+      .map(([x, y]) => {
+        const p = project(v, ASPECT, place([[x, y, x, y]], n.p, v)[0][0]);
+        return p ? [p[0], p[1]] : null;
+      })
+      .filter(Boolean);
+    if (poly.length >= 3) out.push({ poly, z: q[2], id: n.id });
+  }
+  return out;
+}
+
+/* Every stroke the plate is made of, cut and classed: an edge as its visible
+   pieces (occlusion, the haze's trim, and a step wherever it crosses a depth
+   role), a form as its own segments with a face. One list, drawn twice: to the
+   still below, and checked before either file is written. */
+function drawing(nodes, edges, v) {
+  const byId = new Map(nodes.map((n) => [n.id, n]));
+  const occ = occludersFor(nodes, v);
+  const at = (p) => {
+    const q = project(v, ASPECT, p);
+    return q ? toPixel(q, VB_W, VB_H) : null;
+  };
+  const lines = [];
+  const rungs = [];
+  const push = (into, cls, a, b, role, face, alpha, z) => {
+    const pa = at(a);
+    const pb = at(b);
+    if (!pa || !pb) return;
+    into.push({ cls, a: pa, b: pb, role, face, alpha, z0: z ? z[0] : 0, z1: z ? z[1] : 0 });
+  };
+
+  for (const e of edges) {
+    const a = byId.get(e.a);
+    const b = byId.get(e.b);
+    if (!a || !b) continue;
+    const qa = project(v, ASPECT, a.p);
+    const qb = project(v, ASPECT, b.p);
+    if (!qa || !qb) continue;
+    const trim = { head: HAZE.gap[depthAt(CAMERA, qa[2])], tail: HAZE.gap[depthAt(CAMERA, qb[2])] };
+    const cls = e.kind === 'spine' ? 'scene-spine' : e.kind === 'open' ? 'scene-open' : 'scene-edge';
+    const runs = e.kind === 'open' ? dash(a.p, b.p, DASH) : [[a.p, b.p]];
+    for (const [p, q] of runs) {
+      /* A dash carries no trim of its own -- the pen is already lifted at
+         every gap -- but the forms at both ends still hide it. */
+      const spans = pieces(CAMERA, v, ASPECT, p, q, occ, {
+        ...(e.kind === 'open' ? { head: 0, tail: 0 } : trim),
+        attached: [a.id, b.id],
+      });
+      for (const span of spans) {
+        push(lines, cls, span.a, span.b, span.role, '', valueAt(CAMERA, span.z), [span.z0, span.z1]);
+      }
+      if (e.kind === 'spine') {
+        for (const [p0, p1] of spans.map((s) => [s.a, s.b])) {
+          for (const r of run(p0, p1, RUNG, v)) {
+            const m = [(r[0][0] + r[1][0]) / 2, (r[0][1] + r[1][1]) / 2, (r[0][2] + r[1][2]) / 2];
+            const q = project(v, ASPECT, m);
+            if (!q) continue;
+            push(rungs, 'scene-rung', r[0], r[1], depthAt(CAMERA, q[2]), '', valueAt(CAMERA, q[2]), [q[2], q[2]]);
+          }
+        }
+      }
+    }
+  }
+
+  /* The arm off the frame: from the journal's bracket, through the frame's
+     right edge. The deliberate crop, and the only line here whose end is not
+     a record. */
+  const journal = byId.get('journal');
+  if (journal) {
+    const q = project(v, ASPECT, journal.p);
+    const from = unproject(v, ASPECT, [q[0] + 0.012, q[1]], q[2]);
+    const to = unproject(v, ASPECT, [1.04, q[1] - 0.004], q[2] * (1 + CROP.reach / 100));
+    for (const [p0, p1] of dash(from, to, DASH)) {
+      for (const span of pieces(CAMERA, v, ASPECT, p0, p1, occ, { head: 0, tail: 0 })) {
+        push(lines, 'scene-open', span.a, span.b, span.role, '', valueAt(CAMERA, span.z), [span.z0, span.z1]);
+      }
+    }
+  }
+
+  const forms = [];
+  for (const n of nodes) {
+    const q = project(v, ASPECT, n.p);
+    if (!q) continue;
+    const role = depthAt(CAMERA, q[2]);
+    const value = valueAt(CAMERA, q[2]);
+    const cls = `scene-${n.kind === 'entry' ? 'journal' : n.kind}`;
+    for (const seg of place(form(n.kind, n.size), n.p, v)) {
+      const [nx, ny] = normalOf(seg, n.p, v);
+      const face = faceOf(nx, ny);
+      push(forms, cls, seg[0], seg[1], role, face, value * (face === 'lit' ? 1 : 0.52), [q[2], q[2]]);
+    }
+  }
+
+  return { lines, rungs, forms };
+}
+
+/* ------------------------------------------------------------------- the SVG */
+
+function svg(nodes, edges, labels, counts, draw) {
+  const v = view(state(CAMERA, { dolly: 1 }));
+  const at = (p) => toPixel(project(v, ASPECT, p), VB_W, VB_H);
+
+  const fmt = (x) => round(x).toFixed(1).replace(/\.0$/, '');
+
+  const emit = (list) => {
+    const groups = new Map();
+    for (const s of list) {
+      const alpha = Math.round(s.alpha * 100) / 100;
+      const key = `${s.cls}|${s.role}|${s.face}|${alpha.toFixed(2)}`;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(`M${fmt(s.a[0])} ${fmt(s.a[1])}L${fmt(s.b[0])} ${fmt(s.b[1])}`);
+    }
+    return [...groups.entries()]
+      .sort(([a], [b]) => (a < b ? -1 : 1))
+      .map(([key, segs]) => {
+        const [cls, role, face, alpha] = key.split('|');
+        return `<path class="${cls}" data-depth="${role}"${face ? ` data-light="${face}"` : ''} opacity="${alpha}" d="${segs.join('')}"/>`;
+      })
+      .join('');
+  };
+
+  const sky = stars(SEED, CAMERA, ASPECT);
+  const bands = new Map();
+  for (const s of sky) {
+    const q = project(v, ASPECT, s.p);
+    if (!q) continue;
+    const key = `${s.size.toFixed(0)}|${(Math.round(s.alpha * 0.6 * 50) / 50).toFixed(2)}`;
+    if (!bands.has(key)) bands.set(key, []);
+    const [px, py] = at(s.p);
+    bands.get(key).push(`M${fmt(px)} ${fmt(py)}h.01`);
+  }
+
+  const haze = blobs()
+    .map((b) => {
+      const q = project(v, ASPECT, b.p);
+      if (!q) return '';
+      const r = (b.r / (q[2] * Math.tan((CAMERA.fov * Math.PI) / 360) * ASPECT)) * (VB_W / 2);
+      const [px, py] = at(b.p);
+      return `<circle cx="${fmt(px)}" cy="${fmt(py)}" r="${fmt(r)}" fill="url(#haze-${b.tint})" opacity="${b.alpha.toFixed(3)}"/>`;
+    })
+    .join('');
+
+  const defs = Object.entries(TINTS)
+    .map(
+      ([tint]) =>
+        `<radialGradient id="haze-${tint}"><stop offset="0" stop-color="var(${TINTS[tint]})" stop-opacity="1"/>` +
+        [0.25, 0.5, 0.75].map((d) => `<stop offset="${d * 100}%" stop-color="var(${TINTS[tint]})" stop-opacity="${falloff(d).toFixed(3)}"/>`).join('') +
+        `<stop offset="100%" stop-color="var(${TINTS[tint]})" stop-opacity="0"/></radialGradient>`,
+    )
+    .join('');
+
+  const starPaths = [...bands.entries()]
+    .sort(([a], [b]) => (a < b ? -1 : 1))
+    .map(([key, segs]) => {
+      const [size, alpha] = key.split('|');
+      return `<path class="scene-star" data-size="${size}" opacity="${alpha}" d="${segs.join('')}"/>`;
+    })
+    .join('');
+
+  const text = labels
+    .filter((l) => l.show)
+    .map(
+      (l) =>
+        `<text class="scene-label" x="${fmt(l.x)}" y="${fmt(l.y)}"${l.mid ? ' text-anchor="middle"' : ''} opacity="${(Math.round(l.alpha * 100) / 100).toFixed(2)}">${l.text
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')}</text>`,
+    )
+    .join('');
+
+  const desc =
+    `The site's own map: ${counts.topics} topics, ${counts.repos} repositories, ` +
+    `${counts.units} series units and ${counts.entries} journal entries, laid out around the station at the centre. ` +
+    `A ring is a topic, a diamond a repository, a triangle a series unit, a bracket the journal. ` +
+    `Each shape is labelled where there is room; every one links from the lists below this frame.`;
+
+  return `<svg class="scene-still" viewBox="0 0 ${VB_W} ${VB_H}" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="scene-title scene-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="scene-title">The map of the site</title>
+<desc id="scene-desc">${desc}</desc>
+<defs>${defs}</defs>
+<g class="scene-haze">${haze}</g>
+<g class="scene-stars">${starPaths}</g>
+<g class="scene-edges">${emit(draw.lines)}</g>
+<g class="scene-rungs">${emit(draw.rungs)}</g>
+<g class="scene-forms">${emit(draw.forms)}</g>
+<g class="scene-labels">${text}</g>
+</svg>
+`;
+}
+
+/* ------------------------------------------------------------------- labels */
+
+const LABELS = ['topic', 'unit', 'journal', 'datum'];
+
+/* Where each name sits, and the grid it sits on.
+
+   A name is set above its form (beside it, for the journal), clear of the form
+   by LABEL_GRID.gap, and then its baseline is snapped to the nearest row of
+   LABEL_GRID -- moving up a row rather than down when that is what it takes to
+   keep the gap. The rows are the same across the plate, which is what makes
+   eleven separate names read as one set of labels rather than as eleven
+   floating words.
+
+   The offset lives in the data (`label:` on the node) so the canvas puts every
+   name in the same place. */
+function labels(nodes, v) {
+  const home = project(v, ASPECT, [0, 0, 0]);
+  const out = [];
+  const toPx = (ndc) => toPixel(ndc, VB_W, VB_H);
+  const toNdc = (px) => [(px[0] / VB_W) * 2 - 1, 1 - (px[1] / VB_H) * 2];
+  for (const n of nodes) {
+    if (!LABELS.includes(n.kind)) continue;
+    const q = project(v, ASPECT, n.p);
+    if (!q) continue;
+    let dx = 0;
+    let dy = 0;
+    if (n.kind === 'topic') {
+      const d = Math.hypot(q[0] - home[0], q[1] - home[1]) || 1;
+      dx = ((q[0] - home[0]) / d) * 0.072;
+      dy = ((q[1] - home[1]) / d) * 0.072 + 0.006;
+    } else if (n.kind === 'unit') dy = 0.034;
+    else if (n.kind === 'journal') dx = 0.018;
+    else if (n.kind === 'datum') dy = -0.05;
+    const px = toPx([q[0] + dx, q[1] + dy]);
+    const text = n.kind === 'journal' ? `${n.name} · ${n.count} ${n.count === 1 ? 'entry' : 'entries'}` : n.name;
+    const w = text.length * LABEL_GRID.advance;
+    /* How tall the form it names actually draws, so the gap is the gap. */
+    const centre = toPx(q);
+    const reach = Math.max(
+      ...hull(n.kind, n.size).map(([hx, hy]) => {
+        const p = project(v, ASPECT, place([[hx, hy, hx, hy]], n.p, v)[0][0]);
+        const pxx = p ? toPixel(p, VB_W, VB_H) : centre;
+        return Math.hypot(pxx[0] - centre[0], pxx[1] - centre[1]);
+      }),
+    );
+    const top = centre[1] - (n.kind === 'journal' ? 0 : reach);
+    let y = labelRow(px[1]);
+    while (top - y < LABEL_GRID.gap && y > LABEL_GRID.top) y -= LABEL_GRID.row;
+    /* A name never leaves the frame: the journal's, at the plate's right edge,
+       slides left until it fits. */
+    const x = n.kind === 'journal' ? Math.min(px[0], VB_W - w - 8) : px[0];
+    const snapped = toNdc([x, y]);
+    n.label = [Math.round((snapped[0] - q[0]) * 1000) / 1000, Math.round((snapped[1] - q[1]) * 1000) / 1000];
+    out.push({
+      id: n.id,
+      kind: n.kind,
+      text,
+      ndc: snapped,
+      mid: n.kind !== 'journal',
+      x,
+      y,
+      w,
+      h: LABEL_GRID.cap,
+      alpha: valueAt(CAMERA, q[2]),
+      show: true,
+    });
+  }
+
+  /* Names that would sit on each other are dropped, in order, rather than piled
+     up: an unlabelled form is still a form, and the page names every one of them
+     in text below the frame. */
+  const kept = [];
+  for (const l of out) {
+    const box = { x0: l.x - (l.mid ? l.w / 2 : 0), x1: l.x + (l.mid ? l.w / 2 : l.w), y0: l.y - l.h, y1: l.y + 3 };
+    l.show = !kept.some((k) => box.x0 < k.x1 && box.x1 > k.x0 && box.y0 < k.y1 && box.y1 > k.y0);
+    if (l.show) kept.push(box);
+    l.box = box;
+  }
+  return out;
+}
+
+/* ------------------------------------------------------------------- outputs */
+
+function yamlDoc(nodes, edges, counts) {
+  const q = (s) => `"${String(s).replace(/"/g, '\\"')}"`;
+  const out = [];
+  out.push('# Generated by scripts/scene/map.mjs. Do not edit.');
+  out.push('#');
+  out.push('# The home page\'s map: one node per thing the site actually holds, one');
+  out.push('# edge per relation the repository actually records. Positions are world');
+  out.push('# units in a right-handed frame, y up, the station at the origin.');
+  out.push('#');
+  out.push('#   ring     topic        a graduated ring, sixteen sides');
+  out.push('#   diamond  repository   four sides');
+  out.push('#   triangle series unit  three sides, apex up');
+  out.push('#   bracket  journal      open to the right, nothing on it yet');
+  out.push('#   ring+cross+mast  the station, the origin of the map');
+  out.push('#');
+  out.push('# `camera.depth` is the depth ramp both renderers read: the four stops,');
+  out.push('# the value of each, and where the roles split.');
+  out.push('');
+  out.push(`seed: ${SEED}`);
+  out.push('counts:');
+  for (const [k, val] of Object.entries(counts)) out.push(`  ${k}: ${val}`);
+  out.push('camera:');
+  out.push(`  fov: ${CAMERA.fov}`);
+  out.push(`  aspect: ${CAMERA.aspect}`);
+  out.push(`  radius: ${CAMERA.radius}`);
+  out.push(`  target: [${CAMERA.target.join(', ')}]`);
+  out.push(`  elevation: ${CAMERA.elevation}`);
+  out.push(`  azimuth: ${CAMERA.azimuth}`);
+  out.push(`  yaw: ${CAMERA.yaw}`);
+  out.push(`  pitch: ${CAMERA.pitch}`);
+  out.push(`  dolly: [${CAMERA.dolly.join(', ')}]`);
+  out.push('  depth:');
+  out.push(`    near: ${CAMERA.depth.near}`);
+  out.push(`    far: ${CAMERA.depth.far}`);
+  out.push(`    highlight: ${CAMERA.depth.highlight}`);
+  out.push(`    split: [${CAMERA.depth.split.join(', ')}]`);
+  out.push('    value:');
+  for (const [k, val] of Object.entries(CAMERA.depth.value)) out.push(`      ${k}: ${val}`);
+  out.push('nodes:');
+  for (const n of nodes) {
+    out.push(`- id: ${n.id}`);
+    out.push(`  kind: ${n.kind}`);
+    out.push(`  name: ${q(n.name)}`);
+    out.push(`  url: ${q(n.url)}`);
+    out.push(`  size: ${n.size}`);
+    out.push(`  weight: ${n.weight}`);
+    if (n.count !== undefined) out.push(`  count: ${n.count}`);
+    if (n.label) out.push(`  label: [${n.label.join(', ')}]`);
+    out.push(`  p: [${n.p.map((x) => Math.round(x * 1000) / 1000).join(', ')}]`);
+  }
+  out.push('edges:');
+  for (const e of edges) out.push(`- [${e.a}, ${e.b}, ${e.kind}]`);
+  return out.join('\n') + '\n';
+}
+
+/* ---------------------------------------------------------------- the report */
+
+function inspect(nodes, edges, labels, draw) {
   const problems = [];
   const v = view(state(CAMERA, {}));
   const poses = POSES();
@@ -428,247 +828,73 @@ function inspect(nodes, edges, base) {
       if (!nodes.some((n) => n.id === end)) problems.push(`edge ${e.a} -> ${e.b} names ${end}, which is not on the map`);
     }
   }
-  return { problems, closest };
-}
 
-/* Pixels per world unit at 1440 x 792, on the plane through the camera target:
-   the frame's half width is tanX * radius world units. */
-const PER_UNIT = 1440 / (2 * Math.tan((CAMERA.fov * Math.PI) / 360) * ASPECT * CAMERA.radius);
-const pxRadius = (n) => n.size * PER_UNIT;
-
-/* ------------------------------------------------------------------- the SVG */
-
-const VB_W = 1820;
-const VB_H = 1000;
-const TINTS = { star: '--star', cream: '--cream', dust: '--dust', amber: '--amber', cyan: '--cyan' };
-
-const round = (n) => Math.round(n * 10) / 10;
-const bucket = (a) => Math.round(a * 50) / 50;
-
-function svg(nodes, edges, labels, counts) {
-  const v = view(state(CAMERA, { dolly: 1 }));
-  const at = (p) => toPixel(project(v, ASPECT, p), VB_W, VB_H);
-
-  const lines = new Map();
-  const forms = new Map();
-  const add = (into, cls, a, b, alpha) => {
-    const key = `${cls}|${bucket(alpha).toFixed(2)}`;
-    if (!into.has(key)) into.set(key, []);
-    into.get(key).push(`M${round(a[0])} ${round(a[1])}L${round(b[0])} ${round(b[1])}`);
+  /* Hidden lines: no stroke of the plate may sit inside a nearer diamond. The
+     cut is computed, and this is the file's own drawn geometry checked against
+     the silhouettes -- not the cutter checked against itself. */
+  const repos = nodes
+    .filter((n) => n.kind === 'repo')
+    .map((n) => {
+      const q = project(v, ASPECT, n.p);
+      const poly = hull(n.kind, n.size).map(([x, y]) => {
+        const p = project(v, ASPECT, place([[x, y, x, y]], n.p, v)[0][0]);
+        return toPixel(p, VB_W, VB_H);
+      });
+      return { id: n.id, z: q[2], poly };
+    });
+  const insideOn = (p, poly) => {
+    let c = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const [xi, yi] = poly[i];
+      const [xj, yj] = poly[j];
+      if (yi > p[1] !== yj > p[1] && p[0] < ((xj - xi) * (p[1] - yi)) / (yj - yi) + xi) c = !c;
+    }
+    return c;
   };
-
-  const byId = new Map(nodes.map((n) => [n.id, n]));
-
-  /* Edges first: they are behind the forms they connect, which the canvas gets
-     from the depth buffer and the still from paint order. */
-  for (const e of edges) {
-    const a = byId.get(e.a);
-    const b = byId.get(e.b);
-    if (!a || !b) continue;
-    const pa = project(v, ASPECT, a.p);
-    const pb = project(v, ASPECT, b.p);
-    if (!pa || !pb) continue;
-    const alpha = fade(CAMERA, (pa[2] + pb[2]) / 2) * (e.kind === 'spine' ? 0.6 : e.kind === 'open' ? 0.4 : 0.5);
-    const cls = e.kind === 'spine' ? 'scene-spine' : e.kind === 'open' ? 'scene-open' : 'scene-edge';
-    add(lines, cls, toPixel(pa, VB_W, VB_H), toPixel(pb, VB_W, VB_H), alpha);
-  }
-
-  for (const n of nodes) {
-    const z = project(v, ASPECT, n.p);
-    if (!z) continue;
-    const f = fade(CAMERA, z[2]);
-    /* An entry hangs off the journal's bracket in the same ink: the kind is the
-       form, not the colour, so the two share one class. */
-    const cls = `scene-${n.kind === 'entry' ? 'journal' : n.kind}`;
-    for (const [a, b] of place(form(n.kind, n.size), n.p, v)) {
-      const pa = project(v, ASPECT, a);
-      const pb = project(v, ASPECT, b);
-      if (!pa || !pb) continue;
-      add(forms, cls, toPixel(pa, VB_W, VB_H), toPixel(pb, VB_W, VB_H), f * 0.85);
+  let crossings = 0;
+  for (const s of [...draw.lines]) {
+    const l = Math.hypot(s.b[0] - s.a[0], s.b[1] - s.a[1]);
+    const steps = Math.max(1, Math.ceil(l / 2));
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const p = [s.a[0] + (s.b[0] - s.a[0]) * t, s.a[1] + (s.b[1] - s.a[1]) * t];
+      const z = s.z0 > 0 ? 1 / (1 / s.z0 + t * (1 / s.z1 - 1 / s.z0)) : 0;
+      for (const r of repos) {
+        /* Only a form in front of the ink hides it. */
+        if (r.z > z - 1e-3) continue;
+        if (insideOn(p, r.poly)) {
+          crossings++;
+          problems.push(`${s.cls} ${s.role} has ink inside ${r.id} (form z ${r.z.toFixed(2)}, ink z ${z.toFixed(2)}, at ${p[0].toFixed(0)},${p[1].toFixed(0)}, piece ${s.a.map((v) => v.toFixed(0)).join('/')}..${s.b.map((v) => v.toFixed(0)).join('/')})`);
+          i = steps + 1;
+          break;
+        }
+      }
     }
   }
 
-  const sky = stars(SEED, CAMERA, ASPECT);
-  const bands = new Map();
-  for (const s of sky) {
-    const q = project(v, ASPECT, s.p);
-    if (!q) continue;
-    const key = `${s.size.toFixed(0)}|${bucket(s.alpha * 0.6).toFixed(2)}`;
-    if (!bands.has(key)) bands.set(key, []);
-    const [px, py] = toPixel(q, VB_W, VB_H);
-    bands.get(key).push(`M${round(px)} ${round(py)}h.01`);
+  /* The grid: a label's baseline is a row, and its box stays in the frame. */
+  for (const l of labels.filter((x) => x.show)) {
+    if (Math.abs(l.y - labelRow(l.y)) > 0.01) problems.push(`label ${l.text} is off the row at y ${l.y.toFixed(2)}`);
+    if (l.box.x0 < 0 || l.box.x1 > VB_W) problems.push(`label ${l.text} leaves the frame: ${l.box.x0.toFixed(0)}..${l.box.x1.toFixed(0)}`);
+    if (l.box.y1 < 0 || l.y > VB_H) problems.push(`label ${l.text} is off the top of the frame`);
   }
 
-  const haze = blobs()
-    .map((b) => {
-      const q = project(v, ASPECT, b.p);
-      if (!q) return '';
-      const r = (b.r / (q[2] * Math.tan((CAMERA.fov * Math.PI) / 360) * ASPECT)) * (VB_W / 2);
-      const [px, py] = toPixel(q, VB_W, VB_H);
-      return `<circle cx="${round(px)}" cy="${round(py)}" r="${round(r)}" fill="url(#haze-${b.tint})" opacity="${b.alpha.toFixed(3)}"/>`;
-    })
-    .join('');
+  /* One light: every closed form takes it on some faces and loses it on
+     others, or the light is not doing anything. */
+  const faces = new Map();
+  for (const s of draw.forms) {
+    if (!faces.has(s.cls + s.role)) faces.set(s.cls + s.role, { lit: 0, shadow: 0 });
+    faces.get(s.cls + s.role)[s.face]++;
+  }
+  for (const [key, f] of faces) {
+    if (f.lit && !f.shadow) problems.push(`${key} has no shadowed face`);
+    if (f.shadow && !f.lit) problems.push(`${key} has no lit face`);
+  }
 
-  const defs = Object.entries(TINTS)
-    .map(
-      ([tint]) =>
-        `<radialGradient id="haze-${tint}"><stop offset="0" stop-color="var(${TINTS[tint]})" stop-opacity="1"/>` +
-        [0.25, 0.5, 0.75].map((d) => `<stop offset="${d * 100}%" stop-color="var(${TINTS[tint]})" stop-opacity="${falloff(d).toFixed(3)}"/>`).join('') +
-        `<stop offset="100%" stop-color="var(${TINTS[tint]})" stop-opacity="0"/></radialGradient>`,
-    )
-    .join('');
-
-  const emit = (map) =>
-    [...map.entries()]
-      .sort(([a], [b]) => (a < b ? -1 : 1))
-      .map(([key, segs]) => {
-        const [cls, alpha] = key.split('|');
-        return `<path class="${cls}" opacity="${alpha}" d="${segs.join('')}"/>`;
-      })
-      .join('');
-  const paths = emit(lines);
-  const formPaths = emit(forms);
-
-  const starPaths = [...bands.entries()]
-    .sort(([a], [b]) => (a < b ? -1 : 1))
-    .map(([key, segs]) => {
-      const [size, alpha] = key.split('|');
-      return `<path class="scene-star" data-size="${size}" opacity="${alpha}" d="${segs.join('')}"/>`;
-    })
-    .join('');
-
-  const text = labels
-    .filter((l) => l.show)
-    .map(
-      (l) =>
-        `<text class="scene-label" x="${round(l.x)}" y="${round(l.y)}"${l.mid ? ' text-anchor="middle"' : ''} opacity="${bucket(l.alpha).toFixed(2)}">${l.text
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')}</text>`,
-    )
-    .join('');
-
-  const desc =
-    `The site's own map: ${counts.topics} topics, ${counts.repos} repositories, ` +
-    `${counts.units} series units and ${counts.entries} journal entries, laid out around the station at the centre. ` +
-    `A ring is a topic, a diamond a repository, a triangle a series unit, a bracket the journal. ` +
-    `Each shape is labelled where there is room; every one links from the lists below this frame.`;
-
-  return `<svg class="scene-still" viewBox="0 0 ${VB_W} ${VB_H}" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="scene-title scene-desc" xmlns="http://www.w3.org/2000/svg">
-<title id="scene-title">The map of the site</title>
-<desc id="scene-desc">${desc}</desc>
-<defs>${defs}</defs>
-<g class="scene-haze">${haze}</g>
-<g class="scene-stars">${starPaths}</g>
-<g class="scene-edges">${paths}</g>
-<g class="scene-forms">${formPaths}</g>
-<g class="scene-labels">${text}</g>
-</svg>
-`;
+  return { problems, closest, crossings };
 }
 
-/* ------------------------------------------------------------------- labels */
-
-const LABELS = ['topic', 'unit', 'journal', 'datum'];
-
-/* Where each name sits, as an offset from its form in normalised device
-   coordinates. Outward for a topic, up for a unit, right for the journal's
-   bracket, above the mast for the origin. The offset lives in the data so the
-   still and the canvas put every name in the same place. */
-function labels(nodes, v) {
-  const home = project(v, ASPECT, [0, 0, 0]);
-  const out = [];
-  for (const n of nodes) {
-    if (!LABELS.includes(n.kind)) continue;
-    const q = project(v, ASPECT, n.p);
-    if (!q) continue;
-    let dx = 0;
-    let dy = 0;
-    if (n.kind === 'topic') {
-      const d = Math.hypot(q[0] - home[0], q[1] - home[1]) || 1;
-      dx = ((q[0] - home[0]) / d) * 0.072;
-      dy = ((q[1] - home[1]) / d) * 0.072 + 0.004;
-    } else if (n.kind === 'unit') dy = 0.03;
-    else if (n.kind === 'journal') dx = 0.014;
-    else if (n.kind === 'datum') dy = -0.042;
-    n.label = [Math.round(dx * 1000) / 1000, Math.round(dy * 1000) / 1000];
-    out.push({
-      id: n.id,
-      kind: n.kind,
-      text: n.kind === 'journal' ? `${n.name} · ${n.count} ${n.count === 1 ? 'entry' : 'entries'}` : n.name,
-      ndc: [q[0] + dx, q[1] + dy],
-      mid: n.kind !== 'journal',
-      alpha: fade(CAMERA, q[2]),
-      show: true,
-    });
-  }
-  for (const l of out) {
-    const px = toPixel(l.ndc, VB_W, VB_H);
-    l.x = px[0];
-    l.y = px[1];
-    l.w = l.text.length * 7.4;
-    l.h = 13;
-  }
-
-  /* Names that would sit on each other are dropped, in order, rather than piled
-     up: an unlabelled form is still a form, and the page names every one of them
-     in text below the frame. */
-  const kept = [];
-  for (const l of out) {
-    const box = { x0: l.x - (l.mid ? l.w / 2 : 0), x1: l.x + (l.mid ? l.w / 2 : l.w), y0: l.y - l.h, y1: l.y + 3 };
-    l.show = !kept.some((k) => box.x0 < k.x1 && box.x1 > k.x0 && box.y0 < k.y1 && box.y1 > k.y0);
-    if (l.show) kept.push(box);
-  }
-  return out;
-}
-
-/* ------------------------------------------------------------------- outputs */
-
-function yamlDoc(nodes, edges, counts) {
-  const q = (s) => `"${String(s).replace(/"/g, '\\"')}"`;
-  const out = [];
-  out.push('# Generated by scripts/scene/map.mjs. Do not edit.');
-  out.push('#');
-  out.push('# The home page\'s map: one node per thing the site actually holds, one');
-  out.push('# edge per relation the repository actually records. Positions are world');
-  out.push('# units in a right-handed frame, y up, the station at the origin.');
-  out.push('#');
-  out.push('#   ring     topic        a graduated ring, sixteen sides');
-  out.push('#   diamond  repository   four sides');
-  out.push('#   triangle series unit  three sides, apex up');
-  out.push('#   bracket  journal      open to the right, nothing on it yet');
-  out.push('#   ring+cross+mast  the station, the origin of the map');
-  out.push('');
-  out.push(`seed: ${SEED}`);
-  out.push('counts:');
-  for (const [k, val] of Object.entries(counts)) out.push(`  ${k}: ${val}`);
-  out.push('camera:');
-  out.push(`  fov: ${CAMERA.fov}`);
-  out.push(`  aspect: ${CAMERA.aspect}`);
-  out.push(`  radius: ${CAMERA.radius}`);
-  out.push(`  target: [${CAMERA.target.join(', ')}]`);
-  out.push(`  elevation: ${CAMERA.elevation}`);
-  out.push(`  azimuth: ${CAMERA.azimuth}`);
-  out.push(`  yaw: ${CAMERA.yaw}`);
-  out.push(`  pitch: ${CAMERA.pitch}`);
-  out.push(`  dolly: [${CAMERA.dolly.join(', ')}]`);
-  out.push('  fade:');
-  for (const [k, val] of Object.entries(CAMERA.fade)) out.push(`    ${k}: ${val}`);
-  out.push('nodes:');
-  for (const n of nodes) {
-    out.push(`- id: ${n.id}`);
-    out.push(`  kind: ${n.kind}`);
-    out.push(`  name: ${q(n.name)}`);
-    out.push(`  url: ${q(n.url)}`);
-    out.push(`  size: ${n.size}`);
-    out.push(`  weight: ${n.weight}`);
-    if (n.count !== undefined) out.push(`  count: ${n.count}`);
-    if (n.label) out.push(`  label: [${n.label.join(', ')}]`);
-    out.push(`  p: [${n.p.map((x) => Math.round(x * 1000) / 1000).join(', ')}]`);
-  }
-  out.push('edges:');
-  for (const e of edges) out.push(`- [${e.a}, ${e.b}, ${e.kind}]`);
-  return out.join('\n') + '\n';
-}
+/* ----------------------------------------------------------------------- run */
 
 function main() {
   const ts = topics();
@@ -699,9 +925,10 @@ function main() {
   const v = view(state(CAMERA, {}));
   const ls = labels(nodes, v);
   const counts = { topics: ts.length, repos: rs.length, units: cu.length, entries: ps.length };
+  const draw = drawing(nodes, edges, v);
 
-  const { problems, closest } = inspect(nodes, edges);
-  const svgText = svg(nodes, edges, ls, counts);
+  const { problems, closest, crossings } = inspect(nodes, edges, ls, draw);
+  const svgText = svg(nodes, edges, ls, counts, draw);
   const yamlText = yamlDoc(nodes, edges, counts);
 
   const box = { x0: 1, y0: 1, x1: -1, y1: -1 };
@@ -713,10 +940,18 @@ function main() {
     box.y1 = Math.max(box.y1, q[1]);
   }
 
+  const strokes = draw.lines.length + draw.rungs.length + draw.forms.length;
+  const roles = { highlight: 0, near: 0, mid: 0, far: 0 };
+  for (const s of [...draw.lines, ...draw.rungs, ...draw.forms]) roles[s.role]++;
+
   const rows = [
     ['nodes', nodes.length],
     ['edges', edges.length],
-    ['segments drawn', nodes.reduce((a, n) => a + form(n.kind, n.size).length, 0) + edges.length],
+    ['strokes drawn', strokes],
+    ['  edges', draw.lines.length],
+    ['  rungs', draw.rungs.length],
+    ['  forms', draw.forms.length],
+    ['depth roles', `hi ${roles.highlight} / near ${roles.near} / mid ${roles.mid} / far ${roles.far}`],
     ['stars', stars(SEED, CAMERA, ASPECT).length],
     ['labels kept', ls.filter((l) => l.show).length + '/' + ls.length],
     ['frame box x', `${box.x0.toFixed(3)} .. ${box.x1.toFixed(3)}`],
@@ -729,13 +964,40 @@ function main() {
   console.log(rows.map(([k, x]) => `  ${String(k).padEnd(16)} ${x}`).join('\n'));
 
   if (problems.length) {
-    console.error(`\n${problems.length} problem(s):\n  ` + problems.join('\n  '));
+    console.error(`\n${problems.length} problem(s):\n  ` + [...new Set(problems)].slice(0, 24).join('\n  '));
     process.exitCode = 1;
     return;
   }
+
+  /* Byte-identical: the same content and the same seed give the same two
+     files, byte for byte, on any engine -- the arithmetic is 32-bit integer
+     where it decides where anything goes, and every number written is rounded
+     before it is written. `--check` is what CI runs: it writes nothing and
+     exits 1 when a committed file is not what this seed draws. */
+  const sha = (s) => createHash('sha256').update(s, 'utf8').digest('hex').slice(0, 16);
+  if (CHECK) {
+    let stale = 0;
+    for (const [path, text] of [
+      [OUT_YAML, yamlText],
+      [OUT_SVG, svgText],
+    ]) {
+      const disk = readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
+      if (disk === text) {
+        console.log(`  ok       ${path.split(/[\\/]/).slice(-2).join('/')}  ${sha(text)}  ${text.length} bytes, LF`);
+      } else {
+        console.log(`  STALE    ${path.split(/[\\/]/).slice(-2).join('/')}  re-run node scripts/scene/map.mjs`);
+        stale++;
+      }
+    }
+    console.log(`\n  ${stale ? `${stale} file(s) out of date` : 'clean: the same content gives the same bytes'}`);
+    process.exitCode = stale ? 1 : 0;
+    return;
+  }
+
   writeFileSync(OUT_YAML, yamlText);
   writeFileSync(OUT_SVG, svgText);
-  console.log('\n  wrote _data/scene-map.yml and _includes/scene/map.svg');
+  console.log(`\n  wrote _data/scene-map.yml (${sha(yamlText)}) and _includes/scene/map.svg (${sha(svgText)})`);
+  console.log('  deterministic: the same content and seed give the same bytes');
 }
 
 main();

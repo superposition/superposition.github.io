@@ -9,6 +9,9 @@
 #   triangle series unit  three sides, apex up
 #   bracket  journal      open to the right, nothing on it yet
 #   ring+cross+mast  the station, the origin of the map
+#
+# `camera.depth` is the depth ramp both renderers read: the four stops,
+# the value of each, and where the roles split.
 
 seed: 1977
 counts:
@@ -20,16 +23,22 @@ camera:
   fov: 26
   aspect: 1.82
   radius: 9
-  target: [0.1682727723286413, -0.6230221296519043, 0]
+  target: [0.3976324494802323, -0.6193965512988506, 0]
   elevation: 19
   azimuth: 0
   yaw: 4.5
   pitch: 1.5
   dolly: [1, 1.14]
-  fade:
+  depth:
     near: 0.62
     far: 1.62
-    floor: 0.32
+    highlight: 0.12
+    split: [0.2, 0.38]
+    value:
+      highlight: 1
+      near: 0.88
+      mid: 0.6
+      far: 0.36
 nodes:
 - id: station
   kind: datum
@@ -37,7 +46,7 @@ nodes:
   url: "/"
   size: 0.32
   weight: 4
-  label: [0, -0.042]
+  label: [0, 0.264]
   p: [0, 0, 0]
 - id: topic:data-informatics
   kind: topic
@@ -45,7 +54,7 @@ nodes:
   url: "/journal/#data-informatics"
   size: 0.19
   weight: 2
-  label: [0.008, 0.076]
+  label: [0.009, 0.144]
   p: [0.154, 0.541, -1.289]
 - id: topic:ai
   kind: topic
@@ -53,7 +62,7 @@ nodes:
   url: "/journal/#ai"
   size: 0.19
   weight: 2
-  label: [0.051, 0.055]
+  label: [0.051, 0.145]
   p: [1.248, 0.582, -0.455]
 - id: topic:matrices
   kind: topic
@@ -61,7 +70,7 @@ nodes:
   url: "/journal/#matrices"
   size: 0.19
   weight: 2
-  label: [0.059, 0.045]
+  label: [0.059, 0.154]
   p: [0.785, 0.567, 0.996]
 - id: topic:kinematics
   kind: topic
@@ -69,7 +78,7 @@ nodes:
   url: "/journal/#kinematics"
   size: 0.19
   weight: 2
-  label: [-0.053, 0.053]
+  label: [-0.054, 0.164]
   p: [-0.683, 0.666, 1.102]
 - id: topic:cryptographic-proofs
   kind: topic
@@ -77,7 +86,7 @@ nodes:
   url: "/journal/#cryptographic-proofs"
   size: 0.19
   weight: 2
-  label: [-0.053, 0.053]
+  label: [-0.053, 0.114]
   p: [-1.242, 0.554, -0.365]
 - id: repo:bend-ml-lab
   kind: repo
@@ -99,7 +108,7 @@ nodes:
   url: "/projects/qualia/"
   size: 0.078
   weight: 1
-  p: [2.53, 0.466, -1.015]
+  p: [2.465, 0.466, -0.972]
 - id: repo:divulge
   kind: repo
   name: "DIVULGE"
@@ -183,7 +192,7 @@ nodes:
   url: "/projects/1brc-cpp/"
   size: 0.078
   weight: 1
-  p: [1.074, 0.335, -2.29]
+  p: [0.874, 0.415, -2.29]
 - id: repo:space-bullet-hell
   kind: repo
   name: "Guardian of the Spread"
@@ -225,7 +234,7 @@ nodes:
   url: "/series/#vellum"
   size: 0.1
   weight: 1
-  label: [0, 0.03]
+  label: [0, 0.081]
   p: [-2.556, 1.078, 0.499]
 - id: unit:gauge
   kind: unit
@@ -233,7 +242,7 @@ nodes:
   url: "/series/#gauge"
   size: 0.1
   weight: 1
-  label: [0, 0.03]
+  label: [0, 0.084]
   p: [-1.471, 1.217, 0.157]
 - id: unit:dray
   kind: unit
@@ -241,7 +250,7 @@ nodes:
   url: "/series/#dray"
   size: 0.1
   weight: 1
-  label: [0, 0.03]
+  label: [0, 0.114]
   p: [1.491, 1.066, 0.193]
 - id: unit:sextant
   kind: unit
@@ -249,7 +258,7 @@ nodes:
   url: "/series/#sextant"
   size: 0.1
   weight: 1
-  label: [0, 0.03]
+  label: [0, 0.094]
   p: [2.358, 0.955, 0.483]
 - id: journal
   kind: journal
@@ -258,7 +267,7 @@ nodes:
   size: 0.16
   weight: 1
   count: 0
-  label: [0.014, 0]
+  label: [0.018, 0.03]
   p: [2.86, 0.44, 0.71]
 edges:
 - [station, topic:data-informatics, spine]
