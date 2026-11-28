@@ -456,6 +456,14 @@
   --drift-near: 30px;
   --drift-lift: 6px;
   --pulse-span: 942px;
+  /* Secondary motion: the parts that do not move with the hull. Three periods so
+     the station never reads as a rigid cut-out sliding across the frame. */
+  --dur-sway-mast: 17s;
+  --dur-sway-dish: 11s;
+  --dur-sway-hook: 7.5s;
+  --sway-mast: 2.2px;
+  --sway-lift: 0.9px;
+  --sway-hook: 0.6deg;
   --beam-march: -20px;
   --approach-x: 26px;
   --approach-y: -3.7px;

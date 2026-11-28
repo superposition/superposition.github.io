@@ -1666,7 +1666,10 @@ mjx-container[display="true"] { margin-block: var(--space-3) !important; }
 .scene-switch:checked ~ .scene-frame #docking-shuttle,
 .scene-switch:checked ~ .scene-frame #drone-a,
 .scene-switch:checked ~ .scene-frame #drone-b,
-.scene-switch:checked ~ .scene-frame #alignment-line { animation-play-state: paused; }
+.scene-switch:checked ~ .scene-frame #alignment-line,
+.scene-switch:checked ~ .scene-frame #station-masts,
+.scene-switch:checked ~ .scene-frame #station-mast,
+.scene-switch:checked ~ .scene-frame #station-hook { animation-play-state: paused; }
 .scene-hold {
   margin-top: var(--space-2);
   font: var(--step-1)/var(--leading-body) var(--font-mono);
@@ -1694,6 +1697,20 @@ mjx-container[display="true"] { margin-block: var(--space-3) !important; }
 .scene-frame #scene-traffic-back { animation: scene-drift-far var(--dur-drift-far) var(--ease-soft) infinite alternate; }
 .scene-frame #scene-station { animation: scene-drift-mid var(--dur-drift-mid) var(--ease-soft) infinite alternate; }
 .scene-frame #scene-traffic-front { animation: scene-drift-near var(--dur-drift-near) var(--ease-soft) infinite alternate; }
+
+/* Secondary motion, so nothing in the frame is one rigid piece. The dish masts
+   lag the hull and lean the other way from it, the gantry's lattice tower
+   against the drift at its own period, and the truss section on the hook swings
+   under the gantry that carries it — a pendulum pivoted at the hook, moving
+   slower than the frame it hangs from and behind it in phase. Three periods,
+   three negative delays: nothing in the station is ever at the top of its
+   swing at the same time as anything else. */
+@keyframes scene-sway-mast { from { transform: translate(0, 0); } to { transform: translate(var(--sway-mast), var(--sway-lift)); } }
+@keyframes scene-sway-dish { from { transform: translate(0, 0); } to { transform: translate(calc(var(--sway-mast) * -0.6), var(--sway-lift)); } }
+@keyframes scene-sway-hook { from { transform: rotate(calc(var(--sway-hook) * -1)); } to { transform: rotate(var(--sway-hook)); } }
+.scene-frame #station-masts { animation: scene-sway-dish var(--dur-sway-dish) var(--ease-soft) infinite alternate; animation-delay: -3.1s; }
+.scene-frame #station-mast { animation: scene-sway-mast var(--dur-sway-mast) var(--ease-soft) infinite alternate; animation-delay: -1.7s; }
+.scene-frame #station-hook { animation: scene-sway-hook var(--dur-sway-hook) var(--ease-soft) infinite alternate; animation-delay: -2.6s; transform-box: fill-box; transform-origin: 50% 0%; }
 
 /* The action. The pulse fades at both ends of its run, so the jump from the far
    end of the truss back to the near end is never on screen; the beam's dashes
@@ -2081,7 +2098,10 @@ html.motion .plate img { animation: none; }
   .scene-frame #docking-shuttle,
   .scene-frame #drone-a,
   .scene-frame #drone-b,
-  .scene-frame #alignment-line { animation: none; transform: none; }
+  .scene-frame #alignment-line,
+  .scene-frame #station-masts,
+  .scene-frame #station-mast,
+  .scene-frame #station-hook { animation: none; transform: none; }
   .scene-switch, .scene-hold { display: none; }
 }
 
