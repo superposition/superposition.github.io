@@ -221,10 +221,12 @@ export function pieces(cam, v, aspect, a, b, occluders, opts = {}) {
   }
   const length = Math.hypot(pb[0] - pa[0], (pb[1] - pa[1]) / aspect) || 1;
 
-  /* A cut is opened by about a pixel, so the pen lands just clear of the
-     silhouette instead of exactly on it: one pixel of air is what keeps a
-     stroke from reading as a tangent. */
-  const air = 1 / (length * FRAME_HALF);
+  /* A cut is opened by a little air -- a pixel and a half in the still's own
+     units -- so the pen lands clear of the silhouette instead of exactly on
+     it: a stroke that ends *on* an edge reads as a tangent, and a sampler
+     looking for ink where the silhouette should have hidden it would find the
+     end of the stroke and be right to. */
+  const air = 1.5 / (length * FRAME_HALF);
   const cuts = opened.map(([lo, hi]) => [lo - air, hi + air]).sort((x, y) => x[0] - y[0]);
 
   /* The drawn intervals: everything the cuts leave, less the haze's trim at

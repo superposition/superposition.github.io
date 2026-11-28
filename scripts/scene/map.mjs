@@ -475,11 +475,11 @@ function drawing(nodes, edges, v) {
   };
   const lines = [];
   const rungs = [];
-  const push = (into, cls, a, b, role, face, alpha, z) => {
+  const push = (into, cls, a, b, role, face, alpha, z, ends) => {
     const pa = at(a);
     const pb = at(b);
     if (!pa || !pb) return;
-    into.push({ cls, a: pa, b: pb, role, face, alpha, z0: z ? z[0] : 0, z1: z ? z[1] : 0 });
+    into.push({ cls, a: pa, b: pb, role, face, alpha, z0: z ? z[0] : 0, z1: z ? z[1] : 0, ends });
   };
 
   for (const e of edges) {
@@ -500,7 +500,7 @@ function drawing(nodes, edges, v) {
         attached: [a.id, b.id],
       });
       for (const span of spans) {
-        push(lines, cls, span.a, span.b, span.role, '', valueAt(CAMERA, span.z), [span.z0, span.z1]);
+        push(lines, cls, span.a, span.b, span.role, '', valueAt(CAMERA, span.z), [span.z0, span.z1], [a.id, b.id]);
       }
       if (e.kind === 'spine') {
         for (const [p0, p1] of spans.map((s) => [s.a, s.b])) {
@@ -525,7 +525,7 @@ function drawing(nodes, edges, v) {
     const to = unproject(v, ASPECT, [1.04, q[1] - 0.004], q[2] * (1 + CROP.reach / 100));
     for (const [p0, p1] of dash(from, to, DASH)) {
       for (const span of pieces(CAMERA, v, ASPECT, p0, p1, occ, { head: 0, tail: 0 })) {
-        push(lines, 'scene-open', span.a, span.b, span.role, '', valueAt(CAMERA, span.z), [span.z0, span.z1]);
+        push(lines, 'scene-open', span.a, span.b, span.role, '', valueAt(CAMERA, span.z), [span.z0, span.z1], ['journal', 'crop']);
       }
     }
   }
@@ -860,8 +860,12 @@ function inspect(nodes, edges, labels, draw) {
       const p = [s.a[0] + (s.b[0] - s.a[0]) * t, s.a[1] + (s.b[1] - s.a[1]) * t];
       const z = s.z0 > 0 ? 1 / (1 / s.z0 + t * (1 / s.z1 - 1 / s.z0)) : 0;
       for (const r of repos) {
-        /* Only a form in front of the ink hides it. */
-        if (r.z > z - 1e-3) continue;
+        /* Only a form in front of the ink hides it -- except at the two ends an
+           edge actually has, where the form it lands on hides it whatever the
+           depth tie: an edge that reaches the centre of its own diamond has
+           crossed the silhouette it should have stopped at. */
+        const atEnd = s.ends && s.ends.includes(r.id);
+        if (!atEnd && r.z > z - 1e-3) continue;
         if (insideOn(p, r.poly)) {
           crossings++;
           problems.push(`${s.cls} ${s.role} has ink inside ${r.id} (form z ${r.z.toFixed(2)}, ink z ${z.toFixed(2)}, at ${p[0].toFixed(0)},${p[1].toFixed(0)}, piece ${s.a.map((v) => v.toFixed(0)).join('/')}..${s.b.map((v) => v.toFixed(0)).join('/')})`);
@@ -874,7 +878,12 @@ function inspect(nodes, edges, labels, draw) {
 
   /* The grid: a label's baseline is a row, and its box stays in the frame. */
   for (const l of labels.filter((x) => x.show)) {
-    if (Math.abs(l.y - labelRow(l.y)) > 0.01) problems.push(`label ${l.text} is off the row at y ${l.y.toFixed(2)}`);
+    /* The row arithmetic written out, not read back through `labelRow()`: a
+       gate that asks the same function that placed the label is no gate. */
+    const k = (l.y - LABEL_GRID.top) / LABEL_GRID.row;
+    if (Math.abs(k - Math.round(k)) * LABEL_GRID.row > 0.01) {
+      problems.push(`label ${l.text} is off the row at y ${l.y.toFixed(2)}: ${(Math.abs(k - Math.round(k)) * LABEL_GRID.row).toFixed(2)} from the nearest row`);
+    }
     if (l.box.x0 < 0 || l.box.x1 > VB_W) problems.push(`label ${l.text} leaves the frame: ${l.box.x0.toFixed(0)}..${l.box.x1.toFixed(0)}`);
     if (l.box.y1 < 0 || l.y > VB_H) problems.push(`label ${l.text} is off the top of the frame`);
   }

@@ -252,11 +252,15 @@ silhouette instead of exactly on it. Both renderers call the same function and
 push the same world-space pieces; nothing is faked with a darker stroke, and a
 darker stroke would not survive the measurement.
 
-It does survive it: `measure.mjs` samples every edge along its own line and
-asks whether *that edge's* ink is inside a nearer diamond — before, 17 samples
-over 4 crossings on 3 edges; after, 0, with 4 crossings still cut. It also
-checks the other half, that an edge has ink where it is *not* hidden: 95.8% of
-the pen's own open length on the solid edges.
+It does survive it. `measure.mjs` samples every edge along its own line and
+asks whether *that edge's* ink is inside a nearer diamond — or inside the
+diamond at one of its own ends, which is the same failure: an edge that reaches
+a centre has crossed the silhouette it should have stopped at. The plate has 27
+places where a diamond stands in front of an edge; before this pass ink crossed
+all 27 (306 samples, 24 of the 29 edges); after, none. The measure also checks
+the other half — that an edge has ink where it is *not* hidden — so a plate that
+hid everything would fail too: 94.6% of the pen's own open length on the solid
+edges carries ink.
 
 ## The names: one grid
 
@@ -293,17 +297,22 @@ overflow.
 Small marks at a pitch, from `RUNG` and `DASH` in `forms.js`, which both
 renderers read:
 
-| Where | Pitch | Count |
+| Where | Pitch, as detected | Marks |
 |---|---|---|
 | topic rims, sixteen ticks inside each ring | 16.5 px | 80 |
-| spine rungs, square to the run | 14.5 px | 20 |
-| unit base rungs | 14 px | 12 |
-| the journal arm's dashes | 21.5 px | 41 |
+| unit base rungs | 14 px | 12 (all twelve at the pitch) |
 | the station's rim ticks | 64.5 px | 8 |
+| the journal arm's dashes | 21.5 px | 41 |
+| spine rungs, square to the run | 27.6 px along a spine | 20 |
 
 The pitches above are *detected* by `measure.mjs` as the modal gap between a
-mark and the next mark of its class, not declared. Before this pass there was no
-repeated small detail on the plate at any pitch.
+mark and the next mark of its class, not declared. The spine rungs are the one
+class whose reading needs its caveat: the detector sees a 14 px gap for them,
+because all five spines leave the station and a rung on one spine is often
+nearer a rung on its neighbour than the next rung on its own; the pitch along a
+spine is 27.6 px, and the parallel-mark reading agrees at 14 px for the unit
+bases and 15.5 px for the rungs. Before this pass there was no repeated small
+detail on the plate at any pitch.
 
 The plate sits at `z-index: -3`, under the hero's existing scrim
 (`--hero-scrim`: 52% of the void at the top of the frame, 93% at 80%, opaque at

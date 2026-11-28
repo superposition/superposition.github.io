@@ -441,9 +441,13 @@ for (const e of data.edges) {
     let occludedAny = false;
     let occludedBy = '';
     for (const n of data.nodes) {
-      if (!n.px || n.z >= z - 1e-6) continue;
-      if (n.id === e.a || n.id === e.b) continue;
-      if (!inside(p, n.poly)) continue;
+      if (!n.px || !inside(p, n.poly)) continue;
+      /* A form at one of this edge's own ends hides it whatever the depth tie:
+         an edge that reaches the centre of its own diamond has crossed the
+         silhouette it should have stopped at. */
+      const atEnd = n.id === e.a || n.id === e.b;
+      if (!atEnd && n.z >= z - 1e-6) continue;
+      if (atEnd && n.kind !== 'repo' && n.kind !== 'unit' && n.kind !== 'datum' && n.kind !== 'journal') continue;
       occludedAny = true;
       if (n.kind === 'repo') { occludedNear = true; occludedBy = n.id; }
     }
