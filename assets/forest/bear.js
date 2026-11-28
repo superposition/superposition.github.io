@@ -11,26 +11,38 @@
    the numbers below are printed by the page's own renderer at load:
 
      part      tris  what it is
-     body        82  icosahedron 80 + one quad of lighter chest fur 2
-     head       128  icosahedron 80 + muzzle 12 + nose 12 + two eyes 24
-     ear L       12  five-sided cone 10 + a quad of amber inside it 2
-     ear R       12  the same, mirrored
+     body        93  80-face sphere, a belly patch, five belly tufts, six ruff tufts
+     head       120  80-face skull, a 20-face muzzle, a 20-face nose
+     eyes        14  two 6-gon pupils and two highlights, on their own pivot to blink
+     ear L       16  6-sided cone, an amber inner, a rim
+     ear R       16  the same, tilted differently (see REST)
      jaw         12  a box under the muzzle: the mouth that flaps
-     arm L       12  a box tapered so it narrows at the paw
-     arm R       12
-     leg L       12  a box tapered the other way, so the paw flares
-     leg R       12
+     arm L       22  5-sided tapered tube and a paw pad
+     arm R       22
+     leg L       22
+     leg R       22
      tail         8  a four-sided cone
-     total      302  of a 320 ceiling
+     cheek        1  one tuft, on one cheek, because a face is not a mirror
+     total      368  of a 450 ceiling
 
-   The two subdivision-1 icosahedra are 160 of the 302. That is where the money
-   goes, and it is deliberate: a round head and a round body are most of what
-   makes three hundred triangles read as *cute* rather than as *chunky*, and
-   every other part is a box because at 320 × 240 a box already reads as a form.
-   The ears are the one place a shape had to be solved rather than boxed: two
-   five-sided cones, tilted out, sitting high enough on the skull that the far
-   one still clears the head's silhouette from a three-quarter view — which is
-   the measurement that told me they were wrong the first time.
+   Two things this table is doing. The 80-face skull and the 80-face torso are
+   160 of the 368, because a round head and a round body are most of what makes
+   three hundred triangles read as *cute* rather than as *chunky*. Everything
+   else is a cheap primitive — but the primitives were chosen by what the
+   silhouette needs, not by what was cheapest: limbs are 5-sided tubes rather
+   than boxes because a box corner in a silhouette is the first thing that reads
+   as cheap, and the muzzle and nose are 20-face spheres because they are the
+   highest-contrast edge in the whole animal.
+
+   The other thing is colour. Three value roles, assigned by how close a form is
+   to the lens: `near` for the head and the two limbs on the camera's side,
+   `mid` for the torso and the far ear, `far` for the far limbs and the tail and
+   the back of every round form (see `paint` in mesh.js — one sphere carries
+   both its mid face and its far edge without a second mesh). Pure light is
+   spent only on the two eye highlights, which is the closest thing to a
+   specular the renderer has. The muzzle, belly and paw pads are `mark`, the one
+   hue step off the cream — the two-tone break that keeps the face and the belly
+   legible when the animal is 32 pixels wide.
 
    Colour is vertex colour on one material, so a colour change is a value in
    this file rather than a second draw call — and every colour here comes from
@@ -38,24 +50,76 @@
    Shades are the token times a factor, never a new hue. */
 
 import {
-  BoxGeometry, Color, ConeGeometry, Group, IcosahedronGeometry, Mesh,
-  MeshLambertMaterial,
+  BoxGeometry, Color, ConeGeometry, CylinderGeometry, Group, IcosahedronGeometry,
+  Mesh, MeshLambertMaterial,
 } from 'three';
 
-import { ZERO, merge, quad, shade, shape } from './mesh.js';
+import { ZERO, merge, oval, paint, quad, shade, shape, tuft } from './mesh.js';
+
+/* Where the camera sits in the bear's own frame. scene.js places the camera
+   from this, and the value bands are painted against it, so the bear's near
+   side and the shot's near side are the same side by construction: one number,
+   one owner, no drift. */
+export const CAMERA = { x: 1.9, y: 2.2, z: 4.6 };
+const VIEW = (() => {
+  const length = Math.hypot(CAMERA.x, CAMERA.y, CAMERA.z);
+  return [CAMERA.x / length, CAMERA.y / length, CAMERA.z / length];
+})();
+
+/* The rig. Every proportion the animal has, in one table, so a ratio in the
+   report is a ratio of two numbers here and not a claim about a picture.
+
+   The measures that matter, against the canon for a cute character (a plush
+   mascot of about three heads tall):
+
+     head diameter : body diameter   1.50   canon 1.25–1.60
+     eye width : head width          0.22   canon 0.20–0.30
+     eye spacing : head width        0.41   canon 0.40–0.55
+     muzzle width : head width       0.40   canon 0.30–0.40
+     muzzle height : face height     0.29   canon 0.20–0.30
+     limb length : body height       0.52 (legs), 0.40 (arms)  canon 0.30–0.55
+     limb thickness : limb length    0.54   canon 0.40–0.60 for a plush limb
+
+   The rig numbers are checked against the merged meshes by
+   `scripts/forest/measure.mjs`, so the table is not a second source of truth:
+   if a shape stops matching its number, the measurement says so. */
+export const RIG = {
+  hipY: 0.46,
+  headY: 0.72,
+  foot: 0.22,
+  body: { r: 0.44, scale: [1, 0.96, 0.92] },
+  skull: { r: 0.66, scale: [1, 0.94, 0.96] },
+  muzzle: { r: 0.3, scale: [0.88, 0.6, 0.92], at: [0, -0.3, 0.5] },
+  nose: { r: 0.09, scale: [1.35, 0.95, 0.85], at: [0, -0.155, 0.735] },
+  eye: { x: 0.27, y: 0.02, z: 0.6, rx: 0.16, ry: 0.175, yaw: 0.3 },
+  ear: { r: 0.34, h: 0.52, at: [0.44, 0.5, -0.02], tilt: 0.44 },
+  arm: { rTop: 0.08, rBottom: 0.095, len: 0.34, at: [0.49, 0.2, 0.05] },
+  leg: { rTop: 0.1, rBottom: 0.125, len: 0.44, at: [0.235, -0.24, 0.02] },
+  tail: { r: 0.11, h: 0.19, at: [0.07, -0.02, -0.42] },
+  jaw: { w: 0.26, h: 0.1, d: 0.18, at: [0, -0.44, 0.56] },
+  ruff: { radius: 0.4, y: 0.66, count: 6, w: 0.17, h: 0.15 },
+  belly: { w: 0.42, h: 0.4, at: [0, -0.02, 0.4], count: 5, tuftW: 0.11, tuftH: 0.1 },
+  cheek: { w: 0.13, h: 0.11, at: [-0.46, -0.16, 0.42] },
+};
 
 /* Rest pose, in radians. A gesture is a delta from here, so the arm is already
    held a little out from the body and a gesture never has to describe the
-   stance — only what it changes. */
+   stance — only what it changes.
+
+   This pose is not symmetric, and that is the point: the head is turned a
+   little toward the lens and tipped, the two ears sit at different angles, the
+   tail hangs off one side. A mirror is the tell that a character was extruded
+   rather than drawn, so the animal is minted off-centre and every gesture is
+   still a delta from this one stance. */
 const REST = {
-  armL: [0, 0, 0.16],
-  armR: [0, 0, -0.16],
+  armL: [0.03, 0, 0.17],
+  armR: [0.01, 0, -0.13],
   legL: ZERO,
   legR: ZERO,
-  head: ZERO,
-  earL: [0, 0, 0.1],
-  earR: [0, 0, -0.1],
-  tail: [-0.5, 0, 0],
+  head: [0.02, 0.05, 0.015],
+  earL: [0, 0, 0.13],
+  earR: [-0.03, 0, -0.06],
+  tail: [-0.5, 0, 0.07],
   jaw: ZERO,
 };
 
@@ -66,7 +130,13 @@ const REST = {
    Every gesture starts at a neutral keyframe at t=0 and returns to one at t=1.
    That is the entry and the exit, and it is why nothing snaps: the first and
    last keyframe of every gesture is the rest pose, so starting one mid-flight
-   still leaves from where the bear already is. */
+   still leaves from where the bear already is.
+
+   The hop is written as squash, stretch, settle rather than as a single bob:
+   the deepest squash lands before the body leaves the ground, the stretch
+   arrives at the apex, and the landing is a deeper squash than the takeoff,
+   because a landing is the fall he did not choose. The ears are not in here:
+   they lag by their own spring in scene.js, on every hop, gesture or not. */
 export const GESTURES = [
   {
     name: 'wave',
@@ -114,13 +184,20 @@ export const GESTURES = [
     ],
   },
   {
+    /* The hop in place, authored as a squash-stretch curve: 0.12 to crouch
+       (0.22 of the body's height, which is a real crouch and not a bob), 0.36
+       to leave, 0.5 the apex, 0.64 the fall, 0.74 the landing — the deepest
+       compression of the three — and 0.88 the recovery overshoot. */
     name: 'hop in place',
     ms: 1400,
     keys: [
       { t: 0 },
-      { t: 0.14, p: { bob: -0.1, squash: 0.16, legL: [-0.5, 0, 0], legR: [-0.5, 0, 0] } },
-      { t: 0.4, p: { bob: 0.42, squash: -0.08, legL: [0.5, 0, 0], legR: [0.5, 0, 0], armR: [-0.6, 0, -0.9], armL: [-0.6, 0, 0.9] } },
-      { t: 0.66, p: { bob: -0.06, squash: 0.14, legL: [-0.3, 0, 0], legR: [-0.3, 0, 0] } },
+      { t: 0.12, p: { bob: -0.11, squash: 0.2, legL: [-0.6, 0, 0], legR: [-0.6, 0, 0], armL: [0.2, 0, 0.28], armR: [0.2, 0, -0.24] } },
+      { t: 0.36, p: { bob: 0.3, squash: -0.12, legL: [0.4, 0, 0], legR: [0.4, 0, 0], armR: [-0.7, 0, -0.95], armL: [-0.7, 0, 0.85] } },
+      { t: 0.5, p: { bob: 0.5, squash: -0.14, legL: [0.66, 0, 0], legR: [0.66, 0, 0], armR: [-0.8, 0, -1.0], armL: [-0.8, 0, 0.9], tail: [-0.2, 0, 0.07] } },
+      { t: 0.62, p: { bob: 0.18, squash: 0.02, legL: [0.1, 0, 0], legR: [0.1, 0, 0], armR: [-0.3, 0, -0.5], armL: [-0.3, 0, 0.45] } },
+      { t: 0.74, p: { bob: -0.09, squash: 0.24, legL: [-0.55, 0, 0], legR: [-0.55, 0, 0], armL: [0.24, 0, 0.3], armR: [0.24, 0, -0.26] } },
+      { t: 0.88, p: { bob: 0.02, squash: -0.03, legL: [0.06, 0, 0], legR: [0.06, 0, 0] } },
       { t: 1 },
     ],
   },
@@ -149,8 +226,8 @@ export const GESTURES = [
     ms: 2000,
     keys: [
       { t: 0 },
-      { t: 0.3, p: { bob: -0.2, squash: 0.1, legL: [-1.15, 0, 0.16], legR: [-1.15, 0, -0.16], head: [-0.1, 0, 0], tail: [0.4, 0, 0] } },
-      { t: 0.7, p: { bob: -0.22, squash: 0.11, legL: [-1.2, 0, 0.18], legR: [-1.2, 0, -0.18], head: [-0.12, 0.06, 0.06], tail: [0.45, 0, 0] } },
+      { t: 0.3, p: { bob: -0.2, squash: 0.1, legL: [-1.15, 0, 0.16], legR: [-1.15, 0, -0.16], head: [-0.1, 0, 0], tail: [0.4, 0, 0.07] } },
+      { t: 0.7, p: { bob: -0.22, squash: 0.11, legL: [-1.2, 0, 0.18], legR: [-1.2, 0, -0.18], head: [-0.12, 0.06, 0.06], tail: [0.45, 0, 0.07] } },
       { t: 1 },
     ],
   },
@@ -210,21 +287,28 @@ export function poseAt(gesture, t) {
 /* The middle of a gesture, as one still. This is what the reduced-motion frame
    shows: a different composed pose for every station, with no motion to earn
    it. */
-export const heldPose = (gesture) => {
-  const mid = poseAt(gesture, 0.45);
-  return mid;
-};
+export const heldPose = (gesture) => poseAt(gesture, 0.45);
 
-
-/* The bear. Returns the rig, the parts a gesture can address, and the triangle
-   count measured off the merged geometries rather than counted by hand. */
+/* The bear. Returns the rig, the parts a gesture can address, the triangle
+   count measured off the merged geometries rather than counted by hand, and the
+   manifest: which triangle range belongs to which named form, so a measurement
+   can ask the mesh itself what it is made of without parsing this file. */
 export function createBear(palette) {
   const fur = new Color(palette.cream);
-  const furDeep = shade(fur, 0.72);
-  const dark = new Color(palette.deep).multiplyScalar(0.55);
-  const amber = new Color(palette.amber);
-  const amberDeep = shade(amber, 0.55);
-  const paw = shade(fur, 0.86);
+  const role = {
+    near: fur.clone(),
+    mid: shade(fur, 0.36),
+    far: shade(fur, 0.11),
+    mark: new Color(palette.dust),
+    /* the same marking hue one step up: the muzzle sits on the near value, so
+       dust holds on its own there; the belly sits on the mid torso, and dust
+       against mid is a 24 % step that a 32-pixel reader cannot see. One hue,
+       two values, each chosen against the form it is painted on. */
+    markLight: shade(new Color(palette.dust), 1.5),
+    ink: shade(new Color(palette.deep), 0.32),
+    light: new Color(palette.star),
+    inner: shade(new Color(palette.amber), 0.5),
+  };
 
   const material = new MeshLambertMaterial({ vertexColors: true, flatShading: true });
 
@@ -232,6 +316,7 @@ export function createBear(palette) {
   const hop = new Group();
   const hips = new Group();
   const headPivot = new Group();
+  const eyes = new Group();
   const earL = new Group();
   const earR = new Group();
   const jaw = new Group();
@@ -242,85 +327,206 @@ export function createBear(palette) {
   const tail = new Group();
 
   const budget = [];
-  const piece = (name, shapes, group) => {
+  const manifest = [];
+  const piece = (name, group, shapes) => {
+    // named for the measurement script, which reads the mesh rather than this
+    // file: the name on the group is how a triangle knows which form it is.
+    group.name = name.replace(/ /g, '');
     const mesh = new Mesh(merge(shapes), material);
     group.add(mesh);
-    budget.push({ name, triangles: mesh.geometry.attributes.position.count / 3 });
+    const triangles = mesh.geometry.attributes.position.count / 3;
+    budget.push({ name, triangles });
+    const forms = [];
+    let first = 0;
+    for (const s of shapes) {
+      const count = s.g.attributes.position.count / 3;
+      forms.push({ name: s.name, role: s.role, first, count });
+      first += count;
+    }
+    manifest.push({ part: name, forms });
     return mesh;
   };
 
-  // Body: an 80-face sphere squashed a little, with one quad of lighter fur
-  // where the chest shows under the chin.
-  hips.position.y = 0.44;
-  piece('body', [
-    shape(new IcosahedronGeometry(0.46, 1), furDeep, { at: [0, 0, 0], scale: [1, 0.94, 0.9] }),
-    shape(quad(0.5, 0.44), fur, { at: [0, 0.02, 0.43], rot: [0.12, 0, 0] }),
-  ], hips);
+  /* A form that carries three values at once: near where it turns toward the
+     lens, mid across, far at the back. The thresholds are in the cosine of the
+     angle from the camera, and they are what puts the far edge of the head a
+     step darker than its near edge — depth without a second mesh and without a
+     second light. */
+  const band = (name, geometry, colours, options, where = null) => {
+    const s = shape(geometry, colours[1], options);
+    paint(s.g, colours, {
+      centre: options.at ?? ZERO, axis: VIEW, edges: [0.55, -0.16], where,
+    });
+    return { g: s.g, color: colours[1], name, role: 'band' };
+  };
+  const flat = (name, roleName, geometry, colour, options) => (
+    { ...shape(geometry, colour, options), name, role: roleName }
+  );
+
+  // Body: an 80-face sphere, one belly patch in the mark hue, a fringe of five
+  // tufts along the bottom of the patch and a ruff of six at the neck. The
+  // tufts are the fur break: a fixed pitch, 0.11 apart on the belly and 60° on
+  // the neck, and they are what breaks the body's outline into fur instead of
+  // a shell.
+  hips.position.y = RIG.hipY;
+  const bellyTufts = [];
+  for (let i = 0; i < RIG.belly.count; i += 1) {
+    const t = (i / (RIG.belly.count - 1) - 0.5) * RIG.belly.w;
+    bellyTufts.push(flat(`belly tuft ${i}`, 'mark', tuft(RIG.belly.tuftW, RIG.belly.tuftH), role.mark, {
+      at: [t, RIG.belly.at[1] - RIG.belly.h / 2, RIG.belly.at[2] - 0.04 - Math.abs(t) * 0.3],
+      rot: [0.2, 0, 0],
+    }));
+  }
+  const ruffTufts = [];
+  for (let i = 0; i < RIG.ruff.count; i += 1) {
+    const a = (i / RIG.ruff.count) * Math.PI * 2 + 0.3;
+    ruffTufts.push(flat(`ruff ${i}`, 'mid', tuft(RIG.ruff.w, RIG.ruff.h), role.mid, {
+      at: [Math.sin(a) * RIG.ruff.radius, RIG.ruff.y, Math.cos(a) * RIG.ruff.radius * 0.9],
+      rot: [0.35, a, 0],
+    }));
+  }
+  piece('body', hips, [
+    band('torso', new IcosahedronGeometry(RIG.body.r, 1), [role.mid, role.mid, role.far], {
+      at: [0, 0, 0], scale: RIG.body.scale,
+    }, (x, y, z) => (z > 0.16 && y < 0.14 && Math.abs(x) < 0.3 ? role.markLight : null)),
+    ...bellyTufts,
+    ...ruffTufts,
+  ]);
 
   // Head: the one place the budget is spent. 80 faces make a round head, and a
-  // round head is what a reader reads as cute at this size.
-  headPivot.position.y = 0.6;
-  piece('head', [
-    shape(new IcosahedronGeometry(0.62, 1), fur, { at: [0, 0, 0], scale: [1, 0.95, 0.97] }),
-    shape(new BoxGeometry(0.46, 0.33, 0.3), shade(fur, 0.93), { at: [0, -0.17, 0.53], rot: [0.1, 0, 0] }),
-    shape(new BoxGeometry(0.18, 0.13, 0.14), dark, { at: [0, -0.09, 0.7] }),
-    shape(new BoxGeometry(0.1, 0.16, 0.07), dark, { at: [-0.26, 0.12, 0.56], rot: [0.08, 0.18, 0] }),
-    shape(new BoxGeometry(0.1, 0.16, 0.07), dark, { at: [0.26, 0.12, 0.56], rot: [0.08, -0.18, 0] }),
-  ], headPivot);
+  // round head is what a reader reads as cute at this size. The muzzle and the
+  // nose are spheres for the same reason at their scale: they are the edge the
+  // eye follows first.
+  headPivot.position.y = RIG.headY;
+  piece('head', headPivot, [
+    band('skull', new IcosahedronGeometry(RIG.skull.r, 1), [role.near, role.near, role.mid], {
+      at: [0, 0, 0], scale: RIG.skull.scale,
+    }),
+    flat('muzzle', 'mark', new IcosahedronGeometry(RIG.muzzle.r, 0), role.mark, {
+      at: RIG.muzzle.at, scale: RIG.muzzle.scale,
+    }),
+    flat('nose', 'ink', new IcosahedronGeometry(RIG.nose.r, 0), role.ink, {
+      at: RIG.nose.at, scale: RIG.nose.scale,
+    }),
+    flat('cheek', 'mark', tuft(RIG.cheek.w, RIG.cheek.h), role.mark, {
+      at: RIG.cheek.at, rot: [0.2, -0.5, 0.1],
+    }),
+  ]);
 
-  // Ears sit on their own pivots so they can flick and lag a head turn.
-  earL.position.set(-0.48, 0.44, -0.02);
-  piece('ear L', [
-    shape(new ConeGeometry(0.32, 0.5, 5), fur, { at: [0, 0.12, 0], rot: [0, 0, 0.45] }),
-    shape(quad(0.21, 0.26), amberDeep, { at: [0.04, 0.13, 0.14], rot: [0, 0, 0.45] }),
-  ], earL);
-  earR.position.set(0.48, 0.44, -0.02);
-  piece('ear R', [
-    shape(new ConeGeometry(0.32, 0.5, 5), fur, { at: [0, 0.12, 0], rot: [0, 0, -0.45] }),
-    shape(quad(0.21, 0.26), amberDeep, { at: [-0.04, 0.13, 0.14], rot: [0, 0, -0.45] }),
-  ], earR);
+  /* Eyes on their own pivot, so a blink is a scale and not a second mesh: one
+     group whose y-scale is the lid. Two 6-gon pupils, coplanar and both facing
+     the lens rather than the skull's normal, because a pupil on the surface of
+     a sphere turns away from a three-quarter camera and the far eye stops
+     reading as an eye. */
+  eyes.position.set(0, 0, 0);
+  const eyeParts = [];
+  for (const [side, x, yaw] of [['near', RIG.eye.x, RIG.eye.yaw], ['far', -RIG.eye.x, RIG.eye.yaw]]) {
+    eyeParts.push(flat(`${side} pupil`, 'ink', oval(RIG.eye.rx, RIG.eye.ry, 6), role.ink, {
+      at: [x, RIG.eye.y, RIG.eye.z], rot: [0, yaw, 0],
+    }));
+    eyeParts.push(flat(`${side} spark`, 'light', quad(0.062, 0.072), role.light, {
+      at: [x + 0.05, RIG.eye.y + 0.072, RIG.eye.z + 0.016], rot: [0, yaw, 0.785],
+    }));
+  }
+  piece('eyes', eyes, eyeParts);
+
+  // Ears sit on their own pivots so they can flick and lag a head turn. The
+  // rim is a second quad behind the amber inner: a shape with an edge, not a
+  // triangle with a colour.
+  for (const [name, group, sign, tilt] of [
+    ['ear L', earL, -1, RIG.ear.tilt], ['ear R', earR, 1, RIG.ear.tilt - 0.1],
+  ]) {
+    group.position.set(sign * RIG.ear.at[0], RIG.ear.at[1], RIG.ear.at[2]);
+    piece(name, group, [
+      flat('cone', 'mid', new ConeGeometry(RIG.ear.r, RIG.ear.h, 6), name === 'ear R' ? role.near : role.mid, {
+        at: [0, 0.10, 0], rot: [0, 0, -sign * tilt], scale: [1, 1, 0.72],
+      }),
+      flat('rim', 'light', quad(0.3, 0.34), name === 'ear R' ? role.near : role.mid, {
+        at: [sign * 0.03, 0.11, 0.15], rot: [0, 0, -sign * tilt],
+      }),
+      flat('inner', 'accent', quad(0.2, 0.24), role.inner, {
+        at: [sign * 0.035, 0.105, 0.16], rot: [0, 0, -sign * tilt],
+      }),
+    ]);
+  }
 
   // The mouth: a small wedge that swings open under the muzzle. This is the
   // flap the speech punctuation drives.
-  jaw.position.set(0, -0.3, 0.53);
-  piece('jaw', [shape(new BoxGeometry(0.3, 0.12, 0.2), dark, { at: [0, -0.02, 0.06] })], jaw);
+  jaw.position.set(...RIG.jaw.at);
+  piece('jaw', jaw, [
+    flat('mouth', 'ink', new BoxGeometry(RIG.jaw.w, RIG.jaw.h, RIG.jaw.d), role.ink, { at: [0, -0.02, 0.09] }),
+  ]);
 
-  armL.position.set(-0.5, 0.2, 0.02);
-  piece('arm L', [shape(new BoxGeometry(0.17, 0.36, 0.18), furDeep, { at: [0, -0.14, 0], taper: 1.35 })], armL);
-  armR.position.set(0.5, 0.2, 0.02);
-  piece('arm R', [shape(new BoxGeometry(0.17, 0.36, 0.18), furDeep, { at: [0, -0.14, 0], taper: 1.35 })], armR);
+  // Limbs: 5-sided tubes, tapered. The camera is on the bear's +x side, so the
+  // arm and leg at +x are the near pair and they carry the near value; the pair
+  // on -x is the far value. This is the whole of tell 2 in two numbers.
+  for (const [name, group, sign, limb, colour, roleName] of [
+    ['arm L', armL, -1, RIG.arm, role.far, 'far'],
+    ['arm R', armR, 1, RIG.arm, role.near, 'near'],
+    ['leg L', legL, -1, RIG.leg, role.far, 'far'],
+    ['leg R', legR, 1, RIG.leg, role.near, 'near'],
+  ]) {
+    const pivotY = name.startsWith('leg') ? RIG.leg.at[1] : RIG.arm.at[1];
+    const x = sign * (name.startsWith('leg') ? RIG.leg.at[0] : RIG.arm.at[0]);
+    group.position.set(x, pivotY, name.startsWith('leg') ? RIG.leg.at[2] : RIG.arm.at[2]);
+    piece(name, group, [
+      flat('tube', roleName, new CylinderGeometry(limb.rTop, limb.rBottom, limb.len, 5), colour, {
+        at: [0, -limb.len / 2, 0],
+      }),
+      // The pad is the scale cue: a paw with a sole reads as a paw, a tube reads
+      // as a stick. It sits on the front of the paw, where the camera looks.
+      flat('pad', 'mark', quad(limb.rBottom * 1.3, limb.rBottom * 1.5), role.mark, {
+        at: [0, -limb.len + limb.rBottom * 0.5, limb.rBottom * 0.92],
+        rot: [0.3, 0, 0],
+      }),
+    ]);
+  }
 
-  legL.position.set(-0.24, -0.3, 0.02);
-  piece('leg L', [shape(new BoxGeometry(0.21, 0.28, 0.24), furDeep, { at: [0, -0.16, 0.01], taper: 0.78 })], legL);
-  legR.position.set(0.24, -0.3, 0.02);
-  piece('leg R', [shape(new BoxGeometry(0.21, 0.28, 0.24), furDeep, { at: [0, -0.16, 0.01], taper: 0.78 })], legR);
+  tail.position.set(...RIG.tail.at);
+  piece('tail', tail, [
+    flat('tail', 'far', new ConeGeometry(RIG.tail.r, RIG.tail.h, 4), role.far, {
+      at: [0, 0, -0.08], rot: [-1.2, 0.4, 0],
+    }),
+  ]);
 
-  tail.position.set(0, -0.06, -0.44);
-  piece('tail', [shape(new ConeGeometry(0.12, 0.2, 4), paw, { at: [0, 0, -0.08], rot: [-1.2, 0.4, 0] })], tail);
-
-  headPivot.add(earL, earR, jaw);
+  headPivot.add(earL, earR, jaw, eyes);
   hips.add(headPivot, armL, armR, legL, legR, tail);
   hop.add(hips);
   root.add(hop);
 
-  const parts = { hips, head: headPivot, earL, earR, jaw, armL, armR, legL, legR, tail };
+  const parts = {
+    hips, head: headPivot, earL, earR, jaw, armL, armR, legL, legR, tail, eyes,
+  };
   let triangles = 0;
   root.traverse((object) => {
     if (object.isMesh) triangles += object.geometry.attributes.position.count / 3;
   });
 
+  /* `earLag` is a pair of radians added to the ears after the gesture — the
+     spring in scene.js drives it, so the ears move after the head instead of
+     with it. `blink` is 0 (open) to 1 (shut) and is a scale of the eye pivot,
+     because an eye that closes by hiding is a blink and an eye that closes by
+     a second mesh is two draw calls. */
   const apply = (pose) => {
     for (const [name, rest] of Object.entries(REST)) {
       const delta = pose[name] ?? ZERO;
       const group = parts[name];
       group.rotation.set(rest[0] + delta[0], rest[1] + delta[1], rest[2] + delta[2]);
     }
+    if (pose.earLag) {
+      parts.earL.rotation.x += pose.earLag;
+      parts.earR.rotation.x += pose.earLag;
+    }
+    if (pose.tailLag) parts.tail.rotation.x += pose.tailLag;
+    parts.eyes.scale.y = 1 - 0.94 * (pose.blink ?? 0);
     const squash = pose.squash ?? 0;
     hips.scale.set(1 + squash * 0.5, 1 - squash, 1 + squash * 0.5);
-    hips.position.y = 0.44 + (pose.bob ?? 0);
+    hips.position.y = RIG.hipY + (pose.bob ?? 0);
   };
 
   apply({});
 
-  return { root, hop, hips, parts, triangles, budget, apply, material };
+  return {
+    root, hop, hips, parts, triangles, budget, manifest, apply, material,
+  };
 }
