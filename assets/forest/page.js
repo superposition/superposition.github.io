@@ -18,6 +18,8 @@
    the bear is posed in the middle of the station's gesture, and every sentence
    arrives at once. */
 
+import * as gifts from './gifts.js';
+
 const TYPE_MS = 50;
 
 const root = document.querySelector('[data-forest-stage]');
@@ -33,6 +35,12 @@ const next = document.querySelector('[data-forest-next]');
 const previous = document.querySelector('[data-forest-prev]');
 const list = document.querySelector('[data-forest-lines]');
 
+const openButton = document.querySelector('[data-forest-open]');
+const giftState = document.querySelector('[data-forest-gift-state]');
+const specimen = document.querySelector('[data-forest-specimen]');
+const specimenImage = document.querySelector('[data-forest-specimen-img]');
+const specimenNote = document.querySelector('[data-forest-specimen-note]');
+
 const lines = [...(list?.querySelectorAll('li') ?? [])].map((item) => {
   const anchor = item.querySelector('a');
   const sentence = item.querySelector('[data-sentence]');
@@ -41,8 +49,25 @@ const lines = [...(list?.querySelectorAll('li') ?? [])].map((item) => {
     name: (anchor?.textContent ?? '').trim(),
     href: anchor?.getAttribute('href') ?? '',
     sentence: /[.!?]$/.test(text) ? text : `${text}.`,
+    slug: item.getAttribute('data-slug') ?? '',
+    specimen: item.getAttribute('data-specimen') ?? '',
+    species: item.getAttribute('data-species') ?? '',
+    node: item,
   };
 });
+
+/* Which parcels this browser has already opened, by slug: a station index is
+   the collection's order and the order can change, but a slug is the
+   repository. Nothing here is required — a browser that refuses localStorage
+   forgets between visits and loses nothing else. */
+const storage = (() => {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+})();
+const opened = gifts.load(storage);
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 const pad = (n) => String(n).padStart(2, '0');
@@ -99,7 +124,70 @@ function show(index, { instant = false } = {}) {
   }
   if (previous) previous.disabled = index === 0;
   if (next) next.disabled = index === lines.length - 1;
+  paintGift(index);
   writeSentence(entry.sentence, still);
+}
+
+/* The gift's own state, painted from the model rather than from the last click:
+   which station the reader is at, which slug that station holds, and whether
+   this browser has opened it. Everything that can change the answer calls this
+   one function, so the button, the chip, the specimen and the list marker can
+   never disagree. */
+function paintGift(index) {
+  const entry = lines[index];
+  if (!entry) return;
+  const isOpen = opened.has(entry.slug);
+
+  if (openButton) {
+    openButton.textContent = isOpen ? 'Parcel opened' : 'Open the parcel';
+    openButton.setAttribute(
+      'aria-label',
+      isOpen
+        ? `The parcel holding ${entry.name} is open`
+        : `Open the parcel holding ${entry.name}`,
+    );
+    openButton.disabled = isOpen;
+  }
+  if (giftState) {
+    giftState.textContent = isOpen ? 'The parcel is open' : 'The parcel is closed';
+    giftState.dataset.open = isOpen ? 'true' : 'false';
+  }
+  if (specimen) specimen.hidden = !isOpen;
+  if (isOpen && specimenImage && entry.specimen) {
+    if (specimenImage.getAttribute('src') !== entry.specimen) {
+      specimenImage.src = entry.specimen;
+    }
+    specimenImage.alt = `A ${entry.species} specimen: the plant this repository grows in the garden`;
+  }
+  if (specimenNote) {
+    specimenNote.textContent = isOpen && entry.species
+      ? `${entry.species} · the species its topic grows on the garden page`
+      : '';
+  }
+  if (entry.node) entry.node.dataset.opened = isOpen ? 'true' : 'false';
+}
+
+/* Opening a parcel. The state machine lives in the model (gifts.js and
+   parcels.js): this function records the slug, persists it, asks the scene to
+   animate the parcel — or to simply be open under reduced motion, because a
+   state is not a motion — and repaints. The scene's own phase is what the
+   measurements read. */
+function openGift(index) {
+  const entry = lines[index];
+  if (!forest || !entry || opened.has(entry.slug)) return;
+  opened.add(entry.slug);
+  gifts.save(storage, opened);
+  if (reduced.matches) {
+    // No loop is running, so the parcel is put open and the frame redrawn:
+    // under reduced motion an open parcel is a state, not an animation.
+    forest.openGiftNow(index);
+    forest.still(index);
+    forest.render();
+  } else {
+    forest.openGift(index);
+  }
+  paintGift(index);
+  if (live) live.textContent = `${entry.name}: the parcel is open. ${entry.sentence}`;
 }
 
 function loop(now) {
@@ -127,7 +215,13 @@ function pause() {
 async function load() {
   const { readPalette } = await import('./tokens.js');
   const { createScene } = await import('./scene.js');
-  forest = createScene(canvas, readPalette());
+  forest = createScene(canvas, readPalette(), lines.length);
+  // A parcel that was opened on an earlier visit is open before the first
+  // frame: the reader finds the wood as they left it, not a fresh one that
+  // undoes what they did.
+  lines.forEach((entry, index) => {
+    if (opened.has(entry.slug)) forest.restoreGift(index);
+  });
   record = { last: 0, samples: [], raf: 0 };
 
   poster?.remove();
@@ -165,6 +259,17 @@ async function load() {
     reset: () => { record.samples.length = 0; },
     sentences: lines,
     running: () => Boolean(record.raf),
+    /* The gift, through the same functions the controls call: the state
+       machine, the set of slugs this browser remembers, and the placement, so
+       a check can read what the page did rather than what it said. */
+    open: (index) => openGift(index),
+    gift: (index) => forest.parcelState(index),
+    openGifts: () => [...opened].sort(),
+    places: () => forest.places,
+    parcelOf: (index) => forest.parcels[index],
+    screen: () => forest.parcelScreen(),
+    still: (index) => { forest.still(index); forest.render(); },
+    pick: (x, y) => forest.pick(x, y),
     /* Everything below is the page's own instrument, kept because every number
        in the pull request was read through it and a reader should be able to
        re-read them in a console: the framebuffer's exact pixels (`grab` returns
@@ -201,7 +306,7 @@ wake?.addEventListener('click', async () => {
     wake.remove();
     const note = document.createElement('p');
     note.className = 'forest-fallback';
-    note.textContent = 'The bear needs WebGL, and this browser gave it none. The twenty repositories are listed below, each with its sentence and its link.';
+    note.textContent = 'The bear needs WebGL, and this browser gave it none. The nineteen repositories are listed below, each with its sentence and its link.';
     poster?.appendChild(note);
     console.error(error);
   }
@@ -215,3 +320,44 @@ if (wake) wake.hidden = false;
 
 if (next) next.addEventListener('click', () => show(current + 1));
 if (previous) previous.addEventListener('click', () => show(current - 1));
+
+/* The gift is the affordance and the button is the way in without a pointer.
+   Both call `openGift`, so the state machine has one entrance. */
+if (openButton) openButton.addEventListener('click', () => openGift(current));
+
+/* The parcel itself answers a click: the page hands in the ground-normalised
+   point, the scene casts the ray through the camera the picture was drawn
+   with, and only a closed parcel hit returns an index. A reader who clicks a
+   parcel further up the path gets that station as well as the open, because
+   the sentence is part of what the parcel is holding. */
+const aim = (event) => {
+  const rect = canvas?.getBoundingClientRect();
+  if (!rect?.width || !rect?.height) return null;
+  return {
+    x: ((event.clientX - rect.left) / rect.width) * 2 - 1,
+    y: -((event.clientY - rect.top) / rect.height) * 2 + 1,
+  };
+};
+
+if (canvas) {
+  canvas.addEventListener('click', (event) => {
+    if (!forest) return;
+    const point = aim(event);
+    if (!point) return;
+    const hit = forest.pick(point.x, point.y);
+    if (hit === null) return;
+    if (hit !== current) show(hit);
+    openGift(hit);
+  });
+
+  /* A parcel that can be opened says so before it is clicked. The ray is cast
+     per pointer move, which is a handful of box tests against at most a few
+     parcels and no draw. */
+  canvas.addEventListener('pointermove', (event) => {
+    if (!forest || event.pointerType === 'touch') return;
+    const point = aim(event);
+    if (!point) return;
+    const hit = forest.pick(point.x, point.y);
+    canvas.style.cursor = hit === null ? '' : 'pointer';
+  });
+}

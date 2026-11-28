@@ -49,6 +49,8 @@ sitemap: false
       <li class="swatch"><div class="chip" style="background: var(--flora-bloom)"></div><div class="label"><b>--flora-bloom</b>#ff8fa3 · 9.71:1 · every petal</div></li>
       <li class="swatch"><div class="chip" style="background: var(--flora-spore)"></div><div class="label"><b>--flora-spore</b>#9fe870 · 14.25:1 · spores and the capsule</div></li>
       <li class="swatch"><div class="chip" style="background: var(--flora-leaf)"></div><div class="label"><b>--flora-leaf</b>#2f6b52 · 3.35:1 · a leaf fill, never an edge</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--gift-paper)"></div><div class="label"><b>--gift-paper</b>#e0a086 · 9.54:1 · the wrapping, and the open chip's ground</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--gift-ribbon)"></div><div class="label"><b>--gift-ribbon</b>#7a3348 · 3.98:1 against the paper · the tie, and the closed chip's ground</div></li>
       <li class="swatch"><div class="chip" style="background: var(--chip-bg)"></div><div class="label"><b>--chip-bg</b>rgba(58,52,44,.92) · the chip film</div></li>
       <li class="swatch"><div class="chip" style="background: var(--chip-text)"></div><div class="label"><b>--chip-text</b>#efe6d3 · 10.55:1 on the film</div></li>
       <li class="swatch"><div class="chip" style="background: var(--film-bg)"></div><div class="label"><b>--film-bg</b>rgba(0,0,0,.88) · the release plate</div></li>

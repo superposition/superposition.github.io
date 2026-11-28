@@ -2,25 +2,25 @@
 layout: default
 title: The forest
 permalink: /forest/
-description: A bear of three hundred and sixty-eight triangles walks a low-poly forest and says what each of twenty repositories is, one sentence per stop, with a new gesture at every one.
+description: A bear of three hundred and sixty-eight triangles walks a low-poly forest where every repository is a wrapped parcel under a fir — nineteen parcels, nineteen sentences, a new gesture at every stop.
 scene: forest
 ---
 <script>document.documentElement.classList.add('js');</script>
 <article class="forest wide">
   <header class="page-heading">
     <h1>The forest</h1>
-    <p class="lede">A bear of three hundred and sixty-eight triangles walks a low-poly forest and says what each repository is: twenty sentences, a new gesture at every stop. Every triangle is arithmetic in <a href="https://github.com/superposition/superposition.github.io/tree/main/assets/forest">six files of JavaScript</a> &mdash; no model file, no image, no library but the renderer.</p>
+    <p class="lede">A bear of three hundred and sixty-eight triangles walks a low-poly forest, and every repository is a parcel in it: a box with a ribbon and a tag, standing under its own fir, holding a name, a sentence, a link and the plant it grows on the garden page. There are nineteen and there is no map of them &mdash; the bear hops a station at a time, and the parcel at each one is in the undergrowth rather than on a shelf. Every triangle is arithmetic in <a href="https://github.com/superposition/superposition.github.io/tree/main/assets/forest">seven files of JavaScript</a>: no model file, no image, no library but the renderer.</p>
   </header>
 
   <div class="forest-body">
   <div class="forest-screen">
   <figure class="forest-stage" data-forest-stage>
-    <canvas class="forest-canvas" data-forest-canvas width="320" height="240" role="img" aria-label="A cream bear of three hundred and sixty-eight triangles stands on a path in a low-poly forest at night, seen from the front: a pale face with a tan muzzle, two dark eyes, one ear turned further out than the other."></canvas>
+    <canvas class="forest-canvas" data-forest-canvas width="320" height="240" role="img" aria-label="A cream bear of three hundred and sixty-eight triangles stands on a path in a low-poly green forest at night, seen from the front: a pale face with a tan muzzle, two dark eyes, one ear turned further out than the other. A small parcel with a ribbon and a tag stands under a fir beside the path."></canvas>
     <div class="forest-poster" data-forest-poster>
       <p class="forest-poster-title">The forest</p>
-      <p class="forest-poster-line">Three hundred and sixty-eight triangles of bear, a forest of one mesh, a camera that trails him up the path. It is two hundred kilobytes of renderer, and it loads when you say so.</p>
+      <p class="forest-poster-line">Three hundred and sixty-eight triangles of bear, nineteen wrapped parcels, a forest of one mesh, a camera that trails him up the path. It is two hundred kilobytes of renderer, and it loads when you say so.</p>
       <button class="btn btn-primary" type="button" data-forest-wake hidden>Wake the bear</button>
-      <p class="forest-fallback" data-forest-fallback hidden>The bear needs WebGL, and this browser did not give it any. The twenty repositories are listed below, each with its sentence and its link.</p>
+      <p class="forest-fallback" data-forest-fallback hidden>The bear needs WebGL, and this browser did not give it any. The nineteen repositories are listed below, each with its sentence and its link.</p>
     </div>
   </figure>
   <p class="forest-spec" data-forest-spec></p>
@@ -28,8 +28,16 @@ scene: forest
 
   <div class="forest-panel" data-forest-panel hidden>
     <p class="forest-count" data-forest-count></p>
+    <p class="forest-gift">
+      <span class="forest-gift-state" data-forest-gift-state data-open="false">The parcel is closed</span>
+      <button class="btn btn-primary" type="button" data-forest-open>Open the parcel</button>
+    </p>
     <p class="forest-sentence" data-forest-sentence aria-hidden="true"></p>
     <p class="visually-hidden" data-forest-live aria-live="polite"></p>
+    <figure class="forest-specimen" data-forest-specimen hidden>
+      <img class="forest-specimen-img" data-forest-specimen-img alt="" width="600" height="900" decoding="async">
+      <figcaption class="forest-specimen-note" data-forest-specimen-note></figcaption>
+    </figure>
     <p class="forest-where"><a class="text-link" data-forest-link href="https://github.com/superposition">Repository</a></p>
     <p class="forest-controls">
       <button class="btn" type="button" data-forest-prev>Previous</button>
@@ -39,18 +47,20 @@ scene: forest
   </div>
 
   {%- comment -%}
-    One <li> per repository page, in the collection's own order, so the twenty
+    One <li> per repository page, in the collection's own order, so the
     sentences exist in the HTML, with their links, before any script runs. The
     sentence is the page's tagline — the one line the repository's own page
     already leads with — and falls back to the GitHub description in
     _data/repos.yml only if a page has no tagline, so nothing here is typed by
-    hand and nothing can drift from the pages it describes.
+    hand and nothing can drift from the pages it describes. The specimen is the
+    repository's own plant in _data/flora.yml, the same file the garden page
+    reads, so the two pages cannot grow two different plants for one project.
   {%- endcomment -%}
   {%- assign catalogue = site.data.repos.repos -%}
   {%- assign repositories = site.repos | sort: "order" -%}
   <section aria-labelledby="forest-lines-title">
-    <h2 class="section-title" id="forest-lines-title">The twenty sentences</h2>
-    <p class="forest-note">The same sentences the bear says, in order, with the link to each repository. This is what the page is without JavaScript, and what a screen reader reads.</p>
+    <h2 class="section-title" id="forest-lines-title">The nineteen sentences</h2>
+    <p class="forest-note">The same sentences the bear says, in order, with the link to each repository. This is what the page is without JavaScript, and what a screen reader reads; a row that has been opened in this browser is marked.</p>
     <ol class="forest-lines" data-forest-lines>
       {%- for item in repositories -%}
       {%- assign handle = item.repo | split: "/" | last -%}
@@ -60,11 +70,11 @@ scene: forest
         {%- assign entry = catalogue | where: "name", handle | first -%}
         {%- assign sentence = entry.description | strip -%}
       {%- endif -%}
-      <li><a href="{{ item.url | relative_url }}">{{ name }}</a><span class="forest-line-sentence" data-sentence>{{ sentence }}</span></li>
+      {%- assign plant = site.data.flora.projects | where: "slug", item.slug | first -%}
+      <li data-slug="{{ item.slug }}"{% if plant %} data-specimen="{{ plant.file | relative_url }}" data-species="{{ plant.label }}"{% endif %}><a href="{{ item.url | relative_url }}">{{ name }}</a><span class="forest-line-sentence" data-sentence>{{ sentence }}</span></li>
       {%- endfor -%}
     </ol>
   </section>
 
-  <p class="forest-note forest-note-end">The bear is made in code: a body, a head of eighty faces, two ears on their own pivots, a muzzle, a nose, two eyes that blink on their own clock, four limbs with paw pads, a ruff, a belly of tufts and a tail, each one a primitive pushed through <code>assets/forest/mesh.js</code>. The gestures are one array of keyframes in <code>assets/forest/bear.js</code>; the forest is seeded, so it is the same forest on every load. Under <code>prefers-reduced-motion: reduce</code> he stands still, holds a pose, and the sentences arrive at once.</p>
+  <p class="forest-note forest-note-end">The bear is made in code: a body, a head of eighty faces, two ears on their own pivots, a muzzle, a nose, two eyes that blink on their own clock, four limbs with paw pads, a ruff, a belly of tufts and a tail, each one a primitive pushed through <code>assets/forest/mesh.js</code>. A parcel is eighty-two triangles &mdash; a box, a lid on a hinge, two ribbons, a bow, a tag on its own pivot &mdash; and it is placed by a seed, on the ground, at the foot of a fir, on a side the seed chooses. Opened, the ribbon slackens and drops, the lid overshoots, the paper folds flat, and the repository's plant grows out of the box; the sentence, the link and the specimen arrive in the panel beside the picture. Opening one is a button, or the parcel itself; it stays open in this browser, which is the only thing the page stores. Under <code>prefers-reduced-motion: reduce</code> he stands still, holds a pose, and the sentences arrive at once.</p>
 </article>
-

@@ -147,6 +147,29 @@
   --flora-spore: #9fe870;
   --flora-leaf: #2f6b52;
 
+  /* The forest's two (GALA-99): a parcel is a made object in a wood, so it is
+     the one thing in the scene that is neither grown nor ground. Paper is the
+     wrapping, ribbon is the tie, and they are the only two colours this page
+     adds to the garden's three — the palette is six hues with a job each
+     (leaf: everything that grows; spore: what it releases; bloom: the flower
+     inside a box; paper and ribbon: the gift; and the cream, the dust and the
+     trunk brown the site already had). Neither of these is used as a gradient,
+     a glow or a shadow: they are two flat fills, banded by the scene's one
+     light like every other face in the picture.
+
+     Measured on the three grounds, printed by `npm run contrast`:
+       --gift-paper    9.54 / 8.99 / 9.25  the wrapping, as a fill on the ground
+       --gift-paper block  7.83 / 8.21 / 8.47
+       --gift-ribbon   2.39 / 2.26 / 2.32  the tie on the ground: a band, not an
+                                           edge, so it is measured as a divider
+       --gift-ribbon on paper  3.98        the pair that matters: the tie is
+                                           read against the wrapping it ties
+     And the two pairs where type sits on them, which is the panel's chip:
+       --star on --gift-ribbon  7.07 / 7.07 / 7.96   closed
+       --void on --gift-paper   9.54 / 8.99 / 9.25   opened */
+  --gift-paper: #e0a086;
+  --gift-ribbon: #7a3348;
+
   /* A chip: an eyebrow label is a piece of hardware, so it sits on its own
      film. On an absolute-black ground a black film has nothing to sit on, so
      the film is a warm charcoal with a hairline edge. Two trios, because they

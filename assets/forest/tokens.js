@@ -22,5 +22,13 @@ export function readPalette() {
     amber: read('--amber'),
     dust: read('--dust'),
     cyan: read('--cyan'),
+    /* The garden's three, and the forest's own two. The scene draws with these
+       seven and nothing else, which is why the greyscale measurement in
+       scripts/forest/measure.mjs can name every value in the frame. */
+    leaf: read('--flora-leaf'),
+    bloom: read('--flora-bloom'),
+    spore: read('--flora-spore'),
+    paper: read('--gift-paper'),
+    ribbon: read('--gift-ribbon'),
   };
 }

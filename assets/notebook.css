@@ -2231,6 +2231,72 @@ html.motion .plate img { animation: none; }
   font: var(--step-3)/var(--leading-body) var(--font-text);
   color: var(--star);
 }
+
+/* The gift, as the panel states it: a chip that carries the parcel's own two
+   colours, and one button. The chip is the only place on the site where a
+   parcel's paper is type's ground, which is why the two pairs are measured in
+   tokens.css — closed it is the ribbon under cream, open it is the paper under
+   the ground, so the label changes colour when the parcel does. */
+.forest-gift {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.forest-gift-state {
+  display: inline-block;
+  padding: 0 var(--space-1);
+  border: var(--hair) solid var(--gift-ribbon);
+  border-radius: var(--radius-chip);
+  background: var(--gift-ribbon);
+  color: var(--star);
+  font: 600 var(--step-decal)/var(--leading-body) var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: var(--track-chip);
+}
+.forest-gift-state[data-open="true"] {
+  border-color: var(--gift-paper);
+  background: var(--gift-paper);
+  color: var(--void);
+}
+
+/* What came out of the box: the repository's own plant, at the size the garden
+   page uses for a cell, beside the one line that says what species it is. The
+   image is the same file the garden and the project page draw, so the three
+   pages cannot hold three different plants for one project. */
+.forest-specimen {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: end;
+  gap: var(--space-2);
+  margin: 0;
+}
+.forest-specimen[hidden] { display: none; }
+.forest-specimen-img {
+  display: block;
+  width: auto;
+  height: var(--flora-rail);
+  background-image: var(--flora-glow);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+.forest-specimen-note {
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  color: var(--dust);
+}
+
+/* A row the reader has opened, marked with the parcel's paper: a filled square
+   before the name, and nothing announced, because the list is a list of
+   repositories and the mark is about this browser rather than the project. */
+.forest-lines li[data-opened="true"] a::before {
+  content: "";
+  display: inline-block;
+  width: var(--dot);
+  height: var(--dot);
+  margin-right: var(--space-1);
+  background: var(--gift-paper);
+  vertical-align: middle;
+}
 .forest-where { font: var(--step-2)/var(--leading-body) var(--font-mono); }
 .forest-controls { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 

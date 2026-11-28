@@ -28,14 +28,16 @@
    back without a shader. */
 
 import {
-  Color, DirectionalLight, Fog, HemisphereLight, PerspectiveCamera, Scene,
-  WebGLRenderer,
+  Color, DirectionalLight, Fog, HemisphereLight, MeshLambertMaterial,
+  PerspectiveCamera, Raycaster, Scene, Vector2, WebGLRenderer,
 } from 'three';
 
 import {
   CAMERA, GESTURES, RIG, createBear, gestureFor, heldPose, poseAt,
 } from './bear.js';
 import { createForest, facing, station } from './forest.js';
+import { PAPER, placements } from './gifts.js';
+import { createParcel } from './parcels.js';
 
 export const WIDTH = 320;
 export const HEIGHT = 240;
@@ -76,7 +78,7 @@ const FOOT = RIG.leg.len - LEG_PIVOT + 0.03;
 const lerp = (a, b, k) => a + (b - a) * k;
 const clamp = (v, low, high) => Math.max(low, Math.min(high, v));
 
-export function createScene(canvas, palette) {
+export function createScene(canvas, palette, count) {
   const renderer = new WebGLRenderer({
     canvas,
     antialias: false,
@@ -101,11 +103,25 @@ export function createScene(canvas, palette) {
   scene.add(key.target);
   scene.add(new HemisphereLight(new Color(palette.star), new Color(palette.deep), FILL_INTENSITY));
 
-  const forest = createForest(palette);
+  const places = placements(count);
+  const forest = createForest(palette, places);
   scene.add(forest.root);
 
   const bear = createBear(palette);
+  bear.root.name = 'bear';
   scene.add(bear.root);
+
+  /* The parcels are the only objects in the frame whose geometry changes
+     while the reader watches, so they are five small meshes each rather than
+     one merged buffet: a lid that lifts and a tag that swings cannot share a
+     buffer. A closed parcel draws four of them; the plant stays scaled to
+     nothing until the box is open, and the fog keeps the ones up the path out
+     of the frame, so the count of draws settles around thirty. */
+  const parcelMaterial = new MeshLambertMaterial({ vertexColors: true, flatShading: true });
+  const parcels = places.map((place) => createParcel(palette, place, parcelMaterial));
+  for (const parcel of parcels) scene.add(parcel.root);
+  const raycaster = new Raycaster();
+  const aim = new Vector2();
 
   const state = {
     index: 0,
@@ -135,6 +151,8 @@ export function createScene(canvas, palette) {
      whole turn when it lands, and the measurement that watches for a spin
      cannot tell a snap from a spin. */
   const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
+
+  const last = () => count - 1;
 
   const place = (index) => {
     const s = station(index);
@@ -197,7 +215,7 @@ export function createScene(canvas, palette) {
      motion, in which case the bear is simply there, already in the middle of
      its gesture — a composed still rather than an empty one. */
   const go = (index, { instant = false } = {}) => {
-    const target = Math.max(0, Math.min(19, index));
+    const target = Math.max(0, Math.min(last(), index));
     const previous = state.index;
     const gesture = GESTURES[gestureFor(target)];
     state.index = target;
@@ -266,6 +284,10 @@ export function createScene(canvas, palette) {
         // landing: the compression the fall left him with, recovering with one
         // overshoot. This is the settle the path hop never had.
         state.settle = 1;
+        // The landing disturbs whatever is standing beside the path at this
+        // station: the tag swings, the ribbon rocks, and both settle on the
+        // same spring as the ears.
+        parcels[state.index]?.nudge(1);
       }
     }
 
@@ -324,6 +346,8 @@ export function createScene(canvas, palette) {
     bear.parts.jaw.rotation.x = state.typing
       ? 0.08 + Math.abs(Math.sin(seconds * 26)) * 0.7
       : 0;
+
+    for (const parcel of parcels) parcel.update(dt / 1000, seconds);
   };
 
   const render = () => {
@@ -342,6 +366,9 @@ export function createScene(canvas, palette) {
     const pose = heldPose(GESTURES[gestureFor(index)]);
     bear.apply(pose);
     bear.parts.jaw.rotation.x = 0.06;
+    // No loop runs under reduced motion, so every swinging part is put at the
+    // one pose it would have held: a composed still, not a frame that happened.
+    for (const parcel of parcels) parcel.reset();
   };
 
   const stats = () => ({
@@ -349,13 +376,74 @@ export function createScene(canvas, palette) {
     triangles: renderer.info.render.triangles,
     bearTriangles: bear.triangles,
     forestTriangles: forest.triangles,
+    parcelTriangles: parcels.reduce((sum, parcel) => sum + parcel.triangles, 0),
+    parcels: parcels.length,
+    openParcels: parcels.filter((parcel) => parcel.isOpen()).length,
     budget: bear.budget,
     trees: forest.trees,
     framebuffer: [WIDTH, HEIGHT],
   });
 
+  /* Open one parcel. The animation is the scene's clock, so a reader who
+     presses the button and then presses Next gets both at once; under reduced
+     motion the parcel is simply open, because a state is not a motion. */
+  const openGift = (index) => parcels[index]?.open() ?? false;
+  const openGiftNow = (index) => {
+    const parcel = parcels[index];
+    if (!parcel) return false;
+    parcel.restore();
+    return true;
+  };
+  const restoreGift = (index) => parcels[index]?.restore() ?? false;
+
+  /* What the pointer is over, in the framebuffer's own coordinates: the canvas
+     is 320 × 240 upscaled by CSS, so the page hands in the ground-normalised
+     point and the ray is cast through the camera the picture was drawn with.
+     Only a closed parcel answers, and only the nearest one. */
+  const pick = (x, y) => {
+    aim.set(x, y);
+    raycaster.setFromCamera(aim, camera);
+    const roots = parcels.filter((parcel) => !parcel.isOpen()).map((parcel) => parcel.root);
+    const hits = raycaster.intersectObjects(roots, true);
+    if (!hits.length) return null;
+    let node = hits[0].object;
+    while (node && !parcels.some((parcel) => parcel.root === node)) node = node.parent;
+    const parcel = parcels.find((p) => p.root === node);
+    return parcel ? parcel.index : null;
+  };
+
+  /* Where a parcel is on the screen, in the framebuffer's own terms: normalised
+     device coordinates through the camera the picture was drawn with, and the
+     width in pixels of its paper, which is the number that decides whether a
+     reader can find it. The measurement script reads this rather than guessing
+     from the world position. */
+  const parcelScreen = () => {
+    const V = bear.root.position.clone().constructor;
+    camera.updateMatrixWorld();
+    return parcels.map((parcel) => {
+      const place = places[parcel.index];
+      const centre = new V(place.x, place.y + PAPER.h / 2, place.z).project(camera);
+      const edge = new V(place.x + PAPER.w / 2, place.y + PAPER.h / 2, place.z).project(camera);
+      return {
+        index: parcel.index,
+        x: +centre.x.toFixed(3),
+        y: +centre.y.toFixed(3),
+        z: +centre.z.toFixed(3),
+        px: +Math.abs(edge.x - centre.x) * WIDTH,
+        phase: parcel.state.phase,
+      };
+    });
+  };
+
+  const parcelState = (index) => ({
+    phase: parcels[index]?.state.phase,
+    open: parcels[index]?.isOpen() ?? false,
+    moving: parcels[index]?.isMoving() ?? false,
+  });
+
   return {
-    renderer, scene, camera, bear, forest, state,
+    renderer, scene, camera, bear, forest, parcels, places, state,
     go, step, render, still, setTyping, stats,
+    openGift, openGiftNow, restoreGift, pick, parcelState, parcelScreen,
   };
 }
