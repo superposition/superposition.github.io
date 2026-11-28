@@ -32,7 +32,9 @@ import {
   WebGLRenderer,
 } from 'three';
 
-import { GESTURES, gestureFor, heldPose, poseAt, createBear } from './bear.js';
+import {
+  CAMERA, GESTURES, RIG, createBear, gestureFor, heldPose, poseAt,
+} from './bear.js';
 import { createForest, facing, station } from './forest.js';
 
 export const WIDTH = 320;
@@ -42,18 +44,37 @@ const HOP_MS = 560;
 const ARC = 0.95;
 /* The camera sits ahead of the bear and to its right, in the bear's own frame,
    looking back at it: he walks toward the reader, so the face, the ears and the
-   paws are the subject and the path recedes behind him into the fog. Five units
-   away and 29 degrees of vertical field put him at about a third of the frame's
+   paws are the subject and the path recedes behind him into the fog. The offset
+   itself lives in bear.js, because the value bands are painted against it — the
+   bear's near side and the shot's near side have to be one decision, not two.
+   At about five units with a 58-degree field he occupies a third of the frame's
    height, which is where a character stands on a screen this size. */
-const CAMERA = { x: 1.9, y: 2.2, z: 4.6 };
-const CAMERA_MS = 260;
-const LOOK = 1.05;
+const CAMERA_MS = 190;
+const LOOK = 1.0;
+
+/* One light, and it does not move: a fixed direction in world space, carried
+   along with the bear so every station is lit from the same angle. The bear
+   walks 46 units down the path, so a light bolted to the world origin would put
+   the face in shadow by the fifth station and in full sun at the first — the
+   lighting would change per sentence, which is the opposite of one light. The
+   direction is constant; only the lamp's anchor travels. Offset chosen so the
+   key comes over the camera's shoulder and slightly from the near side. */
+const KEY = { x: 2.6, y: 7.4, z: -5.4 };
+const KEY_INTENSITY = 3.25;
+const FILL_INTENSITY = 0.62;
 
 /* Where the bear's paws are below his root, so he stands on the ground rather
-   than in it: hips at 0.44, leg pivot 0.3 below that, and half a leg at 0.14. */
-const FOOT = 0.6;
+   than in it: hips at RIG.hipY, leg pivot RIG.leg.at[1] below that, and the leg
+   itself below the pivot. It was 0.6 while the legs reached only 0.16, so he
+   floated 0.44 units above the path for the whole walk. */
+const LEG_PIVOT = RIG.hipY + RIG.leg.at[1];
+/* A hand's breadth of clearance: the path is a curve over a rolling floor, so
+   a bear whose feet are exactly on the height at his own centre puts the
+   downhill paw 0.03 into the ground. */
+const FOOT = RIG.leg.len - LEG_PIVOT + 0.03;
 
 const lerp = (a, b, k) => a + (b - a) * k;
+const clamp = (v, low, high) => Math.max(low, Math.min(high, v));
 
 export function createScene(canvas, palette) {
   const renderer = new WebGLRenderer({
@@ -74,10 +95,11 @@ export function createScene(canvas, palette) {
 
   const camera = new PerspectiveCamera(58, WIDTH / HEIGHT, 0.4, 120);
 
-  const key = new DirectionalLight(new Color(palette.cream), 3.8);
-  key.position.set(3.6, 8.5, 7.2);
+  const key = new DirectionalLight(new Color(palette.cream), KEY_INTENSITY);
+  key.position.set(KEY.x, KEY.y, KEY.z);
   scene.add(key);
-  scene.add(new HemisphereLight(new Color(palette.star), new Color(palette.deep), 1.4));
+  scene.add(key.target);
+  scene.add(new HemisphereLight(new Color(palette.star), new Color(palette.deep), FILL_INTENSITY));
 
   const forest = createForest(palette);
   scene.add(forest.root);
@@ -92,17 +114,43 @@ export function createScene(canvas, palette) {
     pending: null,
     typing: false,
     elapsed: 0,
+    settle: 0,
+    ear: { p: 0, v: 0 },
+    tail: { p: 0, v: 0 },
+    bodyY: [],
   };
+
+  /* The key light is carried with the bear: same direction in world space,
+     different anchor per station. Its target is the bear, so the direction
+     never changes and the forest is lit by the same one light. */
+  const carryLight = () => {
+    const p = bear.root.position;
+    key.position.set(p.x + KEY.x, p.y + KEY.y, p.z + KEY.z);
+    key.target.position.set(p.x, p.y, p.z);
+    key.target.updateMatrixWorld();
+  };
+
+  /* atan2 wraps at pi, so the heading is kept in (-pi, pi] everywhere: a hop
+     that ends on the far side of the wrap would otherwise snap the yaw by a
+     whole turn when it lands, and the measurement that watches for a spin
+     cannot tell a snap from a spin. */
+  const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
 
   const place = (index) => {
     const s = station(index);
     bear.root.position.set(s.x, s.y + FOOT, s.z);
-    bear.root.rotation.y = facing(index);
+    bear.root.rotation.y = wrap(facing(index));
   };
 
   /* The hop is interpolated from wherever the bear is when the hop starts, not
      from the station he left: a reader who presses Next twice in half a second
-     gets a second hop out of the air rather than a teleport back to the path. */
+     gets a second hop out of the air rather than a teleport back to the path.
+
+     The turn takes the short way round. `facing` is an atan2, so two adjacent
+     stations can report +3.0 and -3.0 for headings a tenth of a radian apart;
+     interpolating those raw numbers makes the bear spin three hundred degrees,
+     the camera chase him the whole way, and the face leave the frame for most
+     of a second. Wrapping the delta to (-pi, pi] is the whole fix. */
   const placeAt = (k, from, fromYaw, to) => {
     const q = station(to);
     bear.root.position.set(
@@ -110,7 +158,7 @@ export function createScene(canvas, palette) {
       lerp(from.y, q.y + FOOT, k) + ARC * 4 * k * (1 - k),
       lerp(from.z, q.z, k),
     );
-    bear.root.rotation.y = fromYaw + (facing(to) - fromYaw) * k;
+    bear.root.rotation.y = wrap(fromYaw + wrap(facing(to) - fromYaw) * k);
   };
 
   /* The offset is rotated into the bear's own frame, so the camera swings round
@@ -143,6 +191,7 @@ export function createScene(canvas, palette) {
 
   place(0);
   snapCamera();
+  carryLight();
 
   /* Go to a station: a hop along the path unless the reader has asked for no
      motion, in which case the bear is simply there, already in the middle of
@@ -158,6 +207,7 @@ export function createScene(canvas, palette) {
       state.gesture = { gesture, elapsed: 0 };
       place(target);
       snapCamera();
+      carryLight();
       return;
     }
     state.hop = {
@@ -171,6 +221,32 @@ export function createScene(canvas, palette) {
   };
 
   const setTyping = (typing) => { state.typing = typing; };
+
+  /* One blink, 150 ms of lid, fired by the clock and not by a gesture: an
+     animal that blinks only while it performs is a machine. The period is fixed
+     so a reload is the same animal, and every fourth cycle doubles, so the
+     rhythm is not a metronome either. */
+  const blinkAt = (ms) => {
+    const period = 4300;
+    const phase = (ms + 700) % period;
+    const cycle = Math.floor((ms + 700) / period);
+    const single = phase < 150 ? Math.sin((phase / 150) * Math.PI) : 0;
+    const second = cycle % 4 === 1 && phase > 230 && phase < 360
+      ? Math.sin(((phase - 230) / 130) * Math.PI) : 0;
+    return Math.max(single, second);
+  };
+
+  /* The ears and the tail hang off a spring fed with the body's own velocity a
+     moment ago: they lag it, overshoot it and settle, which is the difference
+     between a creature and a model on a turntable. Both springs are integrated
+     from dt, so the motion is a function of time and of nothing else. */
+  const follow = (spring, target, dt) => {
+    const w = 26;
+    const zeta = 0.42;
+    spring.v += (w * w * (target - spring.p) - 2 * zeta * w * spring.v) * (dt / 1000);
+    spring.p += spring.v * (dt / 1000);
+    return spring.p;
+  };
 
   const step = (dt) => {
     state.elapsed += dt;
@@ -187,8 +263,18 @@ export function createScene(canvas, palette) {
         bear.hop.scale.set(1, 1, 1);
         state.gesture = { gesture: state.pending, elapsed: 0 };
         state.pending = null;
+        // landing: the compression the fall left him with, recovering with one
+        // overshoot. This is the settle the path hop never had.
+        state.settle = 1;
       }
     }
+
+    // settle runs on its own clock, decaying, whether or not a gesture follows
+    if (state.settle > 0) {
+      state.settle = Math.max(0, state.settle - dt / 260);
+    }
+
+    carryLight();
 
     const target = cameraTarget();
     const damp = 1 - Math.exp(-dt / CAMERA_MS);
@@ -202,11 +288,35 @@ export function createScene(canvas, palette) {
     const pose = state.gesture ? poseAt(state.gesture.gesture, Math.min(1, state.gesture.elapsed / state.gesture.gesture.ms)) : {};
     if (state.gesture) state.gesture.elapsed += dt;
 
+    const bob = (pose.bob ?? 0) + idle * 0.014;
+    // The body's vertical velocity, sampled 70 ms back: what the ears have not
+    // caught up with yet.
+    // The velocity is the whole animal's, not just the crouch: a hop along the
+    // path moves the root, a hop in place moves the hips, and the ears lag
+    // whichever happened.
+    const bodyY = bear.root.position.y + RIG.hipY + bob;
+    state.bodyY.push({ t: state.elapsed, y: bodyY });
+    while (state.bodyY.length > 24) state.bodyY.shift();
+    const behind = state.bodyY.find((s) => s.t >= state.elapsed - 70) ?? state.bodyY[0];
+    const vy = (bodyY - behind.y) / 0.07;
+    const lag = follow(state.ear, clamp(-vy * 0.32, -0.5, 0.5), dt);
+
+    // The settle: one compression, one overshoot, gone in 260 ms.
+    const settleSquash = state.settle > 0
+      ? 0.15 * state.settle * Math.cos((1 - state.settle) * Math.PI * 2) : 0;
+
     bear.apply({
       ...pose,
-      bob: (pose.bob ?? 0) + idle * 0.014,
-      squash: (pose.squash ?? 0) + idle * 0.02,
-      head: [(pose.head?.[0] ?? 0) + idle * 0.035, pose.head?.[1] ?? 0, pose.head?.[2] ?? 0],
+      bob,
+      squash: (pose.squash ?? 0) + idle * 0.02 + settleSquash,
+      head: [
+        (pose.head?.[0] ?? 0) + idle * 0.035 - clamp(vy * 0.05, -0.08, 0.08),
+        pose.head?.[1] ?? 0,
+        pose.head?.[2] ?? 0,
+      ],
+      earLag: lag,
+      tailLag: follow(state.tail, -vy * 0.12, dt),
+      blink: state.hop ? 0 : blinkAt(state.elapsed),
     });
 
     // The mouth: a flap at about eight syllables a second while a sentence is
