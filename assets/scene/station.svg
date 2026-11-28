@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1500" role="img" aria-labelledby="station-title station-desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1500" role="img" data-bbox="691.7 -42.4 1900.3 797.3" data-body="691.7 162.7 1900.3 797.3" aria-labelledby="station-title station-desc">
   <title id="station-title">Space station, technical elevation: 10-bay truss spine with three habitat rings, four solar wings, one array part-deployed, a gantry straddling open bay 5 with a truss section on the hook, radiators, docking collars and antennae.</title>
   <desc id="station-desc">Seed 1 of the parametric station layer: 10 truss bays of 113 units, 3 habitat rings of 181 units, four solar wings on a 18-unit panel pitch with one array part-deployed, a gantry over open bay 5, lit from the upper left.</desc>
   <g fill="none" stroke-linecap="round" stroke-linejoin="round">

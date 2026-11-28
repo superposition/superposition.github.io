@@ -4,7 +4,7 @@
   seed 20261127
   city     assets/scene/city.svg, 85,716 bytes
   traffic  assets/scene/traffic.svg, 15,024 bytes
-  station  assets/scene/station.svg, 41,808 bytes
+  station  assets/scene/station.svg, 41,882 bytes
   Regenerate: python scripts/scene/compose.py, seed 20261127
 -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1500" role="img" aria-labelledby="station-scene-title station-scene-desc">
@@ -832,18 +832,18 @@
   </g>
   <g id="scene-action" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <g id="alignment-beam">
-      <path d="M1137.3 773L1779.4 705.4M1137.3 773L1772.6 657.8" stroke="#8fd3ff" stroke-width="1" stroke-opacity="0.22"/>
-      <path id="alignment-line" d="M1137.3 773L1712.1 690.7" stroke="#8fd3ff" stroke-width="2" stroke-opacity="0.5" stroke-dasharray="12 8"/>
-      <path d="M1358.3 768.7L1350.7 715.2" stroke="#8fd3ff" stroke-width="2" stroke-opacity="0.55"/>
-      <path d="M1491.4 742.5L1485.8 703" stroke="#8fd3ff" stroke-width="2" stroke-opacity="0.55"/>
-      <path d="M1611.9 719.2L1608 691.5" stroke="#8fd3ff" stroke-width="2" stroke-opacity="0.55"/>
+      <path d="M1233.3 773L1875.4 705.4M1233.3 773L1868.6 657.8" stroke="#8fd3ff" stroke-width="1" stroke-opacity="0.22"/>
+      <path id="alignment-line" d="M1233.3 773L1808.1 690.7" stroke="#8fd3ff" stroke-width="2" stroke-opacity="0.5" stroke-dasharray="12 8"/>
+      <path d="M1454.3 768.7L1446.7 715.2" stroke="#8fd3ff" stroke-width="2" stroke-opacity="0.55"/>
+      <path d="M1587.4 742.5L1581.8 703" stroke="#8fd3ff" stroke-width="2" stroke-opacity="0.55"/>
+      <path d="M1707.9 719.2L1704 691.5" stroke="#8fd3ff" stroke-width="2" stroke-opacity="0.55"/>
     </g>
     <g id="dock-arm">
-      <path d="M1635.2 641L1772 672.6M1635.2 655L1772 690.6" stroke="#efe6d3" stroke-width="1"/>
-      <path d="M1621.2 648L1750 681.6" stroke="#a79085" stroke-width="1" stroke-opacity="0.45"/>
+      <path d="M1731.2 641L1868 672.6M1731.2 655L1868 690.6" stroke="#efe6d3" stroke-width="1"/>
+      <path d="M1717.2 648L1846 681.6" stroke="#a79085" stroke-width="1" stroke-opacity="0.45"/>
     </g>
     <g id="dock-mark">
-      <g transform="translate(1776 681.6)">
+      <g transform="translate(1872 681.6)">
         <circle r="13" fill="none" stroke="#8fd3ff" stroke-width="1"/>
         <circle r="5.5" fill="none" stroke="#8fd3ff" stroke-width="1" stroke-opacity="0.8"/>
         <path d="M-20 0H-13M13 0H20M0 -20V-13M0 13V20" stroke="#8fd3ff" stroke-width="2"/>
@@ -851,7 +851,7 @@
       </g>
     </g>
     <g id="docking-shuttle">
-      <g transform="translate(1072 782.4) rotate(-8.1)">
+      <g transform="translate(1168 782.4) rotate(-8.1)">
         <path d="M66 0L38 -13L-12 -16L-44 -9L-44 9L-12 16L38 13Z" stroke="#efe6d3" stroke-width="2"/>
         <path d="M38 -12L30 -5M38 12L30 5" stroke="#a79085" stroke-width="1"/>
         <path d="M40 -1L22 -7M40 1L22 7" stroke="#8fd3ff" stroke-width="1"/>
@@ -885,11 +885,11 @@
       </g>
     </g>
     <g id="signal-carrier">
-      <path d="M624 547.2H1686.4" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.2"/>
-      <g><path d="M664 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M760 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M856 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M952 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1048 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1144 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1240 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1336 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1432 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1528 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1624 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/></g>
+      <path d="M720 547.2H1782.4" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.2"/>
+      <g><path d="M760 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M856 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M952 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1048 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1144 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1240 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1336 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1432 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1528 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1624 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/><path d="M1720 542.2V552.2" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/></g>
     </g>
     <g id="signal-pulse">
-      <g transform="translate(744 547.2)">
+      <g transform="translate(840 547.2)">
         <path d="M-118 0H-52" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.16"/>
         <path d="M-52 0H-14" stroke="#ffc24a" stroke-width="2" stroke-opacity="0.4"/>
         <circle r="7" fill="none" stroke="#ffc24a" stroke-width="1" stroke-opacity="0.3"/>

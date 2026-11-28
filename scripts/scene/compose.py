@@ -56,7 +56,14 @@ CYAN = "#8fd3ff"
 
 # The shared canvas contract. The station zone is what the action is placed
 # from; the other two are only used to frame a placeholder.
-STATION_ZONE = (560.0, 60.0, 1840.0, 900.0)
+# The station layer is drawn 96 units right of the middle on purpose (BIAS_X in
+# station.py), so the action is staged from the zone the station actually
+# occupies rather than the one it would occupy if it were centred. The two are
+# checked against each other below: the layer publishes its ink bounding box in
+# `data-bbox`, and --check fails when the action and the drawing disagree.
+STATION_BIAS = 96.0
+ALIGN_TOLERANCE = 24.0
+STATION_ZONE = (560.0 + STATION_BIAS, 60.0, 1840.0 + STATION_BIAS, 900.0)
 ZONES = {
     "station": STATION_ZONE,
     "city": (0.0, 860.0, 2400.0, 1500.0),
@@ -178,6 +185,33 @@ def read_layer(path):
     children = [c for c in list(root) if c.tag not in (NS_TAG + "title", NS_TAG + "desc")]
     inherited = [(k, root.get(k)) for k in INHERIT if root.get(k) is not None]
     return root, children, len(raw), inherited
+
+
+def alignment(bbox):
+    """The station's ink bbox against the zone the action is staged from.
+
+    The station is drawn 96 units right of the middle on purpose, and the action
+    is placed from the zone it lands in. Those two facts are checked rather than
+    assumed: a layer that has moved without its zone moving would leave the
+    pulse riding empty sky and the shuttle docking with nothing.
+    """
+    if not bbox:
+        return "no data-bbox; action alignment unchecked"
+    try:
+        x0, y0, x1, y1 = (float(v) for v in bbox.split())
+    except ValueError:
+        return "data-bbox %r is not four numbers; alignment unchecked" % bbox
+    zx0, zy0, zx1, zy1 = STATION_ZONE
+    dx = (x0 + x1) * 0.5 - (zx0 + zx1) * 0.5
+    dy = (y0 + y1) * 0.5 - (zy0 + zy1) * 0.5
+    if abs(dx) > ALIGN_TOLERANCE or abs(dy) > ALIGN_TOLERANCE:
+        return ("MISALIGNED by %.0f, %.0f units — the layer's ink is centred at "
+                "%.0f, %.0f and the action at %.0f, %.0f"
+                % (dx, dy, (x0 + x1) * 0.5, (y0 + y1) * 0.5, (zx0 + zx1) * 0.5, (zy0 + zy1) * 0.5))
+    return ("aligned with the action: ink centred %.0f, %.0f, zone centred %.0f, %.0f "
+            "(off by %.0f, %.0f; tolerance %.0f)"
+            % ((x0 + x1) * 0.5, (y0 + y1) * 0.5, (zx0 + zx1) * 0.5, (zy0 + zy1) * 0.5,
+               dx, dy, ALIGN_TOLERANCE))
 
 
 def split_traffic(children):
@@ -495,8 +529,11 @@ def compose(seed, layer_dir):
             report.append("%-8s skipped — %s" % (key, exc))
             continue
         present[key] = {"children": children, "size": size, "inherited": inherited,
-                        "path": path}
+                        "path": path, "bbox": root.get("data-body") or root.get("data-bbox")}
         report.append("%-8s %s, %s bytes" % (key, path, "{:,}".format(size)))
+
+    if "station" in present:
+        report.append("station  %s" % alignment(present["station"].get("bbox")))
 
     rng = Rng(seed)
     body = ['  <g id="scene-ground">',
@@ -588,6 +625,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     text, report, present, missing = compose(args.seed, Path(args.layers))
+    misaligned = any("MISALIGNED" in line for line in report)
     targets = [Path(args.out)] if args.out else [OUT_SCENE, OUT_INCLUDE]
 
     if args.check:
@@ -599,6 +637,11 @@ def main(argv=None):
             elif target.read_text(encoding="utf-8") != text:
                 print("compose: %s is stale — re-run python scripts/scene/compose.py" % target)
                 stale += 1
+        if misaligned:
+            for line in report:
+                if "MISALIGNED" in line:
+                    print("compose: %s" % line)
+            stale += 1
         print("compose: %s" % ("clean" if not stale else "%d file(s) out of date" % stale))
         return 1 if stale else 0
 

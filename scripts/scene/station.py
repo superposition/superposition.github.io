@@ -1145,6 +1145,21 @@ def describe(st):
             "hook, radiators, docking collars and antennae." % (st.bays, rings, st.open_bay))
 
 
+def ink_bbox(cam, kept, skip_group=""):
+    xs = []
+    ys = []
+    for run in kept:
+        if run["item"]["group"] == skip_group:
+            continue
+        for p in run["pts"]:
+            u, v = cam.project(p)
+            xs.append(u)
+            ys.append(v)
+    if not xs:
+        return (0.0, 0.0, 0.0, 0.0)
+    return (min(xs), min(ys), max(xs), max(ys))
+
+
 def render(st, cam, seed, kept, ink):
     groups = {}
     for run in kept:
@@ -1179,7 +1194,9 @@ def render(st, cam, seed, kept, ink):
     head = [
         '<?xml version="1.0" encoding="utf-8"?>',
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1500" role="img" '
-        'aria-labelledby="station-title station-desc">',
+        'data-bbox="%s" data-body="%s" aria-labelledby="station-title station-desc">'
+        % (" ".join(fmt(v) for v in ink_bbox(cam, kept)),
+           " ".join(fmt(v) for v in ink_bbox(cam, kept, "mast"))),
         '  <title id="station-title">%s</title>' % describe(st),
         '  <desc id="station-desc">Seed %d of the parametric station layer: %d truss bays of %d units, '
         '%d habitat ring%s of %.0f units, four solar wings on a %.0f-unit panel pitch with one array '
