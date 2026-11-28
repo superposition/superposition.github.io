@@ -263,17 +263,28 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 .scene-edge,
 .scene-unit,
 .scene-repo,
-.scene-journal { stroke-width: var(--hair); }
+.scene-journal,
+.scene-rung { stroke-width: var(--hair); }
 .scene-edge { stroke: var(--dust); }
-.scene-open { stroke: var(--dust); stroke-width: var(--hair); stroke-dasharray: var(--hair) var(--space-1); }
+/* The journal's arm is dashed in the geometry, not with a dash array: the
+   generator computes the same dashes the canvas draws, so the two cannot
+   disagree about where the pen lifts. */
+.scene-open { stroke: var(--dust); stroke-width: var(--hair); }
 .scene-spine,
 .scene-topic { stroke: var(--star); stroke-width: calc(var(--hair) * 2); }
 .scene-repo { stroke: var(--cream); }
 .scene-unit { stroke: var(--state); }
 .scene-journal { stroke: var(--dust); }
+.scene-rung { stroke: var(--dust); }
 .scene-datum { stroke: var(--accent); stroke-width: var(--rule-thick); }
 .scene-star { stroke: var(--star); stroke-width: var(--hair); }
 .scene-star[data-size="2"] { stroke-width: calc(var(--hair) * 2); }
+
+/* The depth ramp is in the file, not here: every stroke carries the value of
+   the role it sits in (see `DEPTH` in assets/scene/lib/camera.js), and the
+   still writes that value as the path's opacity. One value per role is
+   therefore one number, checkable with scripts/scene/measure.mjs -- a colour
+   rule here would be a second ramp. */
 
 /* The names on the plate. The still carries them as text in the drawing; the
    live scene carries them as text in the page, at the same anchors, so the map
@@ -288,6 +299,7 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 .map-labels { position: absolute; inset: 0; }
 .map-label {
   position: absolute; inset-block-start: 0; inset-inline-start: 0;
+  line-height: 1;
   white-space: nowrap;
   visibility: hidden;
 }
