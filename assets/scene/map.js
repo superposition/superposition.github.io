@@ -9,7 +9,13 @@
    shown only after a frame has drawn.
 
    It also does nothing at all for a reader who asked for less motion. The still
-   is the composed still: same layout, same camera, same depth fade.
+   is the composed still: same layout, same camera, same depth ramp.
+
+   It draws the plate the still draws, from the same modules: the edges are cut
+   where a nearer form hides them (`pieces()` in lib/camera.js), every stroke
+   takes the value of the depth role it sits in (`valueAt()`), every form
+   segment is lit or in shadow by the one azimuth in lib/forms.js, and the names
+   hang from the same baseline rows. There is no second set of rules here.
 
    What moves, and why: the camera orbits the station by 4.5 degrees of yaw and
    1.5 of pitch on two slow sine periods, follows the pointer by a fraction of
@@ -40,18 +46,27 @@ if (hero) {
   const start = async () => {
     const data = JSON.parse(dataEl.textContent);
     const cam = data.camera;
-    const [{ state, view, scales, project, fade, toPixel }, { form, place }, { stars, blobs, falloff }, THREE, lines] =
-      await Promise.all([
-        import('./lib/camera.js'),
-        import('./lib/forms.js'),
-        import('./lib/field.js'),
-        import('three'),
-        import('three/lines'),
-      ]);
+    const [
+      { ASPECT, state, view, project, depthAt, valueAt, pieces, unproject, toPixel },
+      { form, place, hull, faceOf, normalOf, run, dash, RUNG },
+      { stars, blobs, falloff },
+      THREE,
+      lines,
+    ] = await Promise.all([
+      import('./lib/camera.js'),
+      import('./lib/forms.js'),
+      import('./lib/field.js'),
+      import('three'),
+      import('three/lines'),
+    ]);
 
     const token = (name) =>
       new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#ffffff');
 
+    /* One hue per kind, and the accent only where something functional
+       happens: amber on the station (the origin) and the state colour on the
+       series units. The spines are structure, so they are drawn in the same
+       ink as the rings they lead to -- the still does the same. */
     const INK = {
       datum: token('--amber'),
       topic: token('--star'),
@@ -59,7 +74,7 @@ if (hero) {
       unit: token('--cyan'),
       journal: token('--dust'),
       edge: token('--dust'),
-      spine: token('--amber'),
+      spine: token('--star'),
       open: token('--dust'),
       star: token('--star'),
       cream: token('--cream'),
@@ -94,22 +109,89 @@ if (hero) {
       COLORS[w].push(colour.r * k, colour.g * k, colour.b * k, colour.r * k, colour.g * k, colour.b * k);
     };
 
-    for (const e of data.edges) {
-      const a = byId.get(e.a);
-      const b = byId.get(e.b);
+    /* What a form hides, at the composed pose: the same silhouettes and the
+       same cuts the still is built from, from the same lib/ module. The clip is
+       computed once, here, at the pose the plate is composed for -- a rebuild
+       per frame would cost more than the four degrees of orbit can show. */
+    const occluders = nodes
+      .map((n) => {
+        const q = project(base, cam.aspect, n.p);
+        if (!q) return null;
+        const poly = hull(n.kind, n.size)
+          .map(([x, y]) => {
+            const p = project(base, cam.aspect, place([[x, y, x, y]], n.p, base)[0][0]);
+            return p ? [p[0], p[1]] : null;
+          })
+          .filter(Boolean);
+        return poly.length >= 3 ? { poly, z: q[2], id: n.id } : null;
+      })
+      .filter(Boolean);
+
+    const gap = (z) => {
+      const role = depthAt(cam, z);
+      return role === 'far' ? 6 / 910 : role === 'mid' ? 2.5 / 910 : 0;
+    };
+
+    const tally = { edges: 0, rungs: 0, forms: 0 };
+    const drawEdge = (w, p, q, tint, opts) => {
+      for (const span of pieces(cam, base, cam.aspect, p, q, occluders, opts)) {
+        tally.edges++;
+        const alpha = valueAt(cam, span.z);
+        push(w, span.a, span.b, tint, alpha);
+      }
+    };
+
+    /* `edges:` is a list of `[from, to, kind]` in the YAML, so it arrives here
+       as a list of lists -- read it as one. It used to be read as an object,
+       which quietly dropped every edge from the canvas: the plate drew its
+       forms and no relations at all. */
+    for (const [from, to, kind] of data.edges) {
+      const a = byId.get(from);
+      const b = byId.get(to);
       if (!a || !b) continue;
-      const d = (project(base, cam.aspect, a.p)[2] + project(base, cam.aspect, b.p)[2]) / 2;
-      const f = fade(cam, d);
-      const w = e.kind === 'spine' ? 2 : 1;
-      const tint = e.kind === 'spine' ? INK.spine : e.kind === 'open' ? INK.open : INK.edge;
-      push(w, a.p, b.p, tint, f * (e.kind === 'spine' ? 0.6 : e.kind === 'open' ? 0.4 : 0.5));
+      const w = kind === 'spine' ? 2 : 1;
+      const tint = kind === 'spine' ? INK.spine : kind === 'open' ? INK.open : INK.edge;
+      const qa = project(base, cam.aspect, a.p);
+      const qb = project(base, cam.aspect, b.p);
+      if (!qa || !qb) continue;
+      const trim = { head: gap(qa[2]), tail: gap(qb[2]), attached: [a.id, b.id] };
+      const runs = kind === 'open' ? dash(a.p, b.p) : [[a.p, b.p]];
+      for (const [p, q] of runs) drawEdge(w, p, q, tint, kind === 'open' ? { head: 0, tail: 0, attached: trim.attached } : trim);
+      /* The spine's rungs: the pitch the still draws, in the same plane. */
+      if (kind === 'spine') {
+        for (const span of pieces(cam, base, cam.aspect, a.p, b.p, occluders, trim)) {
+          for (const [r0, r1] of run(span.a, span.b, RUNG, base)) {
+            const m = project(base, cam.aspect, [(r0[0] + r1[0]) / 2, (r0[1] + r1[1]) / 2, (r0[2] + r1[2]) / 2]);
+            push(1, r0, r1, INK.edge, m ? valueAt(cam, m[2]) : 0.6);
+            tally.rungs++;
+          }
+        }
+      }
+    }
+
+    /* The arm off the frame: past the journal's bracket, through the right
+       edge. The one line whose end is not a record. */
+    const journalNode = byId.get('journal');
+    if (journalNode) {
+      const q = project(base, cam.aspect, journalNode.p);
+      if (q) {
+        const from = unproject(base, cam.aspect, [q[0] + 0.012, q[1]], q[2]);
+        const to = unproject(base, cam.aspect, [1.04, q[1] - 0.004], q[2] * 1.022);
+        for (const [p, q2] of dash(from, to)) drawEdge(1, p, q2, INK.open, { head: 0, tail: 0 });
+      }
     }
 
     for (const n of nodes) {
-      const f = fade(cam, project(base, cam.aspect, n.p)[2]);
+      const q = project(base, cam.aspect, n.p);
+      if (!q) continue;
       const w = n.weight;
       const tint = INK[n.kind] || INK.repo;
-      for (const [a, b] of place(form(n.kind, n.size), n.p, base)) push(w, a, b, tint, f * 0.85);
+      const value = valueAt(cam, q[2]);
+      for (const seg of place(form(n.kind, n.size), n.p, base)) {
+        const [nx, ny] = normalOf(seg, n.p, base);
+        push(w, seg[0], seg[1], tint, value * (faceOf(nx, ny) === 'lit' ? 1 : 0.52));
+        tally.forms++;
+      }
     }
 
     const groups = {};
@@ -252,15 +334,26 @@ if (hero) {
     const box = hero.getBoundingClientRect();
     let w = box.width;
     let h = box.height;
-    let aspect = w / h;
+
+    /* The plate is composed in a 1.82 : 1 box and the still letterboxes it
+       into the frame with `preserveAspectRatio="xMidYMid meet"`. The canvas has
+       to do the same thing, or the plate would grow and rise the moment it
+       takes over: same aspect, same drawn rectangle, same offset. `plate()` is
+       that rectangle, and everything that turns a normalised position into a
+       pixel goes through it -- the viewport, the scissor, the labels. */
+    const plate = () => {
+      const fw = Math.min(w, h * ASPECT);
+      const fh = fw / ASPECT;
+      return { x: (w - fw) / 2, y: (h - fh) / 2, w: fw, h: fh };
+    };
 
     const resize = () => {
       const r = hero.getBoundingClientRect();
       w = r.width;
       h = r.height;
-      aspect = w / h;
       renderer.setPixelRatio(dpr());
       renderer.setSize(w, h, false);
+      renderer.setScissorTest(true);
       for (const k in groups) groups[k].mat.resolution.set(w, h);
     };
     resize();
@@ -277,26 +370,36 @@ if (hero) {
       const p = pose(t, pointer, scroll);
       const s = state(cam, p);
       const v = view(s);
+      const f = plate();
       camera.fov = cam.fov;
-      camera.aspect = aspect;
+      camera.aspect = ASPECT;
       camera.position.set(s.eye[0], s.eye[1], s.eye[2]);
       camera.up.set(0, 1, 0);
       camera.lookAt(cam.target[0], cam.target[1], cam.target[2]);
       camera.updateProjectionMatrix();
+      /* GL's origin is the foot of the canvas; the frame's is its head. */
+      const gy = h - f.y - f.h;
+      renderer.setViewport(f.x, gy, f.w, f.h);
+      renderer.setScissor(f.x, gy, f.w, f.h);
       renderer.render(scene, camera);
 
       for (const l of labels) {
         if (!l.node) continue;
-        const q = project(v, aspect, l.node.p);
+        const q = project(v, ASPECT, l.node.p);
         const off = l.node.label || [0, 0];
-        const px = toPixel([q[0] + off[0], q[1] + off[1]], w, h);
-        const f = fade(cam, q[2]);
-        const id = `${Math.round(px[0])},${Math.round(px[1])},${f.toFixed(2)}`;
+        /* The anchor is the name's baseline on the shared row grid: the offset
+           in the data is already snapped to it, so the canvas and the still put
+           every name on the same row. The element hangs by its own baseline --
+           a hair above the bottom of its box, which is where the fall is. */
+        const f = plate();
+        const px = [f.x + (q[0] + off[0] + 1) * 0.5 * f.w, f.y + (1 - (q[1] + off[1])) * 0.5 * f.h];
+        const value = valueAt(cam, q[2]);
+        const id = `${Math.round(px[0])},${Math.round(px[1])},${value.toFixed(2)}`;
         if (id === l.last) continue;
         l.last = id;
-        const mid = l.el.dataset.kind === 'journal' ? '' : ' translate(-50%, -100%)';
-        l.el.style.transform = `translate3d(${px[0].toFixed(1)}px, ${px[1].toFixed(1)}px, 0)${mid || ' translate(0, -100%)'}`;
-        l.el.style.opacity = (0.55 + f * 0.45).toFixed(2);
+        const align = l.el.dataset.kind === 'journal' ? '0' : '-50%';
+        l.el.style.transform = `translate3d(${px[0].toFixed(1)}px, ${px[1].toFixed(1)}px, 0) translate(${align}, calc(-100% + 0.21em))`;
+        l.el.style.opacity = value.toFixed(2);
       }
     };
 
@@ -321,9 +424,11 @@ if (hero) {
       const x = e.clientX - r.left;
       const y = e.clientY - r.top;
       const v = view(state(cam, pose(clock(), aim, scrollOut())));
+      const f = plate();
       let best = null;
       for (const n of nodes) {
-        const px = toPixel(project(v, aspect, n.p), w, h);
+        const ndc = project(v, ASPECT, n.p);
+        const px = [f.x + (ndc[0] + 1) * 0.5 * f.w, f.y + (1 - ndc[1]) * 0.5 * f.h];
         const d = Math.hypot(px[0] - x, px[1] - y);
         if (d < 20 && (!best || d < best.d)) best = { n, d };
       }
@@ -404,7 +509,7 @@ if (hero) {
     play();
 
     /* The head of the console: what the frame cost, when somebody asks. */
-    hero.__map = { renderer, scene, camera, nodes, edges: data.edges, groups, draw, pose };
+    hero.__map = { renderer, scene, camera, nodes, edges: data.edges, groups, draw, pose, tally };
   };
 
   const go = () => start().catch(() => {
