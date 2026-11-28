@@ -1,0 +1,24 @@
+{%- comment -%}
+  The home hero's scene: the site's own map, drawn once, then drawn again in
+  WebGL if the reader's browser can and if they have not asked it not to.
+
+  Nothing here is content. Every node is a page or a record the site already
+  has, every edge a relation the repository already records, and the same
+  records appear as text below the frame: the repositories in .repos-home, the
+  topics in .topic-list, the units on /series/, the journal on /journal/. The
+  still is generated from _data/scene-map.yml by `node --experimental-default-
+  type=module scripts/scene/map.mjs`, which is the same data the canvas reads —
+  one layout, two renderers. docs/scene-map.md is the spec.
+{%- endcomment -%}
+{%- assign map = site.data['scene-map'] -%}
+{%- assign map_labels = map.nodes | where_exp: "n", "n.kind == 'topic' or n.kind == 'unit' or n.kind == 'journal' or n.kind == 'datum'" -%}
+<div class="map" data-map>
+  <input class="visually-hidden map-switch" type="checkbox" id="map-hold">
+  <p class="map-bug wide"><span>Fig. 1</span><span>The map</span><span>{{ site.data.topics.size }} topics</span><span>{{ site.repos.size }} repositories</span><span>{{ site.data.cast.cast.size }} units</span><span>{{ site.posts.size }} entries</span><span class="map-name"></span><span class="crawl-hold"><label for="map-hold">Hold the map</label></span></p>
+  <p class="visually-hidden">The map of this site: {{ site.data.topics.size }} topics, {{ site.repos.size }} repositories, {{ site.data.cast.cast.size }} series units and {{ site.posts.size }} journal entries, drawn as a three-dimensional graph. A ring is a topic, a diamond a repository, a triangle a series unit and a bracket the journal. Every one of them is listed as a link below this frame.</p>
+  {% include scene/map.svg %}
+  <canvas class="map-canvas" aria-hidden="true"></canvas>
+  <div class="map-labels" aria-hidden="true">{%- for n in map_labels -%}<span class="map-label" data-node="{{ n.id }}" data-kind="{{ n.kind }}">{{ n.name }}</span>{%- endfor -%}</div>
+  {%- comment -%} `</` escaped so a title can never close the script tag; JSON reads it back as `/`. {%- endcomment -%}
+  <script type="application/json" class="map-data">{{ map | jsonify | replace: '</', '<\/' }}</script>
+</div>

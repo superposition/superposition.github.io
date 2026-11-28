@@ -146,18 +146,25 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
    leave the header so the nav stays one row on a phone, and the footer carries
    them instead. Hidden this way they also leave the tab order, which is why the
    footer has to carry them — one reachable link at every width, never two. */
-.nav-series, .nav-showing { display: none; }
-@media (min-width: 640px) { .nav-series, .nav-showing { display: inline; } }
+.nav-series, .nav-showing, .nav-garden { display: none; }
+@media (min-width: 640px) { .nav-series, .nav-showing, .nav-garden { display: inline; } }
+
+/* The forest is the one place on the site with a canvas, and it joins the header
+   only where the header has room: a seventh link at 640 would need 610px of a
+   608px row. The home page links it at every width, so nothing is unreachable
+   on a phone. */
+.nav-forest { display: none; }
+@media (min-width: 1000px) { .nav-forest { display: inline; } }
 
 /* The command sweep: the shared hover, focus and current-page signal for chrome
    links and for the rows that behave like them, written once here rather than
    per component. A hairline in currentColor scales out of the left edge; it is
    a transform on a pseudo-element, so it composites instead of repainting the
    text above it, and it carries whatever colour the component is set in. */
-:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .entry, .range-link) {
+:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .plant-row, .entry, .range-link) {
   position: relative; --sweep: 0;
 }
-:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .entry, .range-link)::after {
+:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .plant-row, .entry, .range-link)::after {
   content: "";
   position: absolute;
   inset: auto 0 calc(-1 * var(--hair)) 0;
@@ -168,7 +175,7 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
   transition: transform var(--dur-sweep) var(--ease-out);
   pointer-events: none;
 }
-:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .entry, .range-link):is(:hover, :focus-visible),
+:is(.home-link, .site-header nav a, .topic-list a, .card-title, .repo-row, .plant-row, .entry, .range-link):is(:hover, :focus-visible),
 .site-header nav [aria-current],
 .card:hover .card-title,
 .card:focus-visible .card-title { --sweep: 1; }
@@ -212,9 +219,126 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
 }
 .hero .lede { color: var(--starlight); }
 
-/* The star field is a poster-only layer: display:none elsewhere, so its
-   background image is never fetched on a page that does not show it. */
-.starfield { display: none; }
+/* The map ----------------------------------------------------------------- */
+
+/* The hero's backplate is the site's own map rather than a photograph: the five
+   topics, the twenty repository pages, the four series units and the journal,
+   laid out in space around the station at the origin. The plate is generated
+   (scripts/scene/map.mjs) from the same data the canvas reads, so there is one
+   layout and two renderers; assets/scene/map.js draws it in WebGL when the
+   reader's browser can, and otherwise does nothing at all. docs/scene-map.md is
+   the spec: what maps to what, how the camera is bounded, and the measurements
+   the frame is held to.
+
+   Nothing here is load-bearing for the page's content. Every node on the map is
+   a link that already exists in the lists below it, and the description of the
+   whole drawing is the visually-hidden line in _includes/scene/map.html. */
+
+.map {
+  position: absolute; inset: 0; z-index: -3;
+  pointer-events: none;
+}
+
+/* The plate keeps its composition at every window: its width is the frame's
+   width and its height follows. A phone shows the whole map, smaller, rather
+   than a crop of its middle, and the black above and below it is the page's own
+   ground -- which is why the frame's own edges are never visible. */
+.map .scene-still,
+.map .map-canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+
+/* The still is the scene until a frame has drawn. The canvas is in the page
+   from the start but shows nothing until then, so no reader ever meets an empty
+   rectangle, and no part of the layout depends on a canvas existing. */
+.map .map-canvas { display: none; }
+.map[data-map="live"] .map-canvas { display: block; }
+.map[data-map="live"] .scene-still { visibility: hidden; }
+
+/* The plate's strokes, in the site's three weights. `non-scaling-stroke` keeps
+   them device pixels in the drawing's own units, so a one-pixel rule is one
+   pixel at every width, exactly as it is in the type. */
+.scene-still path { vector-effect: non-scaling-stroke; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.scene-edge,
+.scene-unit,
+.scene-repo,
+.scene-journal,
+.scene-rung { stroke-width: var(--hair); }
+.scene-edge { stroke: var(--dust); }
+/* The journal's arm is dashed in the geometry, not with a dash array: the
+   generator computes the same dashes the canvas draws, so the two cannot
+   disagree about where the pen lifts. */
+.scene-open { stroke: var(--dust); stroke-width: var(--hair); }
+.scene-spine,
+.scene-topic { stroke: var(--star); stroke-width: calc(var(--hair) * 2); }
+.scene-repo { stroke: var(--cream); }
+.scene-unit { stroke: var(--state); }
+.scene-journal { stroke: var(--dust); }
+.scene-rung { stroke: var(--dust); }
+.scene-datum { stroke: var(--accent); stroke-width: var(--rule-thick); }
+.scene-star { stroke: var(--star); stroke-width: var(--hair); }
+.scene-star[data-size="2"] { stroke-width: calc(var(--hair) * 2); }
+
+/* The depth ramp is in the file, not here: every stroke carries the value of
+   the role it sits in (see `DEPTH` in assets/scene/lib/camera.js), and the
+   still writes that value as the path's opacity. One value per role is
+   therefore one number, checkable with scripts/scene/measure.mjs -- a colour
+   rule here would be a second ramp. */
+
+/* The names on the plate. The still carries them as text in the drawing; the
+   live scene carries them as text in the page, at the same anchors, so the map
+   keeps its names when it is a canvas. */
+.scene-label,
+.map-label {
+  font: var(--step-1)/var(--leading-tight) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+  fill: var(--dust);
+}
+.map-labels { position: absolute; inset: 0; }
+.map-label {
+  position: absolute; inset-block-start: 0; inset-inline-start: 0;
+  line-height: 1;
+  white-space: nowrap;
+  visibility: hidden;
+}
+.map[data-map="live"] .map-label { visibility: visible; }
+
+/* The plate's own caption: what it is, how much of it there is, which record is
+   under the pointer, and the switch that stops it. One row above the drawing,
+   wrapping rather than crowding at narrow widths. */
+.map-bug {
+  position: absolute; inset-block-start: var(--space-3); inset-inline: 0;
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: var(--space-half) var(--space-3);
+  font: var(--step-1)/var(--leading-tight) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+}
+/* The caption sits over the plate's empty sky, but a star or a stroke can still
+   pass behind a thirteen-pixel line, and measured at the brightest frame it fell
+   to 2.9:1. Each item therefore carries the page's own ground behind it: the
+   caption's contrast is the caption's, and never depends on what the map is
+   doing underneath. Over black the backing is invisible. */
+.map-bug > span,
+.map-bug .crawl-hold label {
+  background: var(--void);
+  padding-inline: var(--space-1);
+}
+.map-bug > span:first-child { color: var(--star); margin-inline-start: calc(var(--space-1) * -1); }
+.map-bug .map-name { margin-inline-start: auto; color: var(--state-text); }
+.map-bug .crawl-hold { margin-top: 0; margin-inline-start: auto; }
+.map-bug .map-name:not(:empty) ~ .crawl-hold { margin-inline-start: 0; }
+.map-switch:checked ~ .map-bug .crawl-hold label::before { background: var(--state); border-color: var(--state); }
+.map-switch:focus-visible ~ .map-bug .crawl-hold label { outline: var(--ring) solid var(--state); outline-offset: var(--space-half); color: var(--star); }
+
+/* A phone shows the plate, not its names: eleven labels on a four-hundred-pixel
+   drawing are eleven labels on each other. The forms and the caption still say
+   what is there, and the lists below still link every one of them. */
+@media (max-width: 700px) {
+  .map-labels { display: none; }
+}
 
 @keyframes hero-drift {
   from { transform: scale(1); }
@@ -235,10 +359,6 @@ h1, h2, h3, p, figure, blockquote, ul, ol, dl, dd, dt { margin: 0; }
   display: block;
   background: var(--panel);
   border: var(--border-hair);
-}
-.skeleton-hero {
-  position: absolute; inset: 0; z-index: -4;
-  border: 0;
 }
 .skeleton-label {
   position: absolute;
@@ -829,11 +949,18 @@ html[data-lab="a"] .entry-dek { font-family: var(--font-mono); }
 
 /* Entry page -------------------------------------------------------------- */
 
+/* A reading page, so the container is wide and each block centres itself: the
+   headline in a 52rem block, the prose at 39rem, plates up to --figure-max.
+   The alternative — keeping the 44rem container and pulling figures out with
+   negative margins — has to compute its own breakout from 100vw, and 100vw
+   includes the desktop scrollbar, so it overflows by the scrollbar's width at
+   every breakpoint where the plate is the whole page. */
 .entry-page { padding-bottom: var(--space-section); }
-.entry-head { padding-block: var(--space-open) var(--space-2); }
+.entry-head { max-width: var(--measure-head); margin-inline: auto; padding-block: var(--space-open) var(--space-2); }
 .entry-head h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
 .entry-head .lede { margin-top: var(--space-2); }
 .entry-foot {
+  max-width: var(--measure); margin-inline: auto;
   margin-top: var(--space-section); padding-top: var(--space-2);
   border-top: var(--border-hair);
   font: var(--step-1)/1.7 var(--font-mono);
@@ -845,13 +972,49 @@ html[data-lab="a"] .entry-dek { font-family: var(--font-mono); }
 
 .prose { font-size: var(--step-3); line-height: var(--leading-body); }
 .prose > * + * { margin-top: var(--flow); }
+/* An entry's prose gets the rule the repository pages already have. The field
+   shows an article plate at 0.38 of the viewport on the one page that is
+   about photographs, while the same prose on a repository page fills 0.83;
+   the rule existed as .repo-body > :not(figure) and had no entry twin. The
+   prose box is now as wide as a plate may be, the text inside it is not, and
+   the figure is the one child that fills it. The caption stays on the text
+   measure: a caption that runs the whole width of the picture is a second
+   paragraph set in 13px. */
+.entry-body { max-width: var(--figure-max); margin-inline: auto; }
+.entry-body > * { max-width: var(--measure); margin-inline: auto; }
+.entry-body > figure { max-width: var(--figure-max); }
+.entry-body figcaption { max-width: var(--measure); }
+/* In-body section headings. The field's median first h2 inside an essay is
+   24px; ours was 13px mono upper case, the size the field uses for labels, so
+   an essay with six sections read as six footnotes. Option (a), shipped: the
+   display face at --step-4 (22px) in the writer's case, with the mono demoted
+   to the .eyebrow above it. Eric has not chosen between (a) and (b) yet, so
+   the choice is one declaration: swap the SWITCH line for the commented twin
+   under it and the machine voice returns at body size. Case and tracking are
+   shared, so (b) sets the writer's case in mono rather than the label's
+   uppercase — that is the price of one line, and it is a heading at 20px
+   either way. */
 .prose h2 {
-  font: 600 var(--step-1)/1.5 var(--font-mono);
-  text-transform: uppercase; letter-spacing: var(--track-label);
+  font: 400 var(--step-4)/var(--leading-tight) var(--font-display); /* SWITCH */
+  /* font: 600 var(--step-3)/1.5 var(--font-mono); */
+  letter-spacing: var(--track-display);
   color: var(--star);
   margin-top: var(--space-5); padding-top: var(--space-2);
   border-top: var(--border-hair);
 }
+/* The mono the option-(a) heading demoted: a section may carry one eyebrow
+   above its display heading, as Quanta and Nautilus do. Authored as
+   <p class="eyebrow">Field notes</p> before the ## line; optional, and absent
+   on a section that needs no category. The hairline moves up with it so the
+   rule still opens the section. */
+.prose .eyebrow {
+  font: 600 var(--step-1)/1.5 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+  margin-top: var(--space-5); padding-top: var(--space-2);
+  border-top: var(--border-hair);
+}
+.prose .eyebrow + h2 { margin-top: var(--space-1); padding-top: 0; border-top: 0; }
 .prose h3 {
   font: 600 var(--step-1)/1.5 var(--font-mono);
   text-transform: uppercase; letter-spacing: var(--track-label);
@@ -902,7 +1065,7 @@ mjx-container[display="true"] { margin-block: var(--space-3) !important; }
 
 /* Audio ------------------------------------------------------------------- */
 
-.audio { margin-bottom: var(--space-5); border: var(--border-hair); padding: var(--space-2) var(--space-3); }
+.audio { max-width: var(--measure); margin-inline: auto; margin-bottom: var(--space-5); border: var(--border-hair); padding: var(--space-2) var(--space-3); }
 .audio-title { font: 600 var(--step-1)/1.5 var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); }
 .audio-note { margin-top: var(--space-half); font: var(--step-1)/var(--leading-body) var(--font-mono); color: var(--dust); }
 .audio audio { width: 100%; margin-top: var(--space-2); }
@@ -933,10 +1096,49 @@ mjx-container[display="true"] { margin-block: var(--space-3) !important; }
 .site-footer a:hover { color: var(--accent-text); text-decoration: underline; }
 .site-footer a:active { color: var(--accent-peak); }
 
+/* Soundtrack -------------------------------------------------------------- */
+
+/* The site's own track, in the footer row with the quiet links. It is a button
+   and not a link, because it starts and stops something rather than going
+   somewhere, and it is the one control on the site sized to a thumb rather than
+   to its type: --target-touch square, because a play control is pressed on a
+   phone in this footer and never read like a line of text. Pressing it moves
+   nothing — the glyph swaps inside the same 12px box and the word stays put, so
+   the row cannot reflow when the state changes. --starlight at rest (15.44:1 on
+   void), --accent-text on hover (12.93:1), the --state ring at 4px on focus, and
+   --accent-text for a listener who asked for the music before: the stored choice
+   paints the control, and never plays it. */
+.soundtrack-toggle {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  min-height: var(--target-touch); min-width: var(--target-touch);
+  padding-block: var(--space-half);
+  border: 0;
+  background: none;
+  color: var(--starlight);
+  font: var(--step-1)/1.8 var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  cursor: pointer;
+  appearance: none;
+  transition: color var(--dur-state) var(--ease-out);
+}
+.soundtrack-icon { width: var(--space-2); height: var(--space-2); fill: currentColor; }
+.soundtrack-toggle[aria-pressed="true"] .soundtrack-play { display: none; }
+.soundtrack-toggle[aria-pressed="false"] .soundtrack-pause { display: none; }
+.soundtrack-toggle[data-pref="on"] { color: var(--accent-text); }
+.soundtrack-toggle:hover { color: var(--accent-text); text-decoration: underline; }
+.soundtrack-toggle:active { color: var(--accent-peak); }
+.soundtrack-toggle:focus-visible { outline: var(--ring) solid var(--state); outline-offset: var(--space-half); }
+
 /* Repository pages -------------------------------------------------------- */
 
 .repo-page { padding-bottom: var(--space-section); }
-.repo-head { padding-block: var(--space-open) var(--space-2); }
+/* One column below 700: the specimen sits under the title, where a phone
+   reader meets it before the prose. From 700 it takes the rail, and the
+   heading text keeps the measure it had. */
+.repo-head {
+  display: grid; grid-template-columns: minmax(0, 1fr); align-items: start;
+  padding-block: var(--space-open) var(--space-2);
+}
 .repo-head h1 { font-size: var(--step-5); line-height: var(--leading-tight); }
 .repo-head .lede { margin-top: var(--space-2); }
 .repo-head .def { margin-top: var(--space-3); }
@@ -1378,6 +1580,169 @@ mjx-container[display="true"] { margin-block: var(--space-3) !important; }
 .showing-note a { color: var(--dust); }
 .showing-note a:hover { color: var(--star); }
 
+/* Flora — the garden ------------------------------------------------------ */
+
+/* Five species, one per topic, and one plant per repository (GALA-88). The
+   plots are bands of atmosphere rather than cards: hairlines on a pitch over
+   the ground, with one bloom of light behind the specimen, so a plot reads as
+   a horizon and the plant stands on it. These are the only illustrations on
+   the site that are not photographs, which is why they get the ground to
+   themselves and no frame around them. */
+
+.plots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--flora-plot), 1fr));
+  gap: var(--space-4) var(--space-3);
+  margin-top: var(--space-section);
+}
+.plot {
+  position: relative; isolation: isolate;
+  display: grid; align-content: start; justify-items: center;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-2) var(--space-5);
+  border-top: var(--border-hair);
+  background: var(--strata);
+  text-align: center;
+}
+.plot::before {
+  content: "";
+  position: absolute; inset: 0; z-index: -1;
+  background: var(--flora-glow);
+  pointer-events: none;
+}
+.plot .plant { width: var(--flora-plot); }
+.plot-title { font: var(--step-3)/var(--leading-tight) var(--font-display); text-transform: uppercase; color: var(--star); }
+.plot-topic { font: var(--step-1)/var(--leading-body) var(--font-mono); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--accent-text); }
+.plot-note, .garden-note { max-width: var(--measure-narrow); font: var(--step-1)/var(--leading-body) var(--font-text); color: var(--dust); }
+.garden-specimens { margin-top: var(--space-section); }
+.garden-note { margin-top: var(--space-2); }
+
+/* A specimen: the drawing is 600 by 900 and has no width or height of its own,
+   so the cell sets the width and the ratio keeps it true. */
+.plant { display: block; margin: 0; }
+.plant img { display: block; width: 100%; height: auto; }
+
+.plants {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--flora-cell), 1fr));
+  gap: var(--space-4) var(--space-2);
+  list-style: none; margin: var(--space-4) 0 0; padding: 0;
+}
+.plant-row { display: grid; align-content: start; gap: var(--space-1); padding-block: var(--space-2); color: var(--starlight); text-decoration: none; }
+.plant-row .plant { padding-inline: var(--space-2); border-top: var(--border-hair); background: var(--strata); }
+.plant-row:active .plant-name { color: var(--accent-peak); }
+.plant-name { font: var(--step-1)/var(--leading-tight) var(--font-mono); text-transform: uppercase; letter-spacing: var(--track-label); }
+.plant-meta { font: var(--step-decal)/var(--leading-body) var(--font-mono); color: var(--dust); }
+
+/* The repository page's specimen, in the rail. It is small on purpose: the
+   plant names the species, and the writing is what the page is for. */
+.repo-plant { margin: 0; }
+.repo-plant img { display: block; width: 100%; height: auto; }
+.repo-plant figcaption {
+  margin-top: var(--space-1); padding-top: var(--space-1);
+  border-top: var(--border-hair);
+  font: var(--step-decal)/var(--leading-body) var(--font-mono);
+  letter-spacing: var(--track-label); color: var(--dust);
+}
+/* The scene ---------------------------------------------------------------- */
+
+/* /station/ is the one page on the site that is a drawing rather than writing.
+   The composed file is included inline, so its groups are in the page's DOM
+   and anything that can write a selector — this stylesheet, or a script — can
+   move them by name: #scene-city, #scene-traffic-back, #scene-haze,
+   #scene-station, #scene-traffic-front, #scene-action, and inside the action
+   #docking-shuttle, #alignment-beam, #drone-a, #drone-b, #signal-pulse. Each of
+   those handles is a bare group: the transform that places the thing sits on a
+   child, so the handle's own transform belongs to whoever animates it. */
+
+/* The frame takes the wide measure, holds the canvas ratio itself rather than
+   trusting the file's viewBox, and clips — so a drifting layer can never show
+   an edge, and the scene keeps its shape at every width. */
+.scene { max-width: none; }
+.scene-frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--void);
+  aspect-ratio: 8 / 5;
+}
+.scene-frame svg { display: block; width: 100%; height: 100%; }
+
+/* The pause control, on the crawl's pattern: a drawn box whose state is a
+   fill, a hidden checkbox, no script. WCAG 2.2.2 asks for a way to stop motion
+   that runs longer than five seconds, and this scene runs for minutes. */
+.scene-switch:checked ~ .scene-frame #scene-city,
+.scene-switch:checked ~ .scene-frame #scene-traffic-back,
+.scene-switch:checked ~ .scene-frame #scene-station,
+.scene-switch:checked ~ .scene-frame #scene-traffic-front,
+.scene-switch:checked ~ .scene-frame #signal-pulse,
+.scene-switch:checked ~ .scene-frame #docking-shuttle,
+.scene-switch:checked ~ .scene-frame #drone-a,
+.scene-switch:checked ~ .scene-frame #drone-b,
+.scene-switch:checked ~ .scene-frame #alignment-line,
+.scene-switch:checked ~ .scene-frame #station-masts,
+.scene-switch:checked ~ .scene-frame #station-mast,
+.scene-switch:checked ~ .scene-frame #station-hook { animation-play-state: paused; }
+.scene-hold {
+  margin-top: var(--space-2);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  text-transform: uppercase; letter-spacing: var(--track-label);
+  color: var(--dust);
+}
+.scene-hold label { display: inline-flex; align-items: center; gap: var(--space-1); padding-block: var(--space-half); cursor: pointer; }
+.scene-hold label::before {
+  content: ""; flex: none;
+  width: var(--switch); height: var(--switch);
+  border: var(--hair) solid var(--dust);
+}
+.scene-switch:checked ~ .scene-hold label::before { background: var(--state); border-color: var(--state); }
+.scene-switch:focus-visible ~ .scene-hold label { outline: var(--ring) solid var(--state); outline-offset: var(--space-half); color: var(--star); }
+.scene-hold label:hover::before { border-color: var(--star); }
+.scene-hold label:active::before { background: var(--dust); }
+
+/* Three depths, three speeds. The travel is a handful of canvas units, which
+   at the width the page is read at is a few pixels over a minute or two: the
+   scene should feel held, not played. */
+@keyframes scene-drift-far { from { transform: translate(0, 0); } to { transform: translate(var(--drift-far), 0); } }
+@keyframes scene-drift-mid { from { transform: translate(0, 0); } to { transform: translate(var(--drift-mid), var(--drift-lift)); } }
+@keyframes scene-drift-near { from { transform: translate(0, 0); } to { transform: translate(var(--drift-near), var(--drift-lift)); } }
+.scene-frame #scene-city,
+.scene-frame #scene-traffic-back { animation: scene-drift-far var(--dur-drift-far) var(--ease-soft) infinite alternate; }
+.scene-frame #scene-station { animation: scene-drift-mid var(--dur-drift-mid) var(--ease-soft) infinite alternate; }
+.scene-frame #scene-traffic-front { animation: scene-drift-near var(--dur-drift-near) var(--ease-soft) infinite alternate; }
+
+/* Secondary motion, so nothing in the frame is one rigid piece. The dish masts
+   lag the hull and lean the other way from it, the gantry's lattice tower
+   against the drift at its own period, and the truss section on the hook swings
+   under the gantry that carries it — a pendulum pivoted at the hook, moving
+   slower than the frame it hangs from and behind it in phase. Three periods,
+   three negative delays: nothing in the station is ever at the top of its
+   swing at the same time as anything else. */
+@keyframes scene-sway-mast { from { transform: translate(0, 0); } to { transform: translate(var(--sway-mast), var(--sway-lift)); } }
+@keyframes scene-sway-dish { from { transform: translate(0, 0); } to { transform: translate(calc(var(--sway-mast) * -0.6), var(--sway-lift)); } }
+@keyframes scene-sway-hook { from { transform: rotate(calc(var(--sway-hook) * -1)); } to { transform: rotate(var(--sway-hook)); } }
+.scene-frame #station-masts { animation: scene-sway-dish var(--dur-sway-dish) var(--ease-soft) infinite alternate; animation-delay: -3.1s; }
+.scene-frame #station-mast { animation: scene-sway-mast var(--dur-sway-mast) var(--ease-soft) infinite alternate; animation-delay: -1.7s; }
+.scene-frame #station-hook { animation: scene-sway-hook var(--dur-sway-hook) var(--ease-soft) infinite alternate; animation-delay: -2.6s; transform-box: fill-box; transform-origin: 50% 0%; }
+
+/* The action. The pulse fades at both ends of its run, so the jump from the far
+   end of the truss back to the near end is never on screen; the beam's dashes
+   march out towards the hoop on the dash offset the file already draws. */
+@keyframes scene-pulse-run {
+  from { transform: translateX(0); opacity: 0; }
+  5% { opacity: 1; }
+  95% { opacity: 1; }
+  to { transform: translateX(var(--pulse-span)); opacity: 0; }
+}
+.scene-frame #signal-pulse { animation: scene-pulse-run var(--dur-pulse) linear infinite; }
+@keyframes scene-beam-march { to { stroke-dashoffset: var(--beam-march); } }
+.scene-frame #alignment-line { animation: scene-beam-march var(--dur-beam) linear infinite; }
+@keyframes scene-approach { from { transform: translate(0, 0); } to { transform: translate(var(--approach-x), var(--approach-y)); } }
+.scene-frame #docking-shuttle { animation: scene-approach var(--dur-approach) var(--ease-soft) infinite alternate; }
+@keyframes scene-cross-a { from { transform: translate(0, 0); } to { transform: translate(var(--drone-a-x), var(--drone-a-y)); } }
+@keyframes scene-cross-b { from { transform: translate(0, 0); } to { transform: translate(var(--drone-b-x), var(--drone-b-y)); } }
+.scene-frame #drone-a { animation: scene-cross-a var(--dur-drone) var(--ease-soft) infinite alternate; }
+.scene-frame #drone-b { animation: scene-cross-b var(--dur-drone) var(--ease-soft) infinite alternate; }
+
 /* Identity A — instrument ------------------------------------------------ */
 
 /* Alien's screens, not Alien's assets: amber phosphor on carbon, one accent
@@ -1532,14 +1897,6 @@ html[data-lab="b"] .hero img {
   object-position: 50% 35%;
 }
 html[data-lab="b"] .hero .skeleton { display: none; }
-html[data-lab="b"] .starfield {
-  display: block;
-  position: absolute; inset: 0; z-index: -2;
-  background: var(--starfield) repeat;
-  background-size: auto;
-  opacity: .85;
-  pointer-events: none;
-}
 html[data-lab="b"] .hero-inner {
   padding-block: var(--space-open);
   display: flex; flex-direction: column; align-items: center;
@@ -1593,7 +1950,91 @@ html[data-lab="b"] .empty-title { color: var(--star); }
 
 @keyframes figure-in { from { opacity: 0; } }
 
+/* Scene motion (GALA-87) -------------------------------------------------- */
+
+/* The GSAP layer's footholds in the stylesheet. Everything else a scene does is
+   a transform the runtime writes inline; these are the things CSS has to own
+   because they exist before or without the runtime. A page that has not asked
+   for motion in its front matter loads no scripts and never gets the classes
+   this section is scoped to, so its static shell is unchanged: html.motion is
+   set by assets/motion.js and by nothing else. */
+
+/* The opening scene holds the hero for one viewport. The hold itself is
+   ScrollTrigger's (it wraps the hero in a spacer of the same height and fixes
+   it), because that keeps the page's own scroll and the browser's scroll
+   anchoring in charge: nothing about the pin is a full-screen overlay, focus
+   order never enters it, and an anchor jump still lands where it says. The
+   wrapper is the scene's scope in the markup and takes no style of its own. */
+
+/* The first frame. An element a sequence moves is visible in the HTML and laid
+   out where it belongs; this is the only rule in the site that hides content
+   for the runtime. The class is set by the boot snippet in _includes/motion.html
+   only when the reader has not asked for reduced motion, it is removed by the
+   runtime before the first tween is built, and the snippet removes it on a
+   timer if the runtime never arrives — so a failed script ends as the static
+   page, not as a blank hero. */
+html.motion-boot .hero .lede,
+html.motion-boot .hero .topic-list,
+html.motion-boot [data-reveal] { opacity: 0; transform: translateY(var(--rise-distance)); }
+/* The switch paused the statement's own loop, and on this page the scroll is
+   what moves it: the control and its checkbox leave the page together, before
+   the first paint and for as long as the scene runs, so nothing reflows when the
+   runtime takes the loop away and no invisible checkbox keeps a tab stop. */
+html.motion-boot .hero .crawl-switch,
+html.motion-boot .hero .crawl-hold,
+html.motion .hero .crawl-switch,
+html.motion .hero .crawl-hold { display: none; }
+
+/* The reading rail on an entry: a hairline across the top, filling to the
+   entry's own progress. It is only drawn while a scene runs, so the page
+   without JavaScript has no rail and no gap where one would be. Decorative —
+   the entry is the content — so it is hidden from the accessibility tree in
+   the markup and carries no pointer target. */
+.reading-rail { display: none; }
+html.motion .reading-rail {
+  display: block; position: fixed; inset-block-start: 0; inset-inline: 0; z-index: 10;
+  height: var(--rail-height);
+  background: var(--line);
+  pointer-events: none;
+}
+.reading-rail span {
+  --progress: 0;
+  display: block; height: 100%;
+  background: var(--accent);
+  box-shadow: var(--glow-accent);
+  transform: scaleX(var(--progress));
+  transform-origin: 0 50%;
+  transition: transform var(--dur-quick) var(--ease-move);
+}
+
+/* A measured ladder: one row per version, the name and the time on one line and
+   the bar beneath them, so the figure reads as a list at 360 and as a chart at
+   1440 without a second layout. The bar's width is its value as a share of the
+   slowest, set from the data file as --size; the runtime grows the same bar
+   from nothing, and a reader without it sees the finished chart. */
+.ladder { margin-block: var(--space-5); }
+.ladder-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.ladder-row {
+  display: grid; grid-template-columns: 1fr auto; align-items: baseline;
+  gap: var(--space-half) var(--space-2);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+}
+.ladder-name { color: var(--starlight); }
+.ladder-value { color: var(--dust); font-variant-numeric: tabular-nums; }
+.ladder-track { grid-column: 1 / -1; height: var(--tick); background: var(--deep); border: var(--border-hair); }
+.ladder-bar { display: block; height: 100%; width: var(--size); background: var(--accent); transform-origin: 0 50%; }
+
+/* The runtime owns a picture while it runs: the view() timeline below would
+   otherwise arrive at the same moment and fade it twice. Pages without motion
+   keep the CSS reveal. */
+html.motion .prose figure img,
+html.motion .plate img { animation: none; }
+
 /* Narrow ----------------------------------------------------------------- */
+
+@media (min-width: 700px) {
+  .repo-head { grid-template-columns: minmax(0, 1fr) var(--flora-rail); column-gap: var(--space-4); }
+}
 
 @media (max-width: 700px) {
   .site-header { font-size: var(--step-0); letter-spacing: var(--track-label); column-gap: var(--space-2); }
@@ -1618,6 +2059,9 @@ html[data-lab="b"] .empty-title { color: var(--star); }
   .ident-who { line-height: var(--leading-body); }
   .ident-line { font-size: var(--step-3); }
   .table-note { max-width: none; }
+  .plots { grid-template-columns: repeat(auto-fill, minmax(var(--flora-plot), 1fr)); gap: var(--space-3) var(--space-2); }
+  .plot { padding: var(--space-3) var(--space-1) var(--space-4); }
+  .plants { grid-template-columns: repeat(auto-fill, minmax(var(--flora-cell), 1fr)); }
 }
 
 /* Between 420 and 480 the four links fit at --step-0 only with their tracking
@@ -1657,4 +2101,181 @@ html[data-lab="b"] .empty-title { color: var(--star); }
   .card:focus-visible .card-media img { transform: none; }
   .strip-track { animation: none; }
   .strip-toggle, .strip-pause { display: none; }
+  .map-bug .crawl-hold { display: none; }
+  .scene-frame #scene-city,
+  .scene-frame #scene-traffic-back,
+  .scene-frame #scene-station,
+  .scene-frame #scene-traffic-front,
+  .scene-frame #signal-pulse,
+  .scene-frame #docking-shuttle,
+  .scene-frame #drone-a,
+  .scene-frame #drone-b,
+  .scene-frame #alignment-line,
+  .scene-frame #station-masts,
+  .scene-frame #station-mast,
+  .scene-frame #station-hook { animation: none; transform: none; }
+  .scene-switch, .scene-hold { display: none; }
+}
+
+/* Forest ------------------------------------------------------------------ */
+
+/* The one canvas on the site. The stage is a 4:3 box the size of the console's
+   own frame, never the window's, and the canvas inside it fills that box
+   exactly: the picture is 320 × 240 and the browser stretches it with nearest
+   neighbour, so what a reader sees is the framebuffer's own pixels at three
+   times their size rather than a filtered photograph of them.
+
+   Without JavaScript there is no stage at all — the twenty sentences below are
+   the whole page, and the poster's only control would be a button that does
+   nothing — so the section is hidden until the inline script in the page's
+   first line puts `js` on <html>. Nothing else on the site does this, and the
+   reason it does here is that this is the only section that is inert without a
+   renderer. */
+.forest-stage {
+  display: none;
+  position: relative;
+  width: min(100%, var(--forest-stage));
+  aspect-ratio: var(--forest-aspect);
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--void);
+  /* An outline, not a border: a border would take two of the box's pixels out
+     of the picture and leave the upscale at 2.99× instead of 3×. */
+  outline: var(--hair) solid var(--line);
+}
+.js .forest-stage { display: block; }
+
+.forest-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--void);
+  image-rendering: pixelated;
+}
+
+/* The poster: the picture's own proportions held open before it is drawn, so
+   the page never moves when the bear arrives. Its type is the page's type —
+   there is no separate voice for a poster. */
+.forest-poster {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  text-align: center;
+  background-image: var(--rim);
+  background-repeat: no-repeat;
+}
+.forest-poster-title {
+  font: 400 var(--step-5)/var(--leading-tight) var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: var(--track-display);
+  color: var(--star);
+}
+.forest-poster-line {
+  max-width: var(--measure);
+  font: var(--step-2)/var(--leading-body) var(--font-text);
+  color: var(--starlight);
+}
+.forest-fallback {
+  max-width: var(--measure);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  color: var(--dust);
+}
+
+/* What the frame costs, printed from the live renderer rather than written
+   down: a number in this line is a number the scene measured. */
+.forest-spec {
+  min-height: calc(var(--step-0) * var(--leading-body));
+  margin-top: var(--space-2);
+  font: var(--step-0)/var(--leading-body) var(--font-mono);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--dust);
+  text-align: center;
+}
+
+/* The picture and the sentence, side by side from 1000px: the bear talking is
+   the point, and a 720px stage with the words underneath puts the words below
+   the fold on the laptop the page is most likely to be read on. Below 1000
+   they stack, and the panel is held to the reading measure. */
+.forest-body { display: grid; gap: var(--space-4); }
+@media (min-width: 1000px) {
+  .forest-body {
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-5);
+  }
+}
+
+/* The panel: one sentence, who said it, and the two controls. Its sentence row
+   is three lines tall at the narrow width and four on a phone, so a short
+   sentence and a long one put the controls in the same place. */
+.forest-panel {
+  display: none;
+  max-width: var(--measure);
+  margin-inline: auto;
+  gap: var(--space-2);
+}
+.forest-panel:not([hidden]) { display: grid; }
+.forest-count {
+  font: var(--step-1)/var(--leading-tight) var(--font-mono);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--dust);
+}
+.forest-sentence {
+  min-height: calc(var(--step-3) * var(--leading-body) * 3);
+  font: var(--step-3)/var(--leading-body) var(--font-text);
+  color: var(--star);
+}
+.forest-where { font: var(--step-2)/var(--leading-body) var(--font-mono); }
+.forest-controls { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* The twenty sentences, present in the document before any script runs. Same
+   rows as the repository index, in the same order, so the list is the page's
+   spine rather than a fallback. */
+.forest-lines {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  border-top: var(--border-hair);
+}
+.forest-lines li {
+  display: grid;
+  /* The name column is the repository index's 15ch until a name is longer than
+     that, which two of them are: the column grows for that row rather than
+     pushing its sentence sideways. */
+  grid-template-columns: minmax(var(--col-name), max-content) 1fr;
+  gap: var(--space-3);
+  padding-block: var(--space-2);
+  border-bottom: var(--border-hair);
+}
+.forest-lines a {
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  color: var(--star);
+  text-decoration: none;
+}
+.forest-lines a:hover { color: var(--accent-text); }
+.forest-lines a:active { color: var(--accent-peak); }
+.forest-line-sentence {
+  font: var(--step-2)/var(--leading-body) var(--font-text);
+  color: var(--starlight);
+}
+.forest-note {
+  max-width: var(--measure);
+  margin-top: var(--space-3);
+  font: var(--step-1)/var(--leading-body) var(--font-mono);
+  color: var(--dust);
+}
+.forest-note-end { margin-top: var(--space-5); }
+
+@media (max-width: 700px) {
+  .forest-lines li { grid-template-columns: 1fr; gap: var(--space-half); }
+  .forest-poster { padding: var(--space-3); gap: var(--space-2); }
+  .forest-poster-title { font-size: var(--step-4); }
+  .forest-poster-line { font-size: var(--step-1); }
+  .forest-sentence { font-size: var(--step-2); min-height: calc(var(--step-2) * var(--leading-body) * 4); }
 }

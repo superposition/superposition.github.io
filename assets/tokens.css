@@ -44,6 +44,9 @@
      --chip-text 16.9 on --chip-bg     an eyebrow chip on its own film
      --film-text 16.9 on --film-bg     the release plate over a photograph
      --plum-mark   4.2 /  3.8 /  3.5   the quotation mark, at edge contrast
+    --flora-bloom 9.71 /  8.66 /  7.97  a petal, and a label for its species
+    --flora-spore 14.25 / 12.71 / 11.70 spores and the seed capsule
+    --flora-leaf  3.35 /  2.98 /  2.75  every leaf, under a --cream outline
 
    Instrument (data-lab="a"), ground #0a0a0b:
      --star       16.0 / 15.2 / 14.6
@@ -121,6 +124,29 @@
   --nebula-text: #6f93c9;
   --plum-mark: #9a5e72;
 
+  /* Flora (GALA-88): the garden. Five species, and these four are the only
+     colours any of them needs beyond the chrome above. They are not a fourth
+     identity and not a rainbow: a reader tells the species apart by silhouette
+     first, and these carry what a plant cannot say in shape — the hue of a
+     petal, the hue of a spore, the depth of a leaf, and the light behind a
+     plot. The bloom, the spore and the leaf are baked into the SVG assets as
+     well, because an <img> cannot read a custom property: scripts/flora/grow.py
+     carries the same three values and has to change with them.
+
+     Measured on the three grounds, and printed by `npm run contrast`:
+       --flora-bloom  9.71 /  8.66 /  7.97  petal fill, and bright enough to
+                                            label
+       --flora-spore 14.25 / 12.71 / 11.70  spores and the seed capsule
+       --flora-leaf   3.35 /  2.98 /  2.75  every stem and leaf. Measured as a
+                                        divider because it is a fill and never
+                                        an edge: each leaf carries a --cream
+                                        outline, which is 4.6:1 against it and
+                                        15.4:1 against the ground.
+       --flora-glow                     a bloom of light, not type, not an edge */
+  --flora-bloom: #ff8fa3;
+  --flora-spore: #9fe870;
+  --flora-leaf: #2f6b52;
+
   /* A chip: an eyebrow label is a piece of hardware, so it sits on its own
      film. On an absolute-black ground a black film has nothing to sit on, so
      the film is a warm charcoal with a hairline edge. Two trios, because they
@@ -141,6 +167,13 @@
   --glow-alert: 0 0 2px rgba(226, 64, 47, .55), 0 0 16px rgba(226, 64, 47, .22);
   --text-glow: 0 0 10px rgba(255, 194, 74, .32);
   --glow-soft: 0 0 18px rgba(255, 194, 74, .18);
+
+  /* A plot's atmosphere. Two layers, and neither is a wash: the strata are
+     hairlines on a 16px pitch, so a plot reads as a horizon rather than as a
+     card, and the glow is one bloom behind the specimen, cool enough that the
+     plant's own bloom still carries the colour. */
+  --strata: repeating-linear-gradient(to bottom, var(--line) 0 var(--hair), transparent var(--hair) var(--space-3));
+  --flora-glow: radial-gradient(58% 54% at 50% 44%, rgba(255, 143, 163, .17) 0%, rgba(255, 143, 163, 0) 72%);
 
   /* The gauge: 4px bars on a 12px pitch, one hairline tall, over a hairline
      track. One cluster per section title, never a background. */
@@ -221,7 +254,15 @@
   --step-decal: 11px;
   --step-1: 13px;
   --step-2: 15px;
-  --step-3: 19px;
+  /* The reading step. The field's body sizes run 16–22px with a median of 18,
+     and the pages worth copying are the ones that pair the size with a wide
+     column rather than a narrow one: Nautilus 20px in 700px, Low-tech 20px in
+     660px, Aeon 22px in 704px. At 20px in the 39rem measure below a
+     paragraph of an entry-length page sets 69.2 characters per line at 1440,
+     median 70, by a Range walk over plain paragraphs, spaces counted, full
+     lines only. Only the reading step moves: --step-0/-1/-2 and --step-decal
+     are labels and data, measured separately. */
+  --step-3: 20px;
   --step-4: clamp(19px, 2vw, 22px);
   --step-5: clamp(28px, 4.4vw, 44px);
   --step-hero: clamp(48px, 10.4vw, 150px);
@@ -247,11 +288,27 @@
   --leading-body: 1.6;
   /* Rem, not ch: a ch measure resolves against the font of whatever element
      it lands on, so the same token gave 544px in prose, 696px inside an Anton
-     heading and 488px in mono. 34rem is the 544px the prose wants, and the
-     narrower one is narrower: at 38rem the lede was 608px against a 544px
-     column and overhung the text it introduces by 64px. */
-  --measure: 34rem;
-  --measure-narrow: 30rem;
+     heading and 488px in mono. 39rem is 624px, the reading column: at
+     --step-3 (20px) eleven plain paragraphs of an entry-length page measure
+     69.2 characters per line at 1440, median 70, by a Range walk that counts
+     the characters between one change of line top and the next. The field's
+     good pages sit at 66–79 (Quanta 68, Aeon 66, Nautilus 78) and its
+     failures at 88–95; the old 34rem/19px measured 63.6 on the same walk, the
+     narrowest column of the fifteen sites surveyed. The 38rem in the
+     instrument identity is that identity's measure at 16px, not this one. */
+  --measure: 39rem;
+  /* 31rem is 496px: at --step-4 (22px) the lede holds 49.3 characters per line
+     at 1440, the shortest measure on the site and still the size the field
+     sets a dek at. 30rem measured 47 — the survey's "30rem gives 50" was
+     arithmetic, and the walk does not agree with it. */
+  --measure-narrow: 31rem;
+  /* 52rem is 832px: the entry headline's own block, 133% of the reading
+     column — Ars runs 161%, Nautilus 146%, Quanta 136%. Measured at --step-5
+     (44px, Anton): a 71-character title sets in two lines with a 481px second
+     line, a 72-character one with 514px, and a 44-character title lands on one
+     line at 763px. At 45rem the 44-character title breaks with an 81px
+     orphan, which is what fixes the floor. */
+  --measure-head: 52rem;
 
   /* Tracking. Labels are the machine voice; display is the poster. */
   --track-label: .10em;
@@ -277,6 +334,11 @@
   --flow: var(--space-4);
   --space-section: clamp(40px, 5.4vw, 72px);
   --space-open: clamp(56px, 8vw, 112px);
+
+  /* The one box on the site sized to a thumb rather than to its type. The
+     soundtrack control is pressed on a phone in the footer, so it is a 44px
+     square; every other control clears the 24px floor from its padding. */
+  --target-touch: 44px;
 
   /* Two densities, one scale. Comfortable is the reading density: prose, a
      journal row, a card. Compact is the data density: the repository index and
@@ -307,6 +369,10 @@
   --gutter: 24px;
   --max-wide: 1200px;
   --max-crawl: 34rem;
+  /* The widest a plate is allowed to get without going full-bleed: 1000px is
+     0.69 of a 1440 viewport, which is where Nautilus (0.71) and Low-tech
+     (0.72) keep their photographs. It is the same cap the .figure component
+     uses, and the entry page now reads it too. */
   --figure-max: 1000px;
   --col-name: 15ch;
   --def-min: 11rem;
@@ -316,11 +382,24 @@
   --swatch-min: 180px;
   --showing-min: 320px;
   --campaign-col: clamp(220px, 26vw, 360px);
+  /* The garden's three measures. A plot holds a specimen big enough to read the
+     bloom at; the twenty are a catalogue, so their cells are small and the
+     label does the naming; a repository page keeps its specimen in the rail,
+     because the page's subject is the writing. */
+  --flora-plot: clamp(150px, 17vw, 236px);
+  --flora-cell: 132px;
+  --flora-rail: clamp(88px, 11vw, 120px);
   --skip-offset: -100px;
 
   /* Heights and one-off measures. A hero is measured against the screen it
      opens on, so it is the one place a viewport unit is the honest answer. */
   --hero-min: 88svh;
+  /* The forest's stage. 4:3 is the console's own frame and the shape of the
+     320 × 240 framebuffer the scene draws into; 960px is the widest that frame
+     is allowed to get, which makes the upscale exactly 3× on a laptop and
+     leaves the picture hard-edged instead of smooth. */
+  --forest-aspect: 4 / 3;
+  --forest-stage: 960px;
   --hero-min-instrument: 82svh;
   --hero-min-poster: 92svh;
   --crawl-perspective: 760px;
@@ -343,6 +422,55 @@
   --dur-glide: 340ms;
   --ease-soft: ease-in-out;
   --ease-out: cubic-bezier(.2, .55, .25, 1);
+
+  /* Scene motion (GALA-87). The third family: what a page may do with the
+     scroll. One curve for all of it, a ladder of four durations, one stagger
+     and one distance. assets/motion.js reads every token below by name — and
+     builds its GSAP ease out of --ease-move — so a sequence in JavaScript and
+     a rule in notebook.css cannot disagree about how something moves. Nothing
+     here reaches a page that has not asked for motion in its front matter;
+     docs/motion.md is the spec, including when a page is allowed to ask. */
+  --ease-move: cubic-bezier(.22, .61, .36, 1); /* one curve: no bounce, no elastic */
+  --dur-quick: 160ms;    /* a reading the reader caused: the progress rail */
+  --dur-rise: 420ms;     /* one element arriving in place */
+  --dur-settle: 720ms;   /* a short lifted sequence */
+  --dur-scene: 900ms;    /* the longest single step a scene may take */
+  --stagger-step: 70ms;  /* between neighbours: rows, stills, letters */
+  --rise-distance: 18px; /* how far an element travels when it arrives */
+  --scene-pin: 100svh;   /* the scroll a pinned scene is held for */
+  --rail-height: 2px;    /* the reading rail on an entry */
+  /* The scene on /station/. Three depths drift at three speeds, so a still
+     drawing reads as a camera; the action keeps a clock of its own. The
+     travels are user units of the 2400 by 1500 canvas, so one number holds at
+     every width the page is read at. --pulse-span is the truss the pulse runs
+     out along: 0.83 of the station's 1280 units of canvas. */
+  --dur-drift-far: 120s;
+  --dur-drift-mid: 96s;
+  --dur-drift-near: 72s;
+  --dur-pulse: 16s;
+  --dur-approach: 20s;
+  --dur-drone: 44s;
+  --dur-beam: 6s;
+  --drift-far: 9px;
+  --drift-mid: 15px;
+  --drift-near: 30px;
+  --drift-lift: 6px;
+  --pulse-span: 942px;
+  /* Secondary motion: the parts that do not move with the hull. Three periods so
+     the station never reads as a rigid cut-out sliding across the frame. */
+  --dur-sway-mast: 17s;
+  --dur-sway-dish: 11s;
+  --dur-sway-hook: 7.5s;
+  --sway-mast: 2.2px;
+  --sway-lift: 0.9px;
+  --sway-hook: 0.6deg;
+  --beam-march: -20px;
+  --approach-x: 26px;
+  --approach-y: -3.7px;
+  --drone-a-x: 26px;
+  --drone-a-y: -5px;
+  --drone-b-x: -22px;
+  --drone-b-y: 4px;
 }
 
 /* Instrument ------------------------------------------------------------ */
@@ -433,7 +561,6 @@ html[data-lab="b"] {
       rgba(5, 5, 8, .74) 42%,
       rgba(5, 5, 8, 0) 80%);
   --hero-wash: .13;
-  --starfield: url('/assets/art/starfield.svg');
 
   --font-text: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
   --track-label: .20em;
@@ -460,5 +587,10 @@ html[data-lab="b"] {
     --dur-sweep: 0s;
     --dur-state: 0s;
     --dur-glide: 0s;
+    --dur-quick: 0s;
+    --dur-rise: 0s;
+    --dur-settle: 0s;
+    --dur-scene: 0s;
+    --stagger-step: 0s;
   }
 }
