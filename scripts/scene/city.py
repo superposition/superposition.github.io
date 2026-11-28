@@ -30,6 +30,22 @@ DUST = "#a79085"
 RED = "#e2402f"
 GROUND = "#000000"
 
+# The far tier is drawn at this opacity: the haze thins the city by depth. It is
+# a property of the tier, not a wash over the picture, so the near tier is never
+# dimmed for a far field's sake.
+FAR = "0.55"
+
+# Where the city is lit from, and how far that light reaches: windows thin out
+# towards the frame's edges rather than covering it evenly.
+LIT_CENTRE = 1296.0
+LIT_SPREAD = 1150.0
+
+# What a window is, by tier. Lit floors are value, not accent: the near tier's
+# are cream, the middle distance's dust, the far tier's dim dust. A seeded 1 in
+# 8 stays amber, so the lights in the city read as somebody's rather than as a
+# pattern.
+WINDOW = {"near": (CREAM, "1"), "mid": (DUST, "1"), "far": (DUST, FAR)}
+
 # --- canvas and camera ----------------------------------------------------
 W, H = 2400, 1500
 HORIZON = 860.0
@@ -134,8 +150,8 @@ def block(lay, group, xs0, xs1, z0, z1, top_y, rng, windows=0.0,
                 height=h, left=left)
 
 
-def window_rows(lay, group, xs0, xs1, z0, top_y, yg0, rng, dens, colour=AMBER):
-    """Lit floors as 1px amber marks: one dashed row per storey."""
+def window_rows(lay, group, xs0, xs1, z0, top_y, yg0, rng, dens, colour=None, opacity=None):
+    """Lit floors as one dashed row per storey, in the tier's own ink value."""
     width = xs1 - xs0
     if width < 40:
         return
@@ -149,7 +165,13 @@ def window_rows(lay, group, xs0, xs1, z0, top_y, yg0, rng, dens, colour=AMBER):
         return
     rows = []
     y = top_y + floor_s * (0.5 + 0.5 * rng.random())
-    keep = 0.24 + 0.46 * dens
+    # A density gradient across the frame: the city is lit under the station and
+    # thins towards the frame's edges, so the eye has somewhere quiet to rest
+    # instead of an even field of windows. The falloff is a function of screen x
+    # only, so it holds every seed and every depth row.
+    cx = (xs0 + xs1) * 0.5
+    edge = min(1.0, abs(cx - LIT_CENTRE) / LIT_SPREAD)
+    keep = (0.24 + 0.46 * dens) * (1.0 - 0.72 * edge * edge)
     while y < yg0 - floor_s * 0.4:
         if rng.random() < keep:
             rows.append(f"M{p(x0, y)}h{n(x1 - x0)}")
@@ -157,8 +179,12 @@ def window_rows(lay, group, xs0, xs1, z0, top_y, yg0, rng, dens, colour=AMBER):
     if not rows:
         return
     dash = dash_pattern(pitch, rng)
+    tier = group.replace("city-", "")
+    base, base_op = WINDOW.get(tier, (DUST, "1"))
+    colour = colour or (AMBER if rng.random() < 0.125 else base)
+    opacity = opacity or (base_op if colour != AMBER else "0.9")
     lay.add(group, f'<path d="{"".join(rows)}" stroke="{colour}" '
-                   f'stroke-width="1" stroke-dasharray="{dash}"/>')
+                   f'stroke-width="1" stroke-opacity="{opacity}" stroke-dasharray="{dash}"/>')
 
 
 def roof_detail(lay, group, xs0, xs1, top_y, yt1, bs0, bs1, rng, density):
@@ -604,11 +630,11 @@ def weather(lay, rng, params):
 
 GROUP_ATTRS = {
     "ground": 'fill="none" stroke="' + DUST + '" stroke-width="1"',
-    "city-far": 'fill="none" stroke="' + DUST + '" stroke-width="1"',
+    "city-far": 'fill="none" stroke="' + DUST + '" stroke-width="1" stroke-opacity="' + FAR + '"',
     "city-mid": 'fill="none" stroke="' + DUST + '" stroke-width="2"',
-    "city-near": 'fill="none" stroke="' + CREAM + '" stroke-width="4"',
+    "city-near": 'fill="none" stroke="' + CREAM + '" stroke-width="2"',
     "yard": 'fill="none" stroke="' + CREAM + '" stroke-width="2"',
-    "fore": 'fill="none" stroke="' + CREAM + '" stroke-width="1"',
+    "fore": 'fill="none" stroke="' + CREAM + '" stroke-width="4"',
     "weather": 'fill="none" stroke="' + DUST + '" stroke-width="1"',
 }
 
