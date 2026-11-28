@@ -913,7 +913,7 @@ function main() {
   const assignment = topicByRepo();
 
   if (ts.length !== 5) throw new Error(`expected five topics, read ${ts.length}`);
-  if (rs.length !== 20) throw new Error(`expected twenty repository pages, read ${rs.length} (${rs.map((r) => r.slug).join(', ')})`);
+  if (rs.length !== 19) throw new Error(`expected nineteen repository pages, read ${rs.length} (${rs.map((r) => r.slug).join(', ')})`);
   if (cu.length !== 4) throw new Error(`expected four series units, read ${cu.length}`);
   for (const r of rs) {
     if (!(assignment[r.slug] || r.topic)) throw new Error(`no topic for ${r.slug}: _data/topic-by-repo.yml is missing it`);

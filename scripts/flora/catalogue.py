@@ -89,7 +89,6 @@ TOPIC_BY_REPO = {
     "scenelab": "matrices",                   # template-driven arrangement control
     "space-bullet-hell": "kinematics",        # a shooter built on movement
     "topcoat-blocks": "data-informatics",     # a library of blocks, catalogued
-    "zig-wasm-webgpu-hallway-shooter": "kinematics",  # a simulation compiled from Zig
 }
 
 # The fallback for a repository nobody has filed yet: one word per topic,

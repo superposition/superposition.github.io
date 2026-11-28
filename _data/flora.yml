@@ -133,13 +133,6 @@ projects:
     label: Joint Vine
     seed: 1511751
     file: /assets/flora/joint-1511751.svg
-  - slug: zig-wasm-webgpu-hallway-shooter
-    title: "Hallway Shooter"
-    topic: kinematics
-    species: joint
-    label: Joint Vine
-    seed: 9854864
-    file: /assets/flora/joint-9854864.svg
   - slug: 91
     title: "NAIWAN 91"
     topic: matrices

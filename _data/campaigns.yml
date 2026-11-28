@@ -272,21 +272,6 @@
       alt: "The first sector in play: a dark starfield, the player at the left edge with an orange jetpack flame, and obstacles and enemies scattered across the middle of the screen."
       credit: From the repository
 
-- slug: zig-wasm-webgpu-hallway-shooter
-  title: Hallway Shooter
-  film: Three hundred and twenty units
-  genre: Action
-  runtime: 0h 33m
-  logline: "One corridor streaming toward you, its simulation Zig compiled to WebAssembly, drawn with WebGPU."
-  cast: [the corridor, the worker, the instanced draw]
-  stills:
-    - src: /assets/repos/zig-wasm-webgpu-hallway-shooter/corridor-moving-1440.webp
-      alt: "The same corridor twelve seconds later, obstacles in new positions and the score readout at 2822."
-      credit: From the repository
-    - src: /assets/repos/zig-wasm-webgpu-hallway-shooter/corridor-open-1440.webp
-      alt: "A dark vertical corridor with a green player box near the top, orange and blue obstacle rectangles climbing toward it, and a small monospace score readout."
-      credit: From the repository
-
 - slug: macos-metal-vslam
   title: macOS Metal vSLAM
   film: Four views of one moment

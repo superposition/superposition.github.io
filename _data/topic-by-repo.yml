@@ -4,7 +4,7 @@
 # repository is filed under a topic, a series unit fronts a repository, an
 # entry belongs to a topic. The first of those has no home of its own yet:
 # `_repos/*.md` carries no `topic:` front matter, so the assignment is this
-# file. It is GALA-88's reading of the twenty taglines (the garden's
+# file. It is GALA-88's reading of the taglines (the garden's
 # `TOPIC_BY_REPO` in scripts/flora/catalogue.py, PR #53), copied here rather
 # than re-derived so the two pages cannot disagree. The generator reads a
 # repository's own `topic:` front matter first and this file second, so the
@@ -31,4 +31,3 @@ topics:
   "scenelab": matrices   # template-driven arrangement control
   "space-bullet-hell": kinematics   # a shooter built on movement
   "topcoat-blocks": data-informatics   # a library of blocks, catalogued
-  "zig-wasm-webgpu-hallway-shooter": kinematics   # a simulation compiled from Zig

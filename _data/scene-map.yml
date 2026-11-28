@@ -16,7 +16,7 @@
 seed: 1977
 counts:
   topics: 5
-  repos: 20
+  repos: 19
   units: 4
   entries: 0
 camera:
@@ -157,7 +157,7 @@ nodes:
   url: "/projects/cannoli-hell/"
   size: 0.078
   weight: 1
-  p: [-0.972, 0.643, 2.431]
+  p: [-1.088, 0.643, 2.381]
 - id: repo:kotoba-line
   kind: repo
   name: "Kotoba Line"
@@ -178,7 +178,7 @@ nodes:
   url: "/projects/ml-kem-ml-dsa-lab/"
   size: 0.078
   weight: 1
-  p: [-2.354, 0.408, 0.101]
+  p: [-2.169, 0.328, 0.024]
 - id: repo:marigraph
   kind: repo
   name: "Marigraph"
@@ -199,21 +199,14 @@ nodes:
   url: "/projects/space-bullet-hell/"
   size: 0.078
   weight: 1
-  p: [-1.152, 0.863, 1.847]
-- id: repo:zig-wasm-webgpu-hallway-shooter
-  kind: repo
-  name: "Hallway Shooter"
-  url: "/projects/zig-wasm-webgpu-hallway-shooter/"
-  size: 0.078
-  weight: 1
-  p: [-1.693, 0.481, 1.987]
+  p: [-1.325, 0.863, 1.727]
 - id: repo:macos-metal-vslam
   kind: repo
   name: "macOS Metal vSLAM"
   url: "/projects/macos-metal-vslam/"
   size: 0.078
   weight: 1
-  p: [-1.662, 0.688, 1.391]
+  p: [-1.969, 0.498, 1.648]
 - id: repo:cairo_vault
   kind: repo
   name: "Cairo Vault"
@@ -291,7 +284,6 @@ edges:
 - [topic:matrices, repo:marigraph, relation]
 - [topic:data-informatics, repo:1brc-cpp, relation]
 - [topic:kinematics, repo:space-bullet-hell, relation]
-- [topic:kinematics, repo:zig-wasm-webgpu-hallway-shooter, relation]
 - [topic:kinematics, repo:macos-metal-vslam, relation]
 - [topic:cryptographic-proofs, repo:cairo_vault, relation]
 - [topic:ai, repo:nanda-ts, relation]
