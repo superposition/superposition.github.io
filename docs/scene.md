@@ -60,10 +60,10 @@ Per layer, measured on the committed files by `scripts/scene/measure.py`:
 
 | Layer | near | mid | far | accent | steps |
 | --- | --- | --- | --- | --- | --- |
-| station | 29.6 % | 52.2 % | 14.9 % | 2.6 % | cream 4/2/1, dust 2/1, dust@0.5 |
-| city | 24.1 % | 55.2 % | 15.0 % | 5.7 % | cream 2, dust 2/1, dust@0.55 |
+| station | 29.6 % | 52.1 % | 14.9 % | 3.3 % | cream 4/2/1, dust 2/1, dust@0.5 |
+| city | 26.4 % | 56.1 % | 16.5 % | 0.9 % | cream 2, dust 2/1, dust@0.55 |
 | traffic | 21.3 % | 7.7 % | 68.3 % | 2.6 % | cream 2, dust 2/1 at 0.5–0.9 |
-| composed | 24.8 % | 45.3 % | 27.1 % | 2.8 % | — |
+| composed | 25.2 % | 43.8 % | 28.7 % | 2.3 % | — |
 
 **Occlusion.** A line that passes behind a nearer form and continues through it
 reads as wireframe, so every opaque form registers a solid in the station's
