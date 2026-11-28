@@ -57,7 +57,7 @@ rather than guessed: the node carries `fronted: false`.
   and link, plus the camera. 1.8 KB gzipped, and emitted into the page as JSON
   so the canvas reads the same numbers.
 - `_includes/scene/map.svg` — the same scene projected once, cut, lit and
-  depth-ramped, with the names set as text. 26 KB, about 6 KB gzipped.
+  depth-ramped, with the names set as text. 26 KB, 8.4 KB gzipped.
 
 The geometry the canvas draws comes from `assets/scene/lib/forms.js`, and the
 camera and projection from `assets/scene/lib/camera.js` — the same two files the
@@ -359,7 +359,7 @@ SwiftShader), from `_site` built by WSL Ruby 3.0.2, and by
 | canvas name position vs the still's, worst | 0.6 px | labels are hidden below 700 px |
 | still render vs canvas render, pixels within 3 grey levels | 98.6% | — |
 | the map's own code (entry + four modules), bytes / gzipped | 45,711 / 16,875 | same |
-| the still, bytes / gzipped | 26,315 / 8,431 | same |
+| the still, bytes / gzipped | 26,330 / 8,432 | same |
 | the YAML, bytes / gzipped | 7,003 / 1,987 | same |
 | two independent loads, every name at the same pixel | identical | identical |
 
