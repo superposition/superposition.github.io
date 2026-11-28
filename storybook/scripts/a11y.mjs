@@ -18,6 +18,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
+import { measureRun } from './axe.mjs';
 import axe from 'axe-core';
 
 const staticDir = resolve(fileURLToPath(new URL('../storybook-static', import.meta.url)));
@@ -68,19 +69,7 @@ for (const story of stories) {
     continue;
   }
   await page.evaluate(() => document.fonts.ready);
-  await page.evaluate(axeSource);
-  const results = await page.evaluate(async (tags) => {
-    const { violations } = await window.axe.run(document, {
-      runOnly: { type: 'tag', values: tags },
-    });
-    return violations.map((v) => ({
-      id: v.id,
-      impact: v.impact,
-      help: v.help,
-      nodes: v.nodes.slice(0, 4).map((n) => n.target.join(' ')),
-      count: v.nodes.length,
-    }));
-  }, TAGS);
+  const results = await measureRun(page, { source: axeSource, tags: TAGS, id: story.id });
 
   checked += 1;
   if (!results.length) continue;

@@ -40,6 +40,26 @@
   <link rel="preload" href="{{ '/assets/fonts/ibm-plex-mono-regular.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="{{ '/assets/tokens.css' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/notebook.css' | relative_url }}?v=4">
+  {%- comment -%}
+    Two layers, and both are opt-in per page. `motion:` loads the one GSAP
+    runtime behind assets/motion.js (GALA-87); a page without it loads no script
+    at all, which is every page that has nothing to move with one.
+    docs/motion.md says what a page may ask for and why.
+
+    `scene:` puts the vendored three.js behind one import map — the single place
+    the renderer is addressed, so the map and the forest import the same build —
+    and loads the scene's own module. Neither is fetched by a page with nothing
+    to draw, and each scene asks for the renderer only after the page has loaded
+    and only if the browser can draw it.
+  {%- endcomment -%}
+  {% if page.motion %}{% include motion.html %}{% endif %}
+  {% if page.scene %}
+  <script type="importmap">
+  {"imports":{"three":"{{ '/assets/vendor/three/three.module.min.js' | relative_url }}","three/lines":"{{ '/assets/vendor/three/lines.module.min.js' | relative_url }}"}}
+  </script>
+  {% if page.scene == 'map' %}<script type="module" src="{{ '/assets/scene/map.js' | relative_url }}"></script>{% endif %}
+  {% if page.scene == 'forest' %}<script type="module" src="{{ '/assets/forest/page.js' | relative_url }}"></script>{% endif %}
+  {% endif %}
   {% if page.math %}
   <script>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]],displayMath:[["$$","$$"],["\\[","\\]"]],processEscapes:true},options:{skipHtmlTags:["script","noscript","style","textarea","pre","code"]}};</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
@@ -52,8 +72,10 @@
     <nav aria-label="Main navigation">
       <a href="{{ '/projects/' | relative_url }}" {% if page.url == '/projects/' or page.collection == 'repos' %}aria-current="page"{% endif %}>Repositories</a>
       <a class="nav-showing" href="{{ '/now-showing/' | relative_url }}" {% if page.url == '/now-showing/' %}aria-current="page"{% endif %}>Now showing</a>
+      <a class="nav-forest" href="{{ '/forest/' | relative_url }}" {% if page.url == '/forest/' %}aria-current="page"{% endif %}>Forest</a>
       <a href="{{ '/journal/' | relative_url }}" {% if page.url == '/journal/' or page.collection == 'posts' %}aria-current="page"{% endif %}>Journal</a>
       <a class="nav-series" href="{{ '/series/' | relative_url }}" {% if page.url == '/series/' %}aria-current="page"{% endif %}>Series</a>
+      <a class="nav-garden" href="{{ '/garden/' | relative_url }}" {% if page.url == '/garden/' %}aria-current="page"{% endif %}>Garden</a>
       <a href="{{ '/topics/' | relative_url }}" {% if page.url == '/topics/' %}aria-current="page"{% endif %}>Topics</a>
       <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>About</a>
     </nav>
@@ -62,8 +84,15 @@
   <footer class="site-footer wide">
     <div class="wrap">
       <p>Superposition · {{ site.subtitle }}</p>
-      <p><a href="{{ '/feed.xml' | relative_url }}">RSS</a> <span aria-hidden="true">/</span> <a href="https://github.com/superposition">GitHub</a> <span aria-hidden="true">/</span> <a href="{{ '/credits/' | relative_url }}">Image credits</a> <span aria-hidden="true">/</span> <a href="{{ '/style/' | relative_url }}">Design system</a> <span aria-hidden="true">/</span> <a href="{{ '/series/' | relative_url }}">Series</a> <span aria-hidden="true">/</span> <a href="{{ '/now-showing/' | relative_url }}">Now showing</a> <span aria-hidden="true">/</span> <a href="https://t.me/SuprPosition">Say hello</a></p>
+      <p><button class="soundtrack-toggle" type="button" data-soundtrack-toggle aria-pressed="false" aria-label="Play the soundtrack" hidden><svg class="soundtrack-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path class="soundtrack-play" d="M1 0.5 11 6 1 11.5Z"/><path class="soundtrack-pause" d="M1 0.5h3.2v11H1Zm6.8 0H11v11H7.8Z"/></svg>Soundtrack</button> <span aria-hidden="true">/</span> <a href="{{ '/feed.xml' | relative_url }}">RSS</a> <span aria-hidden="true">/</span> <a href="https://github.com/superposition">GitHub</a> <span aria-hidden="true">/</span> <a href="{{ '/credits/' | relative_url }}">Credits</a> <span aria-hidden="true">/</span> <a href="{{ '/style/' | relative_url }}">Design system</a> <span aria-hidden="true">/</span> <a href="{{ '/series/' | relative_url }}">Series</a> <span aria-hidden="true">/</span> <a href="{{ '/garden/' | relative_url }}">Garden</a> <span aria-hidden="true">/</span> <a href="{{ '/now-showing/' | relative_url }}">Now showing</a> <span aria-hidden="true">/</span> <a href="{{ '/station/' | relative_url }}">Station</a> <span aria-hidden="true">/</span> <a href="https://t.me/SuprPosition">Say hello</a></p>
     </div>
+    {%- comment -%}
+      The track is fetched only when the footer control is pressed: the source
+      lives in data-src, the element preloads nothing, and the script sets src
+      on the first press. No page requests the audio until then.
+    {%- endcomment -%}
+    <audio preload="none" loop data-soundtrack-audio data-src="{{ '/assets/audio/superposition.m4a' | relative_url }}"></audio>
+    <script src="{{ '/assets/soundtrack.js' | relative_url }}"></script>
   </footer>
 </body>
 </html>

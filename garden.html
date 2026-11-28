@@ -1,0 +1,45 @@
+---
+layout: default
+title: Garden
+permalink: /garden/
+description: Five species, one per topic, and one plant for every repository.
+---
+
+{%- assign flora = site.data.flora %}
+<header class="page-heading wide">
+  <h1>Garden</h1>
+  <p class="lede">Every topic grows a species and every repository grows one plant of it. A plant is sown from the repository's own name, so it is the same plant on every build: open a project's page and its specimen is waiting beside the title.</p>
+</header>
+
+<div class="wide">
+  <div class="plots">
+    {%- for species in flora.species %}
+    <section class="plot" aria-labelledby="plot-{{ species.slug }}">
+      <figure class="plant" data-plant data-grow data-bloom>
+        <img src="{{ species.file | relative_url }}" width="600" height="900" alt="" loading="lazy" decoding="async">
+      </figure>
+      <h2 class="plot-title" id="plot-{{ species.slug }}">{{ species.label }}</h2>
+      <p class="plot-topic">{{ species.name }}</p>
+      <p class="plot-note">{{ species.blurb }}</p>
+    </section>
+    {%- endfor %}
+  </div>
+</div>
+
+<div class="wide">
+  <section class="garden-specimens" aria-labelledby="specimens-title">
+    <h2 class="section-title" id="specimens-title">Nineteen specimens</h2>
+    <p class="garden-note">One per repository, in the species of its topic. The seed is six digits of the repository's name, which is why the same plant comes back every time.</p>
+    <ul class="plants">
+      {%- for project in flora.projects %}
+      <li>
+        <a class="plant-row" href="{{ '/projects/' | append: project.slug | append: '/' | relative_url }}">
+          <span class="plant"><img src="{{ project.file | relative_url }}" width="600" height="900" alt="" loading="lazy" decoding="async"></span>
+          <span class="plant-name">{{ project.title }}</span>
+          <span class="plant-meta">{{ project.label }} · seed {{ project.seed }}</span>
+        </a>
+      </li>
+      {%- endfor %}
+    </ul>
+  </section>
+</div>

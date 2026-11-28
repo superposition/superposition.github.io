@@ -1,9 +1,10 @@
 const topics = ['Data informatics', 'AI', 'Matrices', 'Kinematics', 'Cryptographic proofs'];
 
-const hero = (withSkeleton) => `<section class="hero" aria-labelledby="hero-title">
-  ${withSkeleton ? '<span class="skeleton skeleton-hero" aria-hidden="true"><span class="skeleton-label">Loading the Carina Nebula</span></span>' : ''}
-  <img src="/assets/art/galaxy/carina-1600.webp" srcset="/assets/art/galaxy/carina-1600.webp 1600w, /assets/art/galaxy/carina-1920.webp 1920w" sizes="100vw" width="1920" height="1111" alt="The Cosmic Cliffs of the Carina Nebula: clouds of rust and blue gas rising against black space.">
-  <div class="starfield" aria-hidden="true"></div>
+/* The backplate is the site's own map now — generated into _includes/scene/map.svg
+   and redrawn in WebGL by assets/scene/map.js, neither of which a workbench story
+   can render. What is here is what the page always has: the type layer, in the
+   band the scene keeps clear for it. */
+const hero = () => `<section class="hero" aria-labelledby="hero-title">
   <div class="hero-inner wide">
     <h1 id="hero-title">Superposition</h1>
     <input class="visually-hidden crawl-switch" type="checkbox" id="crawl-hold">
@@ -24,7 +25,7 @@ export default {
     docs: {
       description: {
         component:
-          'The home page s first viewport: one photograph, full bleed at 88svh, type over it at the bottom. It is the only place the wordmark is at --step-hero (clamp 48 to 150px) and the only thing on the site that moves: the photograph drifts from scale 1 to 1.06 over 24s, and the opening statement drifts 26px inside a frame whose edges fade. The skeleton sits behind the photograph and is covered when it paints. Measured: hero type --star 16.93:1 over the scrim, lede --starlight 15.44:1, the scrim reaches --void at the bottom edge so the copy never sits on the photograph s bright gas.',
+          'The home page s first viewport, full bleed at 88svh, type over the map of the site at the bottom. It is the only place the wordmark is at --step-hero (clamp 48 to 150px). The backplate is _includes/scene/map.html, which a story cannot render: the plate is generated and the canvas needs the page s import map. What is measured here is the type layer. Measured over the busiest frame of the map: headline --star 16.63:1 against the plate s 99th-percentile backdrop and 12.0:1 against the single brightest pixel behind it, lede --starlight 15.34:1, topic list 16.81:1. The scrubbed opening statement drifts 26px inside a frame whose edges fade.',
       },
     },
   },
@@ -33,23 +34,11 @@ export default {
 };
 
 export const Default = {
-  args: { body: hero(true) },
-};
-
-export const WithoutSkeleton = {
-  args: { body: hero(false) },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'The same hero with no skeleton element. Identical once the photograph has painted — which is the point of putting it behind the image rather than above it.',
-      },
-    },
-  },
+  args: { body: hero() },
 };
 
 export const ReducedMotion = {
-  args: { body: hero(true) },
+  args: { body: hero() },
   parameters: {
     docs: {
       description: {

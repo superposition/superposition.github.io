@@ -46,7 +46,6 @@ DESCRIPTIONS = {
     # README: ERC-8004 trustless agent registries in Solidity, Next.js front end.
     "newyears": "ERC-8004 trustless agent registries in Solidity on ROAX, with a Next.js front end.",
     # README: simulation in Zig compiled to WASM, rendering in WebGPU, Web Worker.
-    "zig-wasm-webgpu-hallway-shooter": "A hallway shooter whose simulation runs in Zig compiled to WebAssembly, rendered with WebGPU.",
 }
 
 # Public repositories with nothing to describe: an empty repository, or a

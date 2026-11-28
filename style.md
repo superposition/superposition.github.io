@@ -46,6 +46,11 @@ sitemap: false
       <li class="swatch"><div class="chip" style="background: var(--alert-text)"></div><div class="label"><b>--alert-text</b>#f4735f · 7.46:1</div></li>
       <li class="swatch"><div class="chip" style="background: var(--nebula-text)"></div><div class="label"><b>--nebula-text</b>#6f93c9 · 6.69:1 · prose links</div></li>
       <li class="swatch"><div class="chip" style="background: var(--plum-mark)"></div><div class="label"><b>--plum-mark</b>#9a5e72 · 4.22:1 as an edge</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--flora-bloom)"></div><div class="label"><b>--flora-bloom</b>#ff8fa3 · 9.71:1 · every petal</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--flora-spore)"></div><div class="label"><b>--flora-spore</b>#9fe870 · 14.25:1 · spores and the capsule</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--flora-leaf)"></div><div class="label"><b>--flora-leaf</b>#2f6b52 · 3.35:1 · a leaf fill, never an edge</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--gift-paper)"></div><div class="label"><b>--gift-paper</b>#e0a086 · 9.54:1 · the wrapping, and the open chip's ground</div></li>
+      <li class="swatch"><div class="chip" style="background: var(--gift-ribbon)"></div><div class="label"><b>--gift-ribbon</b>#7a3348 · 3.98:1 against the paper · the tie, and the closed chip's ground</div></li>
       <li class="swatch"><div class="chip" style="background: var(--chip-bg)"></div><div class="label"><b>--chip-bg</b>rgba(58,52,44,.92) · the chip film</div></li>
       <li class="swatch"><div class="chip" style="background: var(--chip-text)"></div><div class="label"><b>--chip-text</b>#efe6d3 · 10.55:1 on the film</div></li>
       <li class="swatch"><div class="chip" style="background: var(--film-bg)"></div><div class="label"><b>--film-bg</b>rgba(0,0,0,.88) · the release plate</div></li>
@@ -121,6 +126,15 @@ sitemap: false
         <p><button class="btn btn-primary" type="button" disabled>Back to the front page</button></p>
       </div>
       <p class="meta">A command link is an underline drawn as a border, 30.1px tall; a button is 39.6px and carries a fill at 13.07:1. Disabled is dust type in a dashed dust edge, 7.51:1 — an unavailable action is still readable. Hover, tab and hold: the states are live.</p>
+    </div>
+
+    <div class="sg-example">
+      <p class="kicker">Soundtrack · the footer of every page</p>
+      <div class="sg-stack">
+        <p><button class="soundtrack-toggle" type="button" aria-pressed="false" aria-label="Play the soundtrack"><svg class="soundtrack-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path class="soundtrack-play" d="M1 0.5 11 6 1 11.5Z"/><path class="soundtrack-pause" d="M1 0.5h3.2v11H1Zm6.8 0H11v11H7.8Z"/></svg>Soundtrack</button></p>
+        <p><button class="soundtrack-toggle" type="button" aria-pressed="true" aria-label="Pause the soundtrack" data-pref="on"><svg class="soundtrack-icon" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path class="soundtrack-play" d="M1 0.5 11 6 1 11.5Z"/><path class="soundtrack-pause" d="M1 0.5h3.2v11H1Zm6.8 0H11v11H7.8Z"/></svg>Soundtrack</button></p>
+      </div>
+      <p class="meta">Play, then pause. It is the one control on the site sized to a thumb — 44px square, where every other target clears 24px from its padding — because it is pressed on a phone in the footer. The word never changes and the glyph swaps inside the same 12px box, so the row cannot reflow when the state does; the second one is what a listener who has asked for the music sees, in the accent, and the stored choice still never starts a note on its own. Hover, tab and hold: the states are live.</p>
     </div>
 
     <div class="sg-example">
@@ -203,9 +217,10 @@ sitemap: false
     <div class="sg-example">
       <p class="kicker">Prose</p>
       <div class="prose">
-        <p>Body copy at 19px in the text face on the 34rem measure, with a <a href="#sg-parts">prose link in the nebula colour</a> and <code>inline code</code> on the surface.</p>
+        <p>Body copy at 20px in the text face on the 39rem measure, 69.2 characters per line at 1440, with a <a href="#sg-parts">prose link in the nebula colour</a> and <code>inline code</code> on the surface.</p>
+        <p class="eyebrow">The eyebrow</p>
         <h2>A section heading inside prose</h2>
-        <p>The section heading is the label voice, not the display face: Plex Mono 600 at 13px, upper case, tracked, in star on a hairline. Anton starts at 22px and is the name a page is called by.</p>
+        <p>The section heading is the display face at 22px in the writer's case, because the field's median first h2 inside an essay is 24px and 13px mono made six sections read as six footnotes. The mono keeps one job above it: an optional eyebrow, 13px Plex Mono 600, upper case and tracked, over the same hairline. A section that needs no category drops it.</p>
         <blockquote>A change of basis is not a change of the map: the arrows are the same arrows, and only the numbers you write them with are different.</blockquote>
         <h3>A third-level heading</h3>
         <p>Text under it, with a list and a figure.</p>

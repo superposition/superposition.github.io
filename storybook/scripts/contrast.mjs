@@ -147,6 +147,29 @@ const PAIRS = [
   ['poster focus ring',    '--state',        '--void',        'edge'],
   ['poster lit edge',      '--poster-edge',  '--void',        'divider'],
   ['poster frame',         '--poster-metal', '--void',        'divider'],
+
+  // The garden: a species is read by silhouette first, so these only have to
+  // be visible on the ground they are drawn on, and the leaf is measured as a
+  // divider because it is a fill under a --cream outline rather than an edge.
+  ['flora bloom',          '--flora-bloom',  '--void',        'edge'],
+  ['flora bloom block',    '--flora-bloom',  '--surface',     'edge'],
+  ['flora spore',          '--flora-spore',  '--void',        'edge'],
+  ['flora spore block',    '--flora-spore',  '--surface',     'edge'],
+  ['flora leaf fill',      '--flora-leaf',   '--void',        'divider'],
+  ['flora leaf on block',  '--flora-leaf',   '--surface',     'divider'],
+  ['flora leaf outline',   '--cream',        '--flora-leaf',  'edge'],
+
+  // The forest's parcels: two flat fills, and the only two pairs on the site
+  // where type sits on a parcel's own colour. The closed chip is cream on the
+  // ribbon; the opened chip is the ground on the paper, because the paper is
+  // the light half of the pair and a label on it is dark.
+  ['gift paper fill',      '--gift-paper',   '--void',        'edge'],
+  ['gift paper block',     '--gift-paper',   '--surface',     'edge'],
+  ['gift ribbon on paper', '--gift-ribbon',  '--gift-paper',  'edge'],
+  ['gift ribbon fill',     '--gift-ribbon',  '--void',        'divider'],
+  ['gift ribbon block',    '--gift-ribbon',  '--surface',     'divider'],
+  ['gift chip closed',     '--star',         '--gift-ribbon', 'text'],
+  ['gift chip open',       '--void',         '--gift-paper',  'text'],
 ];
 
 let failures = 0;

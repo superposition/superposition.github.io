@@ -1,0 +1,21 @@
+# Measured times, and where the figure gets them.
+#
+# These are the numbers the 1brc-cpp page argues from: the repository's own
+# README table, ten million rows on sixteen cores, produced by
+# `run_benchmark.sh` with `time -p` and not reproduced in CI. `/projects/1brc-cpp/`
+# is the authority and carries the caveats; a figure drawn from this file has to
+# agree with the prose that cites it, so the two are edited together.
+#
+# A time is a string because the printed label is what was measured and keeps
+# its second decimal: "0.20" is 0.20 s, not 0.2 s. _includes/figure/ladder.html
+# casts it to a number for the bar's width, so nothing is stored twice.
+
+1brc:
+  unit: s
+  steps:
+    - {label: "v1 naive", time: "0.94"}
+    - {label: "v2 mmap", time: "0.32"}
+    - {label: "v3 custom hash", time: "0.27"}
+    - {label: "v4 fast parse", time: "0.20"}
+    - {label: "v5 parallel", time: "0.07"}
+    - {label: "v6 optimized", time: "0.08"}

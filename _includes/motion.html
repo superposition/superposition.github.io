@@ -1,0 +1,34 @@
+{%- comment -%}
+  The motion layer's way onto a page (GALA-87).
+
+  A page asks for motion with `motion:` in its front matter; _config.yml sets one
+  for every entry and every repository page, and the home page sets its own. This
+  include is everything that buys: the boot snippet, the vendored GSAP build, and
+  the one runtime.
+
+  The snippet's only job is to mark the first frame, so a scrubbed opening does
+  not flash its finished state before the runtime builds it. It refuses to mark
+  anything for a reader who asked for reduced motion, and it takes the mark off
+  again a second and a half later if the runtime never arrives — so a script that
+  fails to load ends as the static page instead of as a blank hero. Nothing else
+  on the site is ever hidden for the runtime's benefit.
+
+  SplitText is only loaded for the opening, which is the only scene that splits
+  type. Every other page pays for GSAP and ScrollTrigger and nothing more.
+{%- endcomment -%}
+<script>
+(function () {
+  var root = document.documentElement;
+  if (!window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  root.className += ' motion-boot';
+  window.setTimeout(function () {
+    if (!root.classList.contains('motion')) root.classList.remove('motion-boot');
+  }, 1500);
+}());
+</script>
+<script defer src="{{ '/assets/vendor/gsap/gsap.min.js' | relative_url }}?v=3.15.1"></script>
+<script defer src="{{ '/assets/vendor/gsap/ScrollTrigger.min.js' | relative_url }}?v=3.15.1"></script>
+{%- if page.motion == 'opening' %}
+<script defer src="{{ '/assets/vendor/gsap/SplitText.min.js' | relative_url }}?v=3.15.1"></script>
+{%- endif %}
+<script defer src="{{ '/assets/motion.js' | relative_url }}?v=1"></script>

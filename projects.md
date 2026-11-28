@@ -2,12 +2,12 @@
 layout: default
 title: Repositories
 permalink: /projects/
-description: The twenty repositories worth a page of their own, and every other public repository.
+description: Nineteen repositories worth a page of their own, and every other public repository.
 ---
 {% assign repos = site.repos | sort: "order" %}
 <header class="page-heading wide">
   <h1>Repositories</h1>
-  <p class="lede">Twenty of the repositories, one page each: what it is, what it does, and how it is built. Every other public repository follows at the end.</p>
+  <p class="lede">Nineteen of the repositories, one page each: what it is, what it does, and how it is built. Every other public repository follows at the end.</p>
 </header>
 <div class="wide">
   {% if repos.size > 0 %}

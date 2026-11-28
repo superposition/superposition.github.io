@@ -3,11 +3,12 @@ layout: default
 title: Superposition
 description: Notes on mathematics, AI, and the systems behind them.
 image: /assets/art/galaxy/carina-1920.webp
+motion: opening
+scene: map
 ---
+<div class="hero-scene" data-motion="opening">
 <section class="hero" aria-labelledby="hero-title">
-  <span class="skeleton skeleton-hero" aria-hidden="true"><span class="skeleton-label">Loading the Carina Nebula</span></span>
-  <img src="{{ '/assets/art/galaxy/carina-1600.webp' | relative_url }}" srcset="{{ '/assets/art/galaxy/carina-1600.webp' | relative_url }} 1600w, {{ '/assets/art/galaxy/carina-1920.webp' | relative_url }} 1920w" sizes="100vw" width="1920" height="1111" alt="The Cosmic Cliffs of the Carina Nebula: clouds of rust and blue gas rising against black space." fetchpriority="high">
-  <div class="starfield" aria-hidden="true"></div>
+  {% include scene/map.html %}
   <div class="hero-inner wide">
     <h1 id="hero-title">Superposition</h1>
     <input class="visually-hidden crawl-switch" type="checkbox" id="crawl-hold">
@@ -20,8 +21,12 @@ image: /assets/art/galaxy/carina-1920.webp
     </ul>
   </div>
 </section>
+</div>
 <div class="hazard" aria-hidden="true"></div>
 {% include campaign/strip.html %}
+<div class="wrap">
+  <p class="kicker"><a class="text-link" href="{{ '/station/' | relative_url }}">Station</a> — one scene, three drawn layers, an action</p>
+</div>
 <div class="wrap">
   {% assign repos = site.repos | sort: "order" %}
   <section class="repos-home" aria-labelledby="repos-title">
@@ -34,10 +39,11 @@ image: /assets/art/galaxy/carina-1920.webp
     {% else %}
     <div class="empty-state">
       <p class="empty-title">No repository pages yet</p>
-      <p class="empty-text">Twenty are getting a page each. Until they land, <a href="{{ '/projects/' | relative_url }}">every public repository</a> is listed together.</p>
+      <p class="empty-text">Nineteen are getting a page each. Until they land, <a href="{{ '/projects/' | relative_url }}">every public repository</a> is listed together.</p>
     </div>
     {% endif %}
   </section>
+  <p class="kicker"><a class="text-link" href="{{ '/garden/' | relative_url }}">The garden: one plant for every repository</a></p>
   {% if site.posts.size > 0 %}
   <section aria-labelledby="recent-title">
     <h2 id="recent-title" class="section-title">Recent entries</h2>
@@ -47,9 +53,9 @@ image: /assets/art/galaxy/carina-1920.webp
     <p class="kicker"><a class="text-link" href="{{ '/journal/' | relative_url }}">All entries</a></p>
   </section>
   {% endif %}
-  <p class="kicker"><a class="text-link" href="{{ '/projects/' | relative_url }}">Repositories</a> <span aria-hidden="true">/</span> <a class="text-link" href="{{ '/about/' | relative_url }}">About</a></p>
+  <p class="kicker"><a class="text-link" href="{{ '/projects/' | relative_url }}">Repositories</a> <span aria-hidden="true">/</span> <a class="text-link" href="{{ '/forest/' | relative_url }}">The forest</a> <span aria-hidden="true">/</span> <a class="text-link" href="{{ '/about/' | relative_url }}">About</a></p>
 </div>
-<div class="wide">
+<div class="wide" data-motion="reveal">
   <div class="plates">
     <figure class="plate">
       <img src="{{ '/assets/art/galaxy/barred-1600.webp' | relative_url }}" srcset="{{ '/assets/art/galaxy/barred-1600.webp' | relative_url }} 1600w, {{ '/assets/art/galaxy/barred-1920.webp' | relative_url }} 1920w" sizes="(max-width: 700px) 100vw, 33vw" width="1600" height="912" loading="lazy" alt="A barred spiral galaxy: two bright arms sweeping out from a straight bar of stars.">
